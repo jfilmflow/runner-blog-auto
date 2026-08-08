@@ -263,14 +263,6 @@
     </div>
 
     <button class="cta" id="genBtn"></button>
-
-    <div class="prog-wrap" id="progWrap" style="display:none">
-      <div class="prog-top">
-        <span class="prog-label" id="progLabel"><span class="spin" style="border-top-color:var(--mint)"></span><span id="progLabelText"></span></span>
-        <span class="prog-pct" id="progPct">0%</span>
-      </div>
-      <div class="prog-track"><div class="prog-bar" id="progBar"></div></div>
-    </div>
   </div>
 
   <!-- STEP 2 -->
@@ -329,6 +321,22 @@
   </div>
 </div>
 
+<!-- 생성 중 진행률 모달 (화면 중앙) -->
+<div class="modal-bg" id="genModal" style="display:none">
+  <div class="modal gen-modal">
+    <div class="modal-logo">✍️</div>
+    <div class="modal-h" id="genTitle"></div>
+    <div class="prog-wrap" style="margin-top:22px">
+      <div class="prog-top">
+        <span class="prog-label"><span class="spin" style="border-top-color:var(--mint)"></span><span id="progLabelText"></span></span>
+        <span class="prog-pct" id="progPct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-bar" id="progBar"></div></div>
+    </div>
+    <div class="modal-note" id="genNote" style="margin-top:16px"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -373,7 +381,8 @@ const I18N = {
     emailInvalid:"Please enter your email address.", authErr:"Login had a problem. Please try again.",
     limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.",
     regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
-    stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing"
+    stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing",
+    genTitle:"Creating your blog post", genNote:"Please keep this open — usually 20–40 seconds."
   },
   ko:{
     brand:"러너들의 <b>공기의 흔적</b>을 남깁니다",
@@ -413,7 +422,8 @@ const I18N = {
     emailInvalid:"이메일 주소를 입력해 주세요.", authErr:"로그인 중 문제가 생겼어요. 다시 시도해 주세요.",
     limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.",
     regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
-    stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리"
+    stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리",
+    genTitle:"블로그를 만들고 있어요", genNote:"창을 닫지 말고 잠시만 기다려 주세요 (보통 20~40초)."
   },
   ja:{
     brand:"ランナーの<b>息づかい</b>を記録に残す",
@@ -453,7 +463,8 @@ const I18N = {
     emailInvalid:"メールアドレスを入力してください。", authErr:"ログインで問題が発生しました。もう一度お試しください。",
     limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。",
     regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
-    stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中"
+    stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中",
+    genTitle:"ブログを作成中です", genNote:"この画面を閉じずにお待ちください（通常20〜40秒）。"
   },
   zh:{
     brand:"留下每一次<b>奔跑的呼吸</b>印记",
@@ -493,7 +504,8 @@ const I18N = {
     emailInvalid:"请输入你的邮箱地址。", authErr:"登录出现问题，请重试。",
     limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。",
     regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
-    stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾"
+    stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾",
+    genTitle:"正在生成你的博客", genNote:"请不要关闭本窗口，通常需要20~40秒。"
   },
   es:{
     brand:"Deja la huella del <b>aliento de cada corredor</b>",
@@ -533,7 +545,8 @@ const I18N = {
     emailInvalid:"Escribe tu dirección de email.", authErr:"Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
     limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.",
     regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
-    stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando"
+    stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando",
+    genTitle:"Creando tu entrada de blog", genNote:"No cierres esto — suele tardar 20–40 s."
   }
 };
 
@@ -640,7 +653,9 @@ function setProg(pct){
   $('#progLabelText').textContent=T(stg);
 }
 function progStart_(){
-  $('#progWrap').style.display='block';
+  $('#genTitle').textContent=T('genTitle');
+  $('#genNote').textContent=T('genNote');
+  $('#genModal').style.display='flex';                    // 화면 중앙 오버레이
   progStart=performance.now(); setProg(0);
   if(progTimer) clearInterval(progTimer);
   progTimer=setInterval(()=>{
@@ -651,8 +666,8 @@ function progStart_(){
 }
 function progStop(done){
   if(progTimer){ clearInterval(progTimer); progTimer=null; }
-  if(done){ setProg(100); setTimeout(()=>{ $('#progWrap').style.display='none'; }, 400); }
-  else { $('#progWrap').style.display='none'; }
+  if(done){ setProg(100); setTimeout(()=>{ $('#genModal').style.display='none'; }, 450); }
+  else { $('#genModal').style.display='none'; }
 }
 
 $('#langSel').onchange=e=>{
