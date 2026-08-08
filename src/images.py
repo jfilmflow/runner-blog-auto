@@ -294,6 +294,37 @@ def render_photo_placeholder(s, path):
     _brandbar(ax); fig.savefig(path, facecolor=SURFACE); plt.close(fig)
 
 
+def _wrap2(text, maxchars):
+    """긴 문구를 최대 2줄로 (가운데 근처 공백에서 분리). 공백 없으면 한 줄."""
+    text = (text or "").strip()
+    if len(text) <= maxchars:
+        return [text]
+    mid = len(text) // 2
+    left = text.rfind(" ", 0, mid); right = text.find(" ", mid)
+    if left == -1 and right == -1:
+        return [text]
+    pos = left if (left != -1 and (right == -1 or (mid - left) <= (right - mid))) else right
+    if pos <= 0:
+        return [text]
+    return [text[:pos].strip(), text[pos:].strip()]
+
+
+def render_keynote(s, path):
+    """빈 사진 자리 대체용 감성 카드 — 큰 문구 한 줄(캡션)로 6장을 꽉 채운다."""
+    fig, ax = _newfig(THUMB_BG)
+    ax.add_patch(Rectangle((0, 0), W, H, color=THUMB_BG))
+    tag = (s.get("tag") or s.get("title") or "RUNNING")
+    _fit(ax, 60, 120, tag, F["black"], 26, W - 120, THUMB_ACCENT, va="center", ha="left")
+    cap = (s.get("caption") or s.get("headline") or s.get("sub") or "오늘도, 한 걸음").strip()
+    lines = _wrap2(cap, 14)
+    y = 360 if len(lines) > 1 else 430
+    for ln in lines:
+        _fit(ax, 60, y, ln, F["black"], 74, W - 120, "#ffffff", va="center", ha="left", min_size=40)
+        y += 118
+    ax.add_patch(Rectangle((60, y - 34), 300, 8, color=THUMB_ACCENT))
+    _brandbar(ax); fig.savefig(path, facecolor=THUMB_BG); plt.close(fig)
+
+
 _RENDERERS = {
     "thumbnail": render_thumbnail, "stat_compare": render_stat_compare,
     "before_after": render_before_after, "bar": render_bar, "summary": render_summary,

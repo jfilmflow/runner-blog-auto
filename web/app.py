@@ -78,6 +78,20 @@ def _period():
     return datetime.now(timezone.utc).strftime("%Y-%m")
 
 
+@app.route("/api/usage")
+def api_usage():
+    """로그인 직후 남은/사용 횟수를 바로 보여주기 위한 조회 (생성 안 해도 표시)."""
+    if not authz.enabled():
+        return jsonify({})
+    token = _bearer()
+    user = authz.verify_token(token)
+    if not user:
+        return jsonify({}), 401
+    lim = authz.free_limit()
+    used = authz.get_usage(token, _period())
+    return jsonify({"used": used, "limit": lim, "remaining": max(0, lim - used), "email": user.get("email")})
+
+
 @app.route("/images/<path:fname>")
 def images(fname):
     return send_from_directory(IMG_DIR, fname)
@@ -91,12 +105,13 @@ def api_generate():
 
     # ── 로그인·사용량(P3) ── 로그인 기능이 켜져 있으면 검증 + 무료 한도 확인
     user = None
+    token = _bearer()
     if authz.enabled():
-        user = authz.verify_token(_bearer())
+        user = authz.verify_token(token)
         if not user:
             return jsonify({"error": "로그인이 필요해요.", "auth_required": True}), 401
         limit = authz.free_limit()
-        used = authz.get_usage(user["id"], _period())
+        used = authz.get_usage(token, _period())
         if used >= limit:
             return jsonify({
                 "error": f"이번 달 무료 {limit}편을 모두 사용했어요.",
@@ -144,9 +159,9 @@ def api_generate():
     # 생성 성공 → 이번 달 편수 +1, 남은 편수 응답에 포함
     usage = None
     if user:
-        new_count = authz.increment_usage(user["id"], _period())
+        new_count = authz.increment_usage(token, _period())
         lim = authz.free_limit()
-        cnt = new_count if new_count is not None else authz.get_usage(user["id"], _period())
+        cnt = new_count if new_count is not None else authz.get_usage(token, _period())
         usage = {"used": cnt, "limit": lim, "remaining": max(0, lim - cnt), "email": user.get("email")}
 
     return jsonify({

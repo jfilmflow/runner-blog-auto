@@ -130,6 +130,15 @@
   @keyframes sp{to{transform:rotate(360deg)}}
   @media(max-width:720px){.row2,.metrics,.gallery{grid-template-columns:1fr 1fr}.steps{flex-direction:column}}
 
+  /* progress bar (생성 중) */
+  .prog-wrap{margin-top:18px}
+  .prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+  .prog-label{color:var(--muted);font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px}
+  .prog-pct{color:var(--mint);font-weight:900;font-size:15px;letter-spacing:-.3px}
+  .prog-track{height:11px;border-radius:999px;background:var(--field-bg);border:1px solid var(--border);overflow:hidden}
+  .prog-bar{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--mint),#22b7d8);
+    transition:width .35s cubic-bezier(.25,.8,.3,1);box-shadow:0 0 14px rgba(46,214,198,.5)}
+
   /* result toolbar */
   .mini-actions{display:flex;gap:9px;margin:-4px 0 22px;flex-wrap:wrap}
   .mini-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-weight:700;
@@ -254,6 +263,14 @@
     </div>
 
     <button class="cta" id="genBtn"></button>
+
+    <div class="prog-wrap" id="progWrap" style="display:none">
+      <div class="prog-top">
+        <span class="prog-label" id="progLabel"><span class="spin" style="border-top-color:var(--mint)"></span><span id="progLabelText"></span></span>
+        <span class="prog-pct" id="progPct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-bar" id="progBar"></div></div>
+    </div>
   </div>
 
   <!-- STEP 2 -->
@@ -348,14 +365,15 @@ const I18N = {
     tNoImg:"No images to download (demo mode or server not connected).", tZip:"⬇ Got the image zip!",
     tZipServer:"Image download works when the server is connected.",
     tNetErr:"Couldn't reach the server. Please wait a moment and try again.", tServer:"Server error",
-    login:"Log in", logout:"Log out", thisMonth:"This month",
+    login:"Log in", logout:"Log out", thisMonth:"This month", remain:"left",
     loginTitle:"Log in to start", loginDesc:"We'll email you a login link — no password. Free posts every month.",
     emailPh:"you@email.com", sendMagic:"Email me a login link", orDivider:"or", googleBtn:"Continue with Google",
     loginNote:"Click the link in the email and you'll come right back here.",
     magicSent:"Check your inbox — we sent a login link.", loginNeeded:"Please log in first.",
     emailInvalid:"Please enter your email address.", authErr:"Login had a problem. Please try again.",
     limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.",
-    regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post."
+    regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
+    stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing"
   },
   ko:{
     brand:"러너들의 <b>공기의 흔적</b>을 남깁니다",
@@ -387,14 +405,15 @@ const I18N = {
     tNoImg:"내려받을 이미지가 없어요 (데모 상태거나 서버 미연결).", tZip:"⬇ 이미지 zip을 받았어요!",
     tZipServer:"이미지 다운로드는 서버 연결 시 작동해요.",
     tNetErr:"서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.", tServer:"서버 오류",
-    login:"로그인", logout:"로그아웃", thisMonth:"이번 달",
+    login:"로그인", logout:"로그아웃", thisMonth:"이번 달", remain:"남음",
     loginTitle:"로그인하고 시작하기", loginDesc:"비밀번호 없이 이메일로 로그인 링크를 보내드려요. 매달 무료로 몇 편씩 만들 수 있어요.",
     emailPh:"you@email.com", sendMagic:"이메일로 로그인 링크 받기", orDivider:"또는", googleBtn:"Google로 계속하기",
     loginNote:"메일의 링크를 누르면 이 화면으로 바로 돌아와요.",
     magicSent:"메일함을 확인하세요 — 로그인 링크를 보냈어요.", loginNeeded:"먼저 로그인해 주세요.",
     emailInvalid:"이메일 주소를 입력해 주세요.", authErr:"로그인 중 문제가 생겼어요. 다시 시도해 주세요.",
     limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.",
-    regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료."
+    regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
+    stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리"
   },
   ja:{
     brand:"ランナーの<b>息づかい</b>を記録に残す",
@@ -426,14 +445,15 @@ const I18N = {
     tNoImg:"ダウンロードする画像がありません（デモ状態またはサーバー未接続）。", tZip:"⬇ 画像zipを取得しました！",
     tZipServer:"画像ダウンロードはサーバー接続時に動作します。",
     tNetErr:"サーバーに接続できませんでした。少し待ってからもう一度お試しください。", tServer:"サーバーエラー",
-    login:"ログイン", logout:"ログアウト", thisMonth:"今月",
+    login:"ログイン", logout:"ログアウト", thisMonth:"今月", remain:"残り",
     loginTitle:"ログインして始める", loginDesc:"パスワード不要。メールでログインリンクを送ります。毎月無料で作れます。",
     emailPh:"you@email.com", sendMagic:"ログインリンクを送る", orDivider:"または", googleBtn:"Googleで続ける",
     loginNote:"メールのリンクを押すと、この画面に戻ってきます。",
     magicSent:"メールを確認してください — ログインリンクを送りました。", loginNeeded:"先にログインしてください。",
     emailInvalid:"メールアドレスを入力してください。", authErr:"ログインで問題が発生しました。もう一度お試しください。",
     limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。",
-    regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。"
+    regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
+    stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中"
   },
   zh:{
     brand:"留下每一次<b>奔跑的呼吸</b>印记",
@@ -465,14 +485,15 @@ const I18N = {
     tNoImg:"没有可下载的图片（演示模式或服务器未连接）。", tZip:"⬇ 已获取图片 zip！",
     tZipServer:"图片下载在连接服务器后可用。",
     tNetErr:"无法连接到服务器。请稍后再试。", tServer:"服务器错误",
-    login:"登录", logout:"退出", thisMonth:"本月",
+    login:"登录", logout:"退出", thisMonth:"本月", remain:"剩",
     loginTitle:"登录后开始", loginDesc:"无需密码，我们会把登录链接发到你的邮箱。每月可免费生成若干篇。",
     emailPh:"you@email.com", sendMagic:"把登录链接发到邮箱", orDivider:"或", googleBtn:"使用 Google 继续",
     loginNote:"点击邮件中的链接，就会回到此页面。",
     magicSent:"请查收邮箱 — 我们已发送登录链接。", loginNeeded:"请先登录。",
     emailInvalid:"请输入你的邮箱地址。", authErr:"登录出现问题，请重试。",
     limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。",
-    regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。"
+    regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
+    stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾"
   },
   es:{
     brand:"Deja la huella del <b>aliento de cada corredor</b>",
@@ -504,14 +525,15 @@ const I18N = {
     tNoImg:"No hay imágenes para descargar (modo demo o servidor no conectado).", tZip:"⬇ ¡Zip de imágenes listo!",
     tZipServer:"La descarga de imágenes funciona con el servidor conectado.",
     tNetErr:"No se pudo conectar con el servidor. Espera un momento e inténtalo de nuevo.", tServer:"Error del servidor",
-    login:"Iniciar sesión", logout:"Cerrar sesión", thisMonth:"Este mes",
+    login:"Iniciar sesión", logout:"Cerrar sesión", thisMonth:"Este mes", remain:"restan",
     loginTitle:"Inicia sesión para empezar", loginDesc:"Te enviamos un enlace de acceso por email, sin contraseña. Posts gratis cada mes.",
     emailPh:"you@email.com", sendMagic:"Enviarme un enlace de acceso", orDivider:"o", googleBtn:"Continuar con Google",
     loginNote:"Haz clic en el enlace del email y volverás aquí.",
     magicSent:"Revisa tu correo — te enviamos un enlace de acceso.", loginNeeded:"Primero inicia sesión.",
     emailInvalid:"Escribe tu dirección de email.", authErr:"Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
     limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.",
-    regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post."
+    regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
+    stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando"
   }
 };
 
@@ -609,6 +631,30 @@ $('#fileInput').onchange=e=>{for(const f of e.target.files)addThumb(f);};
 
 let current=null;
 
+// ===== 진행률 바 (예상 진행률: 초반 빠르게 → 후반 천천히, 완료 시 100%) =====
+let progTimer=null, progStart=0;
+function setProg(pct){
+  $('#progBar').style.width=pct.toFixed(1)+'%';
+  $('#progPct').textContent=Math.round(pct)+'%';
+  const stg = pct>=82?'stg4' : pct>=55?'stg3' : pct>=22?'stg2' : 'stg1';
+  $('#progLabelText').textContent=T(stg);
+}
+function progStart_(){
+  $('#progWrap').style.display='block';
+  progStart=performance.now(); setProg(0);
+  if(progTimer) clearInterval(progTimer);
+  progTimer=setInterval(()=>{
+    const t=(performance.now()-progStart)/1000;           // 경과(초)
+    const pct=92*(1-Math.exp(-t/14));                      // ~30s에 약 80%, 92% 넘지 않음
+    setProg(pct);
+  }, 120);
+}
+function progStop(done){
+  if(progTimer){ clearInterval(progTimer); progTimer=null; }
+  if(done){ setProg(100); setTimeout(()=>{ $('#progWrap').style.display='none'; }, 400); }
+  else { $('#progWrap').style.display='none'; }
+}
+
 $('#langSel').onchange=e=>{
   LANG=e.target.value;
   try{ localStorage.setItem("rb_lang",LANG); }catch(_){}
@@ -620,7 +666,8 @@ $('#genBtn').onclick=async()=>{
   if(!text && files.length===0){toast(T('tNeed'));return;}
   if(AUTH.enabled && !AUTH.session){ openLogin(); return; }   // 로그인 필요
   const btn=$('#genBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>'+T('genLoading');
-  const reset=()=>{btn.disabled=false;btn.textContent=T('genBtn');};
+  const reset=()=>{progStop(false);btn.disabled=false;btn.textContent=T('genBtn');};
+  progStart_();
   let data=null;
   try{
     const fd=new FormData();
@@ -643,11 +690,12 @@ $('#genBtn').onclick=async()=>{
   }
   // 서버가 준 진짜 결과만 사용
   current=data;
+  progStop(true);
   render(current);
   if(data.usage) updateUsage(data.usage);
   $('#step2').classList.remove('hidden');$('#step3').classList.remove('hidden');
   setStep(2);$('#step2').scrollIntoView({behavior:'smooth'});
-  reset();
+  btn.disabled=false; btn.textContent=T('genBtn');
 };
 
 function render(d){
@@ -762,10 +810,11 @@ async function initAuth(){
   if(AUTH.enabled && AUTH.url && AUTH.anon && window.supabase){
     SB=window.supabase.createClient(AUTH.url, AUTH.anon);
     try{ const {data}=await SB.auth.getSession(); AUTH.session=data.session||null; }catch(_){}
-    SB.auth.onAuthStateChange((_e,s)=>{ AUTH.session=s||null; updateAuthUI(); });
+    SB.auth.onAuthStateChange((_e,s)=>{ AUTH.session=s||null; updateAuthUI(); if(s) fetchUsage(); });
   }
   $('#authWrap').style.display = AUTH.enabled ? 'flex' : 'none';
   updateAuthUI();
+  if(AUTH.session) fetchUsage();   // 이미 로그인 상태면 새로고침 직후 바로 표시
 }
 function openLogin(){ if(AUTH.enabled) $('#loginModal').style.display='flex'; }
 function closeLogin(){ $('#loginModal').style.display='none'; }
@@ -789,7 +838,15 @@ function updateUsage(u){
   if(!u || u.used==null || u.limit==null) return;
   const chip=$('#usageChip');
   chip.style.display='inline-block';
-  chip.textContent=`${T('thisMonth')} ${u.used}/${u.limit}`;
+  const remain = (u.remaining!=null) ? u.remaining : Math.max(0, u.limit-u.used);
+  chip.textContent=`${T('thisMonth')} ${u.used}/${u.limit} · ${T('remain')} ${remain}`;
+}
+async function fetchUsage(){   // 로그인 직후/새로고침 시 남은 횟수 즉시 표시
+  if(!AUTH.enabled || !AUTH.session || !AUTH.session.access_token) return;
+  try{
+    const r=await fetch('/api/usage',{headers:{'Authorization':'Bearer '+AUTH.session.access_token}});
+    if(r.ok){ const u=await r.json(); if(u && u.limit!=null) updateUsage(u); }
+  }catch(_){}
 }
 $('#loginBtn').onclick=openLogin;
 $('#modalClose').onclick=closeLogin;

@@ -23,17 +23,20 @@
 [건강 주의] 무리한 운동·과훈련을 부추기지 않는다. 통증·부상을 단정적으로 진단하거나 처방하지 않고 "무리 말고 쉬어가자" 톤으로. 특정 보조제·약 권유 금지.
 [네이버 SEO] 메인 키워드(예: 한강 러닝, 러닝 초보, 10km 러닝, 러닝 코스, 새벽 러닝)를 제목 앞부분·첫문단(100자 내)·소제목 2곳·마지막 문단에 배치하고 본문에 5~8회 자연스럽게. 서브 키워드도 고루 분산.
 [줄바꿈] 1~2문장마다 줄바꿈. 문단은 최대 3줄. 소주제가 바뀌면 빈 줄 하나 더. body 안에서 실제 개행문자(\n)로 넣는다.
-[이미지 마커] body의 문단 사이에 [사진1]~[사진N]을 각각 독립된 줄로 넣는다. 맨 위 대표(썸네일) 1장 + 러닝 사진/기록 카드. 총 5~6장.
+[이미지 마커] body의 문단 사이에 [사진1]~[사진6]을 각각 독립된 줄로 넣는다. 이미지는 항상 정확히 6장이며, 빈칸 없이 모두 채운다. [사진1]은 감성 대표(thumbnail).
 
-=== 이미지 명세 규칙 ===
-러닝 블로그에 어울리게 고른다. 실제 러닝 사진(photo)과 기록 카드를 섞는 게 좋다.
+=== 이미지 명세 규칙 (항상 6장, 빈칸 금지) ===
+첨부 사진이 N장이면(위 [첨부 사진 N장] 참고) 그 N장을 각각 user_photo로 넣고(index 0..N-1), 나머지 (6−N)장은 아래 '카드'들로 채운다. 합은 항상 6.
+- 사진 0장 → 카드 6장 / 1장 → user_photo 1 + 카드 5 / 2장 → user_photo 2 + 카드 4 … (사진이 6장 이상이면 앞에서 6장만).
+- ★photo(Unsplash) 타입은 절대 쓰지 않는다(외부사진·빈칸 방지). 분위기 컷이 필요하면 카드로 대체한다.
+- 카드는 thumbnail·stat_compare·before_after·bar·summary 중에서 소재에 맞게 다양하게 고른다(같은 종류 반복 최소화). [사진1]은 되도록 thumbnail.
+- 데이터가 부족해 기록 카드를 못 만들면, summary(3줄 정리)나 thumbnail류 감성 카드로라도 6장을 반드시 채운다.
 - thumbnail: {tag, line1, line2, highlight, line3, sub}  // 감성 대표 썸네일. highlight는 강조 문구(예: "10km 완주").
 - stat_compare: {title, headline, left_label, left_num, left_unit, right_label, right_num, right_unit, foot}  // 두 기록 비교(예: 거리 vs 시간, 목표 vs 실제)
 - before_after: {title, headline, from_label, from_val, to_label, to_val, delta, foot}  // 지난주 vs 이번주, 3주 전 vs 지금 같은 성장. ★from_val·to_val은 짧은 값만(예: "5km","42.195km","4:26:33","58분"). 문장·긴 설명 금지 — 그런 내용은 headline이나 foot에.
 - bar: {title, headline, unit, items:[[label, number], ...], foot}  // 구간별 페이스, 요일별 거리 등 (양수)
 - summary: {title, headline, lines:[[번호, 윗줄, 아랫줄], ...]}  // 오늘의 3줄 정리
-- photo: {query, caption}  // Unsplash 사진. query는 영어(예: "running by the han river at sunrise", "runner tying shoes on track"). 코스·분위기 컷용.
-- user_photo: {index, caption}  // 러너가 직접 올린 사진. index는 첨부 사진 번호(0부터). 사진이 있으면 Unsplash보다 이걸 우선 쓰세요. caption은 사진에 대한 한 줄 설명.
+- user_photo: {index, caption}  // 러너가 직접 올린 사진. index는 첨부 사진 번호(0부터). caption은 사진에 대한 한 줄 설명.
 
 === 출력 형식 ===
 반드시 아래 구조의 JSON '하나만' 출력한다. JSON 앞뒤 설명 문장 금지. 코드블록(```) 금지.

@@ -1,6 +1,7 @@
 -- ============================================================
 -- 러너 블로그 · P3 로그인/사용량 : Supabase SQL
 -- Supabase 대시보드 → 왼쪽 "SQL Editor" → New query → 아래 전체 붙여넣고 Run
+--   (전에 표를 이미 만들었어도 이 파일 전체를 다시 Run 해도 안전합니다.)
 -- ============================================================
 
 -- 이번 달 생성 편수를 유저별로 저장하는 표
@@ -12,12 +13,25 @@ create table if not exists public.usage_counters (
   primary key (user_id, period)
 );
 
--- RLS 켜기: 정책을 안 만들면 일반 사용자는 접근 불가,
--- 서버(service_role 키)만 읽고 쓸 수 있음 = 사용량을 사용자가 못 건드림(안전).
+-- RLS 켜기: 정책을 안 만들면 사용자는 표에 직접 손을 못 댐(카운트 위조 방지).
+-- 대신 아래 두 함수(security definer)를 통해서만 자기 것 조회/증가 가능.
 alter table public.usage_counters enable row level security;
 
--- 생성 성공 시 +1 (원자적). 서버에서 이 함수를 호출합니다.
-create or replace function public.increment_usage(p_user uuid, p_period text)
+-- 이번 달 '내' 편수 조회 (auth.uid() = 로그인한 본인)
+create or replace function public.my_usage(p_period text)
+returns int
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select coalesce(
+    (select count from public.usage_counters
+      where user_id = auth.uid() and period = p_period), 0);
+$$;
+
+-- 생성 성공 시 '내' 편수 +1 (원자적). 증가만 가능 → 사용자가 못 내림.
+create or replace function public.bump_usage(p_period text)
 returns int
 language plpgsql
 security definer
@@ -27,7 +41,7 @@ declare
   cur int;
 begin
   insert into public.usage_counters (user_id, period, count)
-    values (p_user, p_period, 1)
+    values (auth.uid(), p_period, 1)
     on conflict (user_id, period)
     do update set count = public.usage_counters.count + 1,
                   updated_at = now()
@@ -35,3 +49,7 @@ begin
   return cur;
 end;
 $$;
+
+-- 로그인한 사용자만 이 함수들을 실행할 수 있게 허용
+grant execute on function public.my_usage(text)  to authenticated;
+grant execute on function public.bump_usage(text) to authenticated;

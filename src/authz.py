@@ -28,8 +28,10 @@ def free_limit():
 
 
 def enabled():
-    """로그인·사용량 기능 켜짐 여부 (URL + 서비스키 있어야 authoritative 하게 셀 수 있음)."""
-    return bool(SUPABASE_URL and SERVICE)
+    """로그인·사용량 기능 켜짐 여부.
+       URL + anon 키만 있으면 ON. (사용량은 로그인한 사용자 토큰으로 DB 함수 호출 →
+       service_role 비밀키 불필요. 사용자는 자기 카운트를 못 내림 = 안전.)"""
+    return bool(SUPABASE_URL and ANON)
 
 
 def public_config():
@@ -72,28 +74,30 @@ def verify_token(token):
     return None
 
 
-def get_usage(uid, period):
-    """이번 달(period=YYYY-MM) 해당 유저의 생성 편수."""
-    if not enabled():
+def get_usage(token, period):
+    """이번 달(period=YYYY-MM) 로그인 사용자의 생성 편수.
+       DB 함수 my_usage() 를 '사용자 토큰'으로 호출 → auth.uid() 로 본인 것만 셈."""
+    if not enabled() or not token:
         return 0
-    url = f"{SUPABASE_URL}/rest/v1/usage_counters?user_id=eq.{uid}&period=eq.{period}&select=count"
-    st, data = _req(url, headers={"apikey": SERVICE, "Authorization": f"Bearer {SERVICE}"})
-    if st == 200 and isinstance(data, list) and data:
+    st, data = _req(f"{SUPABASE_URL}/rest/v1/rpc/my_usage", method="POST",
+                    headers={"apikey": ANON, "Authorization": f"Bearer {token}"},
+                    data={"p_period": period})
+    if st in (200, 201):
         try:
-            return int(data[0].get("count", 0))
+            return int(data)
         except Exception:
             return 0
     return 0
 
 
-def increment_usage(uid, period):
-    """생성 성공 시 편수 +1 (원자적, DB 함수 increment_usage 사용). 새 값 반환 or None."""
-    if not enabled():
+def increment_usage(token, period):
+    """생성 성공 시 편수 +1 (원자적, DB 함수 bump_usage). 새 값 반환 or None.
+       사용자 토큰으로 호출하지만 함수가 auth.uid() 기준이라 남의 것/자기 것 조작 불가(증가만)."""
+    if not enabled() or not token:
         return None
-    url = f"{SUPABASE_URL}/rest/v1/rpc/increment_usage"
-    st, data = _req(url, method="POST",
-                    headers={"apikey": SERVICE, "Authorization": f"Bearer {SERVICE}"},
-                    data={"p_user": uid, "p_period": period})
+    st, data = _req(f"{SUPABASE_URL}/rest/v1/rpc/bump_usage", method="POST",
+                    headers={"apikey": ANON, "Authorization": f"Bearer {token}"},
+                    data={"p_period": period})
     if st in (200, 201):
         try:
             return int(data)

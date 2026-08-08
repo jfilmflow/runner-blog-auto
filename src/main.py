@@ -59,20 +59,26 @@ def prepare_images(result, user_photos=None):
                 shutil.copy(user_photos[idx], dest); paths.append(dest)
                 print(f"  [사진{sid}] 사용자 사진 삽입 (index {idx})")
             else:
-                print(f"  [사진{sid}] 사용자 사진 index {idx} 없음 — 건너뜀")
+                # 지정한 사진이 없으면 빈칸으로 두지 말고 감성 카드로 채움 (항상 6장 유지)
+                ph = os.path.join(IMG_DIR, f"{sid:02d}_keynote.png")
+                try:
+                    images_mod.render_keynote(s, ph); paths.append(ph)
+                    print(f"  [사진{sid}] 사용자 사진 index {idx} 없음 → 감성 카드로 대체")
+                except Exception as e:
+                    print(f"  [사진{sid}] 대체 카드 생성 실패: {e}")
         elif t == "photo":
             dest = os.path.join(IMG_DIR, f"{sid:02d}_photo.jpg")
             got = unsplash_mod.fetch(s.get("query", s.get("caption", "running")), dest) if unsplash_mod.available() else None
             if got:
                 paths.append(got)
             else:
-                # Unsplash 키 없음/실패 → 빈칸 대신 '여기에 러닝 사진' 안내 카드로 채움
-                ph = os.path.join(IMG_DIR, f"{sid:02d}_photo.png")
+                # Unsplash 없음/실패 → 빈칸 대신 감성 카드로 6장을 꽉 채움
+                ph = os.path.join(IMG_DIR, f"{sid:02d}_keynote.png")
                 try:
-                    images_mod.render_photo_placeholder(s, ph); paths.append(ph)
-                    print(f"  [사진{sid}] Unsplash 없음 → 사진 안내 카드로 대체")
+                    images_mod.render_keynote(s, ph); paths.append(ph)
+                    print(f"  [사진{sid}] Unsplash 없음 → 감성 카드로 대체")
                 except Exception as e:
-                    print(f"  [사진{sid}] 사진 안내 카드 생성 실패: {e}")
+                    print(f"  [사진{sid}] 대체 카드 생성 실패: {e}")
         else:
             p = os.path.join(IMG_DIR, f"{sid:02d}_{t}.png")
             if os.path.exists(p):
