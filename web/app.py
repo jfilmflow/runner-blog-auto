@@ -24,6 +24,8 @@ import engine as engine_mod
 import keyword_seo as keyword_mod
 import main as pipeline           # prepare_images 재사용
 import images as images_mod       # 카드 하단 브랜드 문구 언어 전환용
+import authz                      # 로그인·사용량(P3)
+from datetime import datetime, timezone
 
 OUT = os.path.join(ROOT, "output")
 IMG_DIR = os.path.join(OUT, "images")
@@ -61,6 +63,21 @@ def index():
     return send_from_directory(HERE, "index.html")
 
 
+@app.route("/api/config")
+def api_config():
+    """프론트가 로그인 붙일 때 필요한 공개 설정(URL·anon키·무료한도)."""
+    return jsonify(authz.public_config())
+
+
+def _bearer():
+    h = request.headers.get("Authorization", "")
+    return h[7:].strip() if h.lower().startswith("bearer ") else ""
+
+
+def _period():
+    return datetime.now(timezone.utc).strftime("%Y-%m")
+
+
 @app.route("/images/<path:fname>")
 def images(fname):
     return send_from_directory(IMG_DIR, fname)
@@ -71,6 +88,20 @@ def api_generate():
     text = (request.form.get("text") or "").strip()
     lang = (request.form.get("lang") or "").strip()
     provider = os.getenv("ENGINE_PROVIDER", "claude")
+
+    # ── 로그인·사용량(P3) ── 로그인 기능이 켜져 있으면 검증 + 무료 한도 확인
+    user = None
+    if authz.enabled():
+        user = authz.verify_token(_bearer())
+        if not user:
+            return jsonify({"error": "로그인이 필요해요.", "auth_required": True}), 401
+        limit = authz.free_limit()
+        used = authz.get_usage(user["id"], _period())
+        if used >= limit:
+            return jsonify({
+                "error": f"이번 달 무료 {limit}편을 모두 사용했어요.",
+                "limit_reached": True, "used": used, "limit": limit,
+            }), 402
 
     # 업로드된 러닝 사진 저장 (AI가 읽고 본문에 삽입)
     up_dir = os.path.join(OUT, "uploads")
@@ -110,6 +141,14 @@ def api_generate():
         imgs_out.append({"id": sid, "type": s.get("type"), "label": _label(s),
                          "url": f"/images/{fname}" if fname else None, "file": fname})
 
+    # 생성 성공 → 이번 달 편수 +1, 남은 편수 응답에 포함
+    usage = None
+    if user:
+        new_count = authz.increment_usage(user["id"], _period())
+        lim = authz.free_limit()
+        cnt = new_count if new_count is not None else authz.get_usage(user["id"], _period())
+        usage = {"used": cnt, "limit": lim, "remaining": max(0, lim - cnt), "email": user.get("email")}
+
     return jsonify({
         "title": result.get("title"),
         "title_options": [result.get("title")] + result.get("title_options", []),
@@ -118,6 +157,7 @@ def api_generate():
         "hashtags": result.get("hashtags", []),
         "body": result.get("body"),
         "images": imgs_out,
+        "usage": usage,
     })
 
 
