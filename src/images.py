@@ -16,12 +16,45 @@ RED = "#d03b3b"; RED_LT = "#e06a6a"; BLUE = "#2a78d6"; GRID = "#e6e5df"
 ACCENT = "#12b5a6"; ACCENT_LT = "#5fd6c9"  # 러닝 성장 강조색(민트)
 THUMB_BG = "#111214"; THUMB_ACCENT = "#6fa8ff"; THUMB_HL = "#ff5a5a"
 BRAND_FOOTER = "러너들의 공기의 흔적을 남깁니다"
+_FOOTER_BY_LANG = {
+    "en": "Runner's Blog Studio",
+    "ko": "러너들의 공기의 흔적을 남깁니다",
+    "ja": "ランナーの息づかいを記録に残す",
+    "zh": "留下每一次奔跑的呼吸印记",
+    "es": "Estudio de Blog para Corredores",
+}
+
+
+def set_lang(lang):
+    """카드 하단 브랜드 문구를 UI 언어에 맞춤. (모르는 코드는 한국어 유지)"""
+    global BRAND_FOOTER
+    BRAND_FOOTER = _FOOTER_BY_LANG.get((lang or "").lower(), _FOOTER_BY_LANG["ko"])
+
+
 W, H = 1200, 900
 
 
 def _find_korean_font():
-    """번들 폰트(fonts/NanumGothic*) 우선 → 없으면 시스템 한글 폰트 탐색. (서버 배포 대비)"""
+    """번들 폰트 우선 (서버 배포 대비).
+       1순위: Noto Sans CJK (한·일·중·라틴 전부 커버 → 다국어 카드 글자 OK)
+       2순위: NanumGothic (한국어 전용)
+       3순위: 시스템 폰트 탐색
+    """
     _fd = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fonts")
+
+    # 1) Noto Sans CJK — 다국어(en/ko/ja/zh/es) 카드 글자를 한 폰트로 처리
+    _noto_reg = os.path.join(_fd, "NotoSansCJK-Regular.ttc")
+    _noto_bold = os.path.join(_fd, "NotoSansCJK-Bold.ttc")
+    if os.path.exists(_noto_reg):
+        _b = _noto_bold if os.path.exists(_noto_bold) else _noto_reg
+        return {
+            "black": FontProperties(fname=_b),
+            "bold":  FontProperties(fname=_b),
+            "med":   FontProperties(fname=_noto_reg),
+            "reg":   FontProperties(fname=_noto_reg),
+        }
+
+    # 2) NanumGothic — 한국어 전용 폴백
     _reg = os.path.join(_fd, "NanumGothic.ttf")
     if os.path.exists(_reg):
         _bold = os.path.join(_fd, "NanumGothicBold.ttf")

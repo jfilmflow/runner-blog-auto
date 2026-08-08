@@ -72,7 +72,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None):
     if provider == "claude":
         import anthropic
         client = anthropic.Anthropic()  # ANTHROPIC_API_KEY 환경변수 사용
-        model = model or "claude-sonnet-4-5"
+        model = model or os.getenv("ANTHROPIC_MODEL") or "claude-sonnet-4-5"
         content = [{"type": "text", "text": user_text}]
         for p in photo_paths:
             media, b64 = _encode_image(p)

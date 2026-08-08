@@ -23,6 +23,7 @@ except Exception:
 import engine as engine_mod
 import keyword_seo as keyword_mod
 import main as pipeline           # prepare_images 재사용
+import images as images_mod       # 카드 하단 브랜드 문구 언어 전환용
 
 OUT = os.path.join(ROOT, "output")
 IMG_DIR = os.path.join(OUT, "images")
@@ -31,6 +32,28 @@ app = Flask(__name__, static_folder=None)
 
 def _label(spec):
     return spec.get("headline") or spec.get("caption") or spec.get("type", "이미지")
+
+
+# 출력 언어 지시문 (UI에서 고른 언어로 블로그 글까지 생성)
+_LANG_NAME = {
+    "en": "English", "ko": "Korean (한국어)", "ja": "Japanese (日本語)",
+    "zh": "Simplified Chinese (简体中文)", "es": "Spanish (Español)",
+}
+
+
+def _lang_directive(lang):
+    name = _LANG_NAME.get((lang or "").lower())
+    if not name:
+        return ""   # 모르는 코드면 프롬프트 기본(한국어) 유지
+    return (
+        f"\n\n[OUTPUT LANGUAGE — 최우선]\n"
+        f"Write EVERYTHING (title, title_options, body, hashtags, image card text/captions, "
+        f"main_keyword, sub_keywords) in {name}. "
+        f"Localize naturally for a native {name} reader — do NOT translate word-for-word.\n"
+        f"EXCEPTION: keep the image markers EXACTLY as [사진1], [사진2], ... (do not translate or renumber them). "
+        f"Also keep any Unsplash photo `query` field in English.\n"
+        f"The user's source text below may be in another language; still output in {name}."
+    )
 
 
 @app.route("/")
@@ -46,6 +69,7 @@ def images(fname):
 @app.route("/api/generate", methods=["POST"])
 def api_generate():
     text = (request.form.get("text") or "").strip()
+    lang = (request.form.get("lang") or "").strip()
     provider = os.getenv("ENGINE_PROVIDER", "claude")
 
     # 업로드된 러닝 사진 저장 (AI가 읽고 본문에 삽입)
@@ -62,14 +86,18 @@ def api_generate():
 
     if not text and not photos:
         return jsonify({"error": "러닝 이야기(글) 또는 러닝 사진 중 하나는 넣어주세요."}), 400
+
+    story = text + _lang_directive(lang)   # 사용자 원문 + 출력 언어 지시
     try:
-        result = engine_mod.generate(text, provider=provider, photo_paths=photos)
+        result = engine_mod.generate(story, provider=provider, photo_paths=photos)
     except Exception as e:
-        return jsonify({"error": f"글 생성 실패: {e}"}), 500
+        import traceback; traceback.print_exc()
+        return jsonify({"error": f"글 생성 실패 [{type(e).__name__}]: {e}"}), 500
 
     kws = [result.get("main_keyword", "")] + result.get("sub_keywords", [])
     result["keyword_report"] = keyword_mod.analyze([k for k in kws if k])
 
+    images_mod.set_lang(lang)     # 카드 하단 브랜드 문구를 선택 언어로
     image_paths = pipeline.prepare_images(result, user_photos=photos)
 
     specs = sorted(result.get("images", []), key=lambda x: int(x.get("id", 0)))
