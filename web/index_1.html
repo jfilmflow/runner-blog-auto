@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runner's Blog Studio</title>
+<style>
+  :root{
+    --bg:#070a0b; --panel:#0f1416; --panel2:#141b1d; --field-bg:#0c1113;
+    --border:#213033; --border2:#2c3d40;
+    --text:#eef4f3; --muted:#7f9298; --muted2:#5d6f74;
+    --mint:#2ed6c6; --mint2:#49e9d9; --mint-press:#1fbcae; --ink:#04211e;
+    --blue:#3aa0ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1100px 520px at 78% -8%,#0f2b2a 0%,transparent 60%),
+      radial-gradient(900px 500px at 10% 0%,#0c2230 0%,var(--bg) 55%);
+    color:var(--text);font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;padding:30px 18px 90px;min-height:100vh}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  /* header */
+  .top{display:flex;align-items:center;gap:14px;padding:2px 6px}
+  .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--mint),#1f9fd6);
+    display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:0 8px 20px rgba(46,214,198,.28);flex:none}
+  .brandbox{display:flex;flex-direction:column;line-height:1.1}
+  .brand{font-size:23px;font-weight:800;letter-spacing:-.4px}
+  .brand b{color:var(--mint)}
+  .brand-sub{color:var(--muted);font-size:12.5px;margin-top:3px;font-weight:500}
+  .lang-wrap{margin-left:auto;position:relative}
+  .lang-sel{appearance:none;background:var(--panel2);border:1px solid var(--border2);color:var(--text);
+    font-weight:700;font-size:13px;padding:9px 34px 9px 14px;border-radius:11px;cursor:pointer;font-family:inherit;outline:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237f9298' stroke-width='2.4'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;transition:.15s}
+  .lang-sel:hover{border-color:var(--mint)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:22px 6px 8px}
+  .chip{border:1px solid rgba(46,214,198,.4);color:var(--mint);background:rgba(46,214,198,.07);
+    font-weight:700;font-size:13px;padding:7px 13px;border-radius:10px;display:inline-flex;align-items:center;gap:6px}
+  .lede{color:var(--muted);font-size:14.5px;margin:14px 6px 22px;line-height:1.6;max-width:760px}
+
+  /* progress */
+  .steps{display:flex;gap:8px;margin:0 6px 20px}
+  .steps .s{flex:1;display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--border);font-size:13.5px;color:var(--muted);font-weight:600}
+  .steps .s .n{width:22px;height:22px;border-radius:7px;background:var(--border2);color:var(--text);
+    display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:none}
+  .steps .s.active{border-color:var(--mint);color:var(--text)}
+  .steps .s.active .n{background:var(--mint);color:var(--ink)}
+
+  /* card */
+  .card{background:linear-gradient(180deg,#111819,#0e1416);border:1px solid var(--border);
+    border-radius:20px;padding:30px 32px;margin-bottom:20px}
+  .head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .tab{padding:5px 12px;border-radius:8px;background:rgba(46,214,198,.12);color:var(--mint);
+    font-size:12.5px;font-weight:800;letter-spacing:.3px}
+  .head h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px}
+  .head-desc{color:var(--muted);font-size:14px;margin:2px 0 22px;line-height:1.55}
+
+  label.fl{display:block;font-weight:700;font-size:14.5px;margin:20px 0 9px}
+  label.fl .dim{color:var(--muted);font-weight:500;font-size:13px}
+  textarea,input.txt,select{width:100%;background:var(--field-bg);border:1px solid var(--border);
+    color:var(--text);border-radius:12px;padding:15px 17px;font-size:14.5px;font-family:inherit;outline:none;transition:.15s}
+  textarea{min-height:200px;resize:vertical;line-height:1.6}
+  textarea::placeholder,input.txt::placeholder{color:var(--muted2)}
+  textarea:focus,input.txt:focus,select:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(46,214,198,.14)}
+
+  .drop{border:1.5px dashed var(--border2);border-radius:14px;padding:38px 20px;text-align:center;
+    color:var(--muted);cursor:pointer;transition:.15s}
+  .drop:hover{border-color:var(--mint);background:rgba(46,214,198,.04)}
+  .drop .ico{font-size:30px;margin-bottom:12px}
+  .drop b{color:var(--mint)}
+  .drop .hint{color:var(--muted2);font-size:12.5px;margin-top:8px}
+  .thumbs{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+  .thumbs img{width:70px;height:70px;object-fit:cover;border-radius:9px;border:1px solid var(--border)}
+
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237f9298' stroke-width='2.4'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 15px center;padding-right:40px}
+
+  .cta{width:100%;margin-top:28px;background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border:none;border-radius:14px;
+    padding:19px;font-size:17px;font-weight:900;cursor:pointer;letter-spacing:-.2px;transition:.12s;
+    box-shadow:0 10px 26px rgba(46,214,198,.24)}
+  .cta:hover{filter:brightness(1.06);transform:translateY(-1px)}
+  .cta:active{transform:translateY(0)}
+  .cta[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none;filter:none}
+
+  .hidden{display:none}
+  .titles{display:flex;flex-direction:column;gap:9px}
+  .title-opt{display:flex;gap:12px;align-items:center;background:var(--field-bg);border:1px solid var(--border);
+    border-radius:11px;padding:13px 15px;cursor:pointer;transition:.12s}
+  .title-opt:hover{border-color:var(--mint)}
+  .title-opt.sel{border-color:var(--mint);background:rgba(46,214,198,.07)}
+  .title-opt .radio{width:17px;height:17px;border-radius:999px;border:2px solid var(--muted);flex:none}
+  .title-opt.sel .radio{border-color:var(--mint);background:var(--mint);box-shadow:inset 0 0 0 3px var(--field-bg)}
+  .title-opt span{font-weight:700;font-size:15px}
+
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+  .metric{background:var(--field-bg);border:1px solid var(--border);border-radius:13px;padding:15px}
+  .metric .k{color:var(--muted);font-size:12px;margin-bottom:6px}
+  .metric .v{font-size:22px;font-weight:900;letter-spacing:-.5px}
+  .metric .v.good{color:var(--mint)}
+
+  .preview-body{background:#fbfdfc;color:#1a2321;border-radius:13px;padding:28px 28px;line-height:1.75;
+    font-size:14.5px;max-height:500px;overflow:auto;white-space:pre-wrap}
+  .imgmark{display:flex;align-items:center;gap:10px;background:#e2f7f4;border:1px dashed #96d6cd;color:#276b62;
+    border-radius:10px;padding:10px 14px;margin:13px 0;font-weight:700;font-size:13px}
+  .imgmark .box{width:38px;height:38px;border-radius:8px;background:var(--mint);display:flex;align-items:center;justify-content:center}
+  .hashtags{margin-top:8px;color:#1f8f84;font-size:13px}
+
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+  .gallery .g{border:1px solid var(--border);border-radius:11px;overflow:hidden;background:var(--field-bg)}
+  .gallery .g img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover}
+  .gallery .g .cap{padding:8px 10px;font-size:11.5px;color:var(--muted)}
+  .g.ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:var(--muted2);
+    font-size:12px;text-align:center;padding:10px}
+
+  .actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+  .btn{flex:1;min-width:200px;border-radius:13px;padding:17px;font-size:15.5px;font-weight:800;cursor:pointer;
+    border:1px solid var(--border2);background:var(--panel2);color:var(--text);transition:.12s}
+  .btn:hover{border-color:var(--mint)}
+  .btn.primary{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border-color:transparent}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .note{color:var(--muted);font-size:12.5px;margin-top:13px;line-height:1.6}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#0f1a1b;border:1px solid var(--mint);
+    color:var(--text);padding:13px 22px;border-radius:12px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.45);display:none;z-index:50}
+  .spin{width:17px;height:17px;border:2.5px solid rgba(4,33,30,.35);border-top-color:var(--ink);border-radius:999px;
+    display:inline-block;vertical-align:-3px;margin-right:8px;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media(max-width:720px){.row2,.metrics,.gallery{grid-template-columns:1fr 1fr}.steps{flex-direction:column}}
+
+  /* progress bar (생성 중) */
+  .prog-wrap{margin-top:18px}
+  .prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+  .prog-label{color:var(--muted);font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px}
+  .prog-pct{color:var(--mint);font-weight:900;font-size:15px;letter-spacing:-.3px}
+  .prog-track{height:11px;border-radius:999px;background:var(--field-bg);border:1px solid var(--border);overflow:hidden}
+  .prog-bar{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--mint),#22b7d8);
+    transition:width .35s cubic-bezier(.25,.8,.3,1);box-shadow:0 0 14px rgba(46,214,198,.5)}
+
+  /* result toolbar */
+  .mini-actions{display:flex;gap:9px;margin:-4px 0 22px;flex-wrap:wrap}
+  .mini-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-weight:700;
+    font-size:13.5px;padding:10px 15px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s;
+    display:inline-flex;align-items:center;gap:7px}
+  .mini-btn:hover{border-color:var(--mint)}
+  .mini-btn.accent{border-color:rgba(46,214,198,.45);color:var(--mint);background:rgba(46,214,198,.07)}
+
+  /* auth */
+  .auth-wrap{display:flex;align-items:center;gap:10px;margin-left:10px}
+  .usage-chip{font-size:12px;font-weight:700;color:var(--mint);background:rgba(46,214,198,.09);
+    border:1px solid rgba(46,214,198,.3);padding:7px 11px;border-radius:10px;white-space:nowrap}
+  .auth-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-weight:700;
+    font-size:13px;padding:9px 15px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s}
+  .auth-btn:hover{border-color:var(--mint)}
+  .user-chip{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted)}
+  .user-chip b{color:var(--text);font-weight:700;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .auth-link{background:none;border:none;color:var(--muted);font-weight:700;font-size:12.5px;cursor:pointer;
+    font-family:inherit;text-decoration:underline;padding:4px}
+  .auth-link:hover{color:var(--mint)}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(2,6,7,.72);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal{position:relative;width:100%;max-width:420px;background:linear-gradient(180deg,#121a1b,#0e1416);
+    border:1px solid var(--border2);border-radius:20px;padding:30px 28px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .modal-logo{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--mint),#1f9fd6);
+    display:flex;align-items:center;justify-content:center;font-size:23px;margin-bottom:16px}
+  .modal-h{font-size:20px;font-weight:800;letter-spacing:-.3px}
+  .modal-d{color:var(--muted);font-size:13.5px;margin:6px 0 20px;line-height:1.55}
+  .modal .or{display:flex;align-items:center;gap:12px;color:var(--muted2);font-size:12px;margin:16px 0}
+  .modal .or::before,.modal .or::after{content:"";flex:1;height:1px;background:var(--border)}
+  .modal-x{position:absolute;top:16px;right:18px;background:none;border:none;color:var(--muted);
+    font-size:18px;cursor:pointer;line-height:1}
+  .modal-x:hover{color:var(--text)}
+  .gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1f2933;
+    border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+  .gbtn:hover{filter:brightness(.97)}
+  .gicon{width:19px;height:19px}
+  .modal-note{color:var(--muted2);font-size:11.5px;margin-top:14px;line-height:1.5;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="logo">✍️</div>
+    <div class="brandbox">
+      <div class="brand" data-i18n-html="brand"></div>
+      <div class="brand-sub" data-i18n="brandSub"></div>
+    </div>
+    <div class="lang-wrap">
+      <select class="lang-sel" id="langSel" aria-label="Language">
+        <option value="en">🇺🇸 English</option>
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="ja">🇯🇵 日本語</option>
+        <option value="zh">🇨🇳 简体中文</option>
+        <option value="es">🇪🇸 Español</option>
+      </select>
+    </div>
+    <div class="auth-wrap" id="authWrap" style="display:none">
+      <span class="usage-chip" id="usageChip" style="display:none"></span>
+      <button class="auth-btn" id="loginBtn"></button>
+      <span class="user-chip" id="userChip" style="display:none">
+        <b id="userEmail"></b>
+        <button class="auth-link" id="logoutBtn"></button>
+      </span>
+    </div>
+  </div>
+
+  <div class="chips">
+    <span class="chip">◆ <span data-i18n="chip1"></span></span>
+    <span class="chip">◆ <span data-i18n="chip2"></span></span>
+    <span class="chip">◆ <span data-i18n="chip3"></span></span>
+    <span class="chip">◆ <span data-i18n="chip4"></span></span>
+  </div>
+
+  <div class="lede" data-i18n="lede"></div>
+
+  <div class="steps">
+    <div class="s active" id="ps1"><span class="n">1</span><span data-i18n="step1"></span></div>
+    <div class="s" id="ps2"><span class="n">2</span><span data-i18n="step2"></span></div>
+    <div class="s" id="ps3"><span class="n">3</span><span data-i18n="step3"></span></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="card">
+    <div class="head"><span class="tab">STEP 1</span><h2 data-i18n="step1"></h2></div>
+    <div class="head-desc" data-i18n="s1desc"></div>
+
+    <label class="fl"><span data-i18n="lblStory"></span> <span class="dim" data-i18n="lblStoryDim"></span></label>
+    <textarea id="srcText" data-i18n-ph="phStory"></textarea>
+
+    <label class="fl"><span data-i18n="lblCap"></span> <span class="dim" data-i18n="lblCapDim"></span></label>
+    <div class="drop" id="drop">
+      <div class="ico">📎</div>
+      <div data-i18n-html="dropMain"></div>
+      <div class="hint" data-i18n="dropHint"></div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    </div>
+    <div class="thumbs" id="thumbs"></div>
+
+    <label class="fl"><span data-i18n="lblKw"></span> <span class="dim" data-i18n="lblKwDim"></span></label>
+    <input class="txt" id="keywords" data-i18n-ph="phKw">
+
+    <div class="row2">
+      <div>
+        <label class="fl" data-i18n="lblLen"></label>
+        <select id="length">
+          <option value="2800" data-i18n="len1"></option>
+          <option value="3200" data-i18n="len2"></option>
+          <option value="2000" data-i18n="len3"></option>
+        </select>
+      </div>
+      <div>
+        <label class="fl" data-i18n="lblProof"></label>
+        <select id="proof">
+          <option value="basic" data-i18n="proof1"></option>
+          <option value="strict" data-i18n="proof2"></option>
+          <option value="off" data-i18n="proof3"></option>
+        </select>
+      </div>
+    </div>
+
+    <button class="cta" id="genBtn"></button>
+
+    <div class="prog-wrap" id="progWrap" style="display:none">
+      <div class="prog-top">
+        <span class="prog-label" id="progLabel"><span class="spin" style="border-top-color:var(--mint)"></span><span id="progLabelText"></span></span>
+        <span class="prog-pct" id="progPct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-bar" id="progBar"></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card hidden" id="step2">
+    <div class="head"><span class="tab">STEP 2</span><h2 data-i18n="step2"></h2></div>
+    <div class="head-desc" data-i18n="s2desc"></div>
+
+    <div class="mini-actions">
+      <button class="mini-btn accent" id="regenBtn">🔄 <span data-i18n="regen"></span></button>
+      <button class="mini-btn" id="newBtn">✏️ <span data-i18n="newPost"></span></button>
+    </div>
+
+    <label class="fl" data-i18n="lblPickTitle"></label>
+    <div class="titles" id="titles"></div>
+
+    <label class="fl" data-i18n="lblMetrics"></label>
+    <div class="metrics" id="metrics"></div>
+
+    <label class="fl" data-i18n="lblPreview"></label>
+    <div class="preview-body" id="bodyPreview"></div>
+
+    <label class="fl" data-i18n="lblImages"></label>
+    <div class="gallery" id="gallery"></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card hidden" id="step3">
+    <div class="head"><span class="tab">STEP 3</span><h2 data-i18n="step3"></h2></div>
+    <div class="head-desc" data-i18n-html="s3desc"></div>
+    <div class="actions">
+      <button class="btn primary" id="copyHtmlBtn" data-i18n="btnHtml"></button>
+      <button class="btn" id="copyMdBtn" data-i18n="btnMd"></button>
+      <button class="btn" id="copyTextBtn" data-i18n="btnText"></button>
+      <button class="btn" id="dlImagesBtn" data-i18n="btnZip"></button>
+    </div>
+    <div class="note" data-i18n-html="note3"></div>
+  </div>
+
+</div>
+
+<!-- 로그인 모달 -->
+<div class="modal-bg" id="loginModal" style="display:none">
+  <div class="modal">
+    <button class="modal-x" id="modalClose">✕</button>
+    <div class="modal-logo">✍️</div>
+    <div class="modal-h" data-i18n="loginTitle"></div>
+    <div class="modal-d" data-i18n="loginDesc"></div>
+    <input class="txt" id="emailInput" type="email" data-i18n-ph="emailPh" autocomplete="email">
+    <button class="cta" id="magicBtn" style="margin-top:12px" data-i18n="sendMagic"></button>
+    <div class="or"><span data-i18n="orDivider"></span></div>
+    <button class="gbtn" id="googleBtn">
+      <svg class="gicon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
+      <span data-i18n="googleBtn"></span>
+    </button>
+    <div class="modal-note" data-i18n="loginNote"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================ i18n ============================ */
+const I18N = {
+  en:{
+    brand:"Leave the trace of every <b>runner's breath</b>",
+    brandSub:"And a polished blog post is written for you, automatically",
+    chip1:"Draft generation", chip2:"Auto image attach", chip3:"Search-volume data", chip4:"Auto SEO placement",
+    lede:"Just drop in your daily running story and a few photos. Out comes a solid, well-structured blog post.",
+    step1:"Add material", step2:"Refine result", step3:"Export",
+    s1desc:"Paste the running feed you posted on Instagram, Threads, or X. If you have photos from your run, add them too :)",
+    lblStory:"Your running story", lblStoryDim:"— Instagram · Threads · notes (leave empty if uploading photos only)",
+    phStory:"e.g. 10 km along the river at dawn. The first 3 km felt heavy, but after the turnaround my legs loosened up and my pace came back. The iced americano afterward never tasted so sweet...",
+    lblCap:"Reference captures", lblCapDim:"— multiple OK · AI reads the text and uses it",
+    dropMain:"Drag images here or <b>click to choose</b>",
+    dropHint:"PNG · JPG · WEBP · crisp, readable captures work best (multiple OK)",
+    lblKw:"Target keywords", lblKwDim:"— up to 3, leave blank and AI picks them",
+    phKw:"e.g. river run, 10k pace, beginner running",
+    lblLen:"Post length", len1:"SEO-focused · ~2,800 chars", len2:"In-depth · ~3,200 chars", len3:"Concise · ~2,000 chars",
+    lblProof:"Proofreading", proof1:"Standard · proof while writing", proof2:"Precise · extra polish pass", proof3:"No proofreading",
+    genBtn:"⚡ Generate my blog post", genLoading:"Writing your post, images & metrics...",
+    s2desc:"Pick a title and skim the body, images, and search metrics. If it looks good, move on to Step 3 below.",
+    lblPickTitle:"Choose a title", lblMetrics:"Keyword search metrics", lblPreview:"Post preview", lblImages:"Generated images",
+    metricsEmpty:"Add search API keys to show monthly search volume and opportunity scores.",
+    mSearch:"searches", mScore:"Opportunity",
+    s3desc:"Copy the finished post or download the images, then paste into <b>any blog you like</b> — WordPress, Medium, Ghost, and more.",
+    btnHtml:"📋 Copy as HTML", btnMd:"📋 Copy Markdown", btnText:"📋 Copy text", btnZip:"⬇ Download all images (zip)",
+    note3:"💡 For most blog editors, <b>Copy as HTML</b> pastes cleanest (keeps paragraphs & formatting). Download the images as a zip and place them in order at each <b>📷 photo marker</b> in the body.",
+    photo:"Photo", imgHere:"image goes here",
+    tNeed:"Add a story or at least one capture", tDemo:"Preview demo (real generation when the server is connected)",
+    tHtml:"✅ Copied as HTML! Paste into your blog editor.", tMd:"✅ Markdown copied!", tText:"✅ Text copied!",
+    tNoImg:"No images to download (demo mode or server not connected).", tZip:"⬇ Got the image zip!",
+    tZipServer:"Image download works when the server is connected.",
+    tNetErr:"Couldn't reach the server. Please wait a moment and try again.", tServer:"Server error",
+    login:"Log in", logout:"Log out", thisMonth:"This month",
+    loginTitle:"Log in to start", loginDesc:"We'll email you a login link — no password. Free posts every month.",
+    emailPh:"you@email.com", sendMagic:"Email me a login link", orDivider:"or", googleBtn:"Continue with Google",
+    loginNote:"Click the link in the email and you'll come right back here.",
+    magicSent:"Check your inbox — we sent a login link.", loginNeeded:"Please log in first.",
+    emailInvalid:"Please enter your email address.", authErr:"Login had a problem. Please try again.",
+    limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.",
+    regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
+    stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing"
+  },
+  ko:{
+    brand:"러너들의 <b>공기의 흔적</b>을 남깁니다",
+    brandSub:"그러면 근사한 블로그 글이 자동으로 완성됩니다",
+    chip1:"초안 생성", chip2:"이미지 자동 첨부", chip3:"검색량 데이터", chip4:"SEO 자동 배치",
+    lede:"당신의 데일리 러닝 이야기와 사진을 간단하게 넣어주세요. 아주 탄탄한 스토리의 블로그로 나옵니다.",
+    step1:"소재 넣기", step2:"결과 다듬기", step3:"내보내기",
+    s1desc:"당신이 인스타, 스레드, X에 올린 러닝 피드 이야기를 여기 넣으면 됩니다. 당신의 러닝 순간의 사진이 있다면 그 사진도 넣어주세요 :)",
+    lblStory:"러닝 이야기", lblStoryDim:"— 인스타·스레드·메모 (사진만 올릴 거면 비워도 됨)",
+    phStory:"예) 오늘 새벽 한강 10km. 초반 3km가 유독 무거웠는데, 반환점 돌고 나니 다리가 풀리면서 페이스가 살아났다. 끝나고 마신 아이스 아메리카노 한 잔이 그렇게 달 수가 없었다...",
+    lblCap:"참고 캡처", lblCapDim:"— 여러 장 가능 · AI가 글자를 읽어 반영",
+    dropMain:"이미지를 끌어다 놓거나 <b>여기를 눌러 선택</b>",
+    dropHint:"PNG · JPG · WEBP · 글자가 또렷한 캡처가 좋아요 (여러 장 OK)",
+    lblKw:"노리는 키워드", lblKwDim:"— 최대 3개, 비워두면 AI가 알아서 고름",
+    phKw:"예) 한강 러닝, 10km 페이스, 러닝 초보",
+    lblLen:"원고 분량", len1:"상위노출형 · 약 2,800자", len2:"깊이형 · 약 3,200자", len3:"간결형 · 약 2,000자",
+    lblProof:"문장 다듬기", proof1:"표준 · 생성하며 교정", proof2:"정밀 · 한 번 더 손질", proof3:"교정 안 함",
+    genBtn:"⚡ 원고 자동 생성 시작", genLoading:"원고·이미지·지표 만드는 중...",
+    s2desc:"제목을 하나 고르고, 본문·이미지·검색 지표를 훑어보세요. 괜찮으면 아래 3단계로 넘어갑니다.",
+    lblPickTitle:"제목 고르기", lblMetrics:"키워드 검색 지표", lblPreview:"원고 미리보기", lblImages:"함께 만든 이미지",
+    metricsEmpty:"검색/검색광고 API 키를 넣으면 월간검색량·기회점수가 표시됩니다.",
+    mSearch:"검색", mScore:"기회점수",
+    s3desc:"완성본을 복사하거나 이미지를 내려받아, 워드프레스·미디엄·고스트 등 <b>원하는 블로그 어디든</b> 붙여넣으세요.",
+    btnHtml:"📋 HTML로 복사", btnMd:"📋 마크다운 복사", btnText:"📋 텍스트 복사", btnZip:"⬇ 이미지 전체 다운로드(zip)",
+    note3:"💡 대부분 블로그 편집기엔 <b>HTML로 복사</b>가 제일 깔끔해요(문단·서식 유지). 이미지는 zip으로 받아, 본문 속 <b>📷 사진 표시</b> 자리에 순서대로 올리면 됩니다.",
+    photo:"사진", imgHere:"이미지 자리",
+    tNeed:"러닝 이야기나 캡처를 하나는 넣어주세요", tDemo:"미리보기 데모입니다 (서버 연결 시 실제 생성)",
+    tHtml:"✅ HTML로 복사됐어요! 블로그 편집기에 붙여넣으세요.", tMd:"✅ 마크다운 복사됐어요!", tText:"✅ 텍스트 복사됐어요!",
+    tNoImg:"내려받을 이미지가 없어요 (데모 상태거나 서버 미연결).", tZip:"⬇ 이미지 zip을 받았어요!",
+    tZipServer:"이미지 다운로드는 서버 연결 시 작동해요.",
+    tNetErr:"서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.", tServer:"서버 오류",
+    login:"로그인", logout:"로그아웃", thisMonth:"이번 달",
+    loginTitle:"로그인하고 시작하기", loginDesc:"비밀번호 없이 이메일로 로그인 링크를 보내드려요. 매달 무료로 몇 편씩 만들 수 있어요.",
+    emailPh:"you@email.com", sendMagic:"이메일로 로그인 링크 받기", orDivider:"또는", googleBtn:"Google로 계속하기",
+    loginNote:"메일의 링크를 누르면 이 화면으로 바로 돌아와요.",
+    magicSent:"메일함을 확인하세요 — 로그인 링크를 보냈어요.", loginNeeded:"먼저 로그인해 주세요.",
+    emailInvalid:"이메일 주소를 입력해 주세요.", authErr:"로그인 중 문제가 생겼어요. 다시 시도해 주세요.",
+    limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.",
+    regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
+    stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리"
+  },
+  ja:{
+    brand:"ランナーの<b>息づかい</b>を記録に残す",
+    brandSub:"すると、素敵なブログ記事が自動で仕上がります",
+    chip1:"下書き生成", chip2:"画像を自動添付", chip3:"検索ボリューム", chip4:"SEO自動配置",
+    lede:"あなたの毎日のランニングの話と写真を入れるだけ。しっかりしたストーリーのブログになります。",
+    step1:"素材を入れる", step2:"結果を整える", step3:"書き出す",
+    s1desc:"インスタ・スレッズ・Xに投稿したランニングの話をここに入れてください。ランニング中の写真があれば、それも一緒にどうぞ :)",
+    lblStory:"ランニングの話", lblStoryDim:"— インスタ・スレッズ・メモ（写真だけなら空欄でOK）",
+    phStory:"例）明け方の河川敷10km。最初の3kmが重かったけど、折り返してから脚がほぐれてペースが戻った。走り終わりのアイスアメリカーノが最高だった…",
+    lblCap:"参考キャプチャ", lblCapDim:"— 複数OK · AIが文字を読み取って反映",
+    dropMain:"画像をドラッグ、または<b>ここをクリックして選択</b>",
+    dropHint:"PNG · JPG · WEBP · 文字がはっきりしたキャプチャがおすすめ（複数OK）",
+    lblKw:"狙うキーワード", lblKwDim:"— 最大3つ、空欄ならAIが選びます",
+    phKw:"例）河川敷ラン, 10kmペース, ランニング初心者",
+    lblLen:"原稿の分量", len1:"上位表示型・約2,800字", len2:"深掘り型・約3,200字", len3:"簡潔型・約2,000字",
+    lblProof:"文章の調整", proof1:"標準・生成しながら校正", proof2:"精密・もう一度整える", proof3:"校正なし",
+    genBtn:"⚡ 原稿の自動生成を開始", genLoading:"原稿・画像・指標を作成中...",
+    s2desc:"タイトルを一つ選び、本文・画像・検索指標を確認してください。よければ下のステップ3へ。",
+    lblPickTitle:"タイトルを選ぶ", lblMetrics:"キーワード検索指標", lblPreview:"原稿プレビュー", lblImages:"生成された画像",
+    metricsEmpty:"検索APIキーを設定すると、月間検索数とチャンススコアが表示されます。",
+    mSearch:"検索", mScore:"チャンス度",
+    s3desc:"完成した記事をコピー、または画像をダウンロードして、WordPress・Medium・Ghostなど<b>お好きなブログ</b>に貼り付けてください。",
+    btnHtml:"📋 HTMLでコピー", btnMd:"📋 Markdownをコピー", btnText:"📋 テキストをコピー", btnZip:"⬇ 画像を一括ダウンロード(zip)",
+    note3:"💡 多くのブログエディタでは<b>HTMLでコピー</b>が一番きれいに貼れます（段落・書式を維持）。画像はzipでダウンロードし、本文の<b>📷 写真マーカー</b>の位置に順番に入れてください。",
+    photo:"写真", imgHere:"画像の位置",
+    tNeed:"ランニングの話かキャプチャを一つは入れてください", tDemo:"プレビューデモです（サーバー接続時に実生成）",
+    tHtml:"✅ HTMLでコピーしました！ブログエディタに貼り付けてください。", tMd:"✅ Markdownをコピーしました！", tText:"✅ テキストをコピーしました！",
+    tNoImg:"ダウンロードする画像がありません（デモ状態またはサーバー未接続）。", tZip:"⬇ 画像zipを取得しました！",
+    tZipServer:"画像ダウンロードはサーバー接続時に動作します。",
+    tNetErr:"サーバーに接続できませんでした。少し待ってからもう一度お試しください。", tServer:"サーバーエラー",
+    login:"ログイン", logout:"ログアウト", thisMonth:"今月",
+    loginTitle:"ログインして始める", loginDesc:"パスワード不要。メールでログインリンクを送ります。毎月無料で作れます。",
+    emailPh:"you@email.com", sendMagic:"ログインリンクを送る", orDivider:"または", googleBtn:"Googleで続ける",
+    loginNote:"メールのリンクを押すと、この画面に戻ってきます。",
+    magicSent:"メールを確認してください — ログインリンクを送りました。", loginNeeded:"先にログインしてください。",
+    emailInvalid:"メールアドレスを入力してください。", authErr:"ログインで問題が発生しました。もう一度お試しください。",
+    limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。",
+    regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
+    stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中"
+  },
+  zh:{
+    brand:"留下每一次<b>奔跑的呼吸</b>印记",
+    brandSub:"然后一篇精彩的博客文章会自动生成",
+    chip1:"生成草稿", chip2:"自动配图", chip3:"搜索量数据", chip4:"SEO自动布局",
+    lede:"只需放入你每天的跑步故事和照片，就能生成结构扎实的博客文章。",
+    step1:"添加素材", step2:"优化结果", step3:"导出",
+    s1desc:"把你发在 Instagram、Threads、X 上的跑步动态贴进来。如果有跑步时的照片，也一起放进来吧 :)",
+    lblStory:"你的跑步故事", lblStoryDim:"— Instagram · Threads · 笔记（只上传照片可留空）",
+    phStory:"例）清晨沿河跑了10公里。前3公里格外沉重，过了折返点后腿脚放松，配速回来了。跑完后的那杯冰美式格外香甜……",
+    lblCap:"参考截图", lblCapDim:"— 可多张 · AI 会读取文字并使用",
+    dropMain:"把图片拖到这里，或<b>点击选择</b>",
+    dropHint:"PNG · JPG · WEBP · 文字清晰的截图效果最好（可多张）",
+    lblKw:"目标关键词", lblKwDim:"— 最多3个，留空则由 AI 选择",
+    phKw:"例）沿河跑, 10公里配速, 跑步新手",
+    lblLen:"文章篇幅", len1:"利于排名 · 约2,800字", len2:"深度型 · 约3,200字", len3:"简洁型 · 约2,000字",
+    lblProof:"文句润色", proof1:"标准 · 边生成边校对", proof2:"精细 · 再润色一遍", proof3:"不校对",
+    genBtn:"⚡ 开始自动生成文章", genLoading:"正在生成文章·图片·指标...",
+    s2desc:"选一个标题，浏览正文、图片和搜索指标。满意的话就进入下面的第3步。",
+    lblPickTitle:"选择标题", lblMetrics:"关键词搜索指标", lblPreview:"文章预览", lblImages:"生成的图片",
+    metricsEmpty:"配置搜索 API 密钥后，将显示月搜索量和机会评分。",
+    mSearch:"搜索", mScore:"机会评分",
+    s3desc:"复制成品或下载图片，粘贴到<b>任何你喜欢的博客</b>——WordPress、Medium、Ghost 等。",
+    btnHtml:"📋 复制为 HTML", btnMd:"📋 复制 Markdown", btnText:"📋 复制文本", btnZip:"⬇ 下载全部图片(zip)",
+    note3:"💡 对多数博客编辑器，<b>复制为 HTML</b> 粘贴效果最好（保留段落和格式）。图片用 zip 下载后，按顺序放到正文中<b>📷 图片标记</b>的位置。",
+    photo:"图片", imgHere:"图片位置",
+    tNeed:"请至少填入一段跑步故事或一张截图", tDemo:"这是预览演示（连接服务器后为真实生成）",
+    tHtml:"✅ 已复制为 HTML！粘贴到你的博客编辑器。", tMd:"✅ 已复制 Markdown！", tText:"✅ 已复制文本！",
+    tNoImg:"没有可下载的图片（演示模式或服务器未连接）。", tZip:"⬇ 已获取图片 zip！",
+    tZipServer:"图片下载在连接服务器后可用。",
+    tNetErr:"无法连接到服务器。请稍后再试。", tServer:"服务器错误",
+    login:"登录", logout:"退出", thisMonth:"本月",
+    loginTitle:"登录后开始", loginDesc:"无需密码，我们会把登录链接发到你的邮箱。每月可免费生成若干篇。",
+    emailPh:"you@email.com", sendMagic:"把登录链接发到邮箱", orDivider:"或", googleBtn:"使用 Google 继续",
+    loginNote:"点击邮件中的链接，就会回到此页面。",
+    magicSent:"请查收邮箱 — 我们已发送登录链接。", loginNeeded:"请先登录。",
+    emailInvalid:"请输入你的邮箱地址。", authErr:"登录出现问题，请重试。",
+    limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。",
+    regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
+    stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾"
+  },
+  es:{
+    brand:"Deja la huella del <b>aliento de cada corredor</b>",
+    brandSub:"Y una entrada de blog pulida se escribe automáticamente",
+    chip1:"Generar borrador", chip2:"Imágenes automáticas", chip3:"Datos de búsqueda", chip4:"SEO automático",
+    lede:"Solo pon tu historia diaria de running y algunas fotos. Obtendrás una entrada de blog sólida y bien estructurada.",
+    step1:"Añadir material", step2:"Refinar resultado", step3:"Exportar",
+    s1desc:"Pega el feed de running que publicaste en Instagram, Threads o X. Si tienes fotos de tu carrera, añádelas también :)",
+    lblStory:"Tu historia de running", lblStoryDim:"— Instagram · Threads · notas (déjalo vacío si solo subes fotos)",
+    phStory:"ej.) 10 km junto al río al amanecer. Los primeros 3 km fueron pesados, pero tras el giro las piernas se soltaron y recuperé el ritmo. El americano helado de después nunca supo tan bien...",
+    lblCap:"Capturas de referencia", lblCapDim:"— varias OK · la IA lee el texto y lo usa",
+    dropMain:"Arrastra imágenes aquí o <b>haz clic para elegir</b>",
+    dropHint:"PNG · JPG · WEBP · las capturas nítidas funcionan mejor (varias OK)",
+    lblKw:"Palabras clave", lblKwDim:"— hasta 3, déjalo en blanco y la IA las elige",
+    phKw:"ej.) correr junto al río, ritmo 10k, running principiante",
+    lblLen:"Longitud del texto", len1:"Optimizado SEO · ~2.800 car.", len2:"En profundidad · ~3.200 car.", len3:"Conciso · ~2.000 car.",
+    lblProof:"Corrección", proof1:"Estándar · corrige al escribir", proof2:"Preciso · pulido extra", proof3:"Sin corrección",
+    genBtn:"⚡ Generar mi entrada de blog", genLoading:"Creando texto, imágenes y métricas...",
+    s2desc:"Elige un título y revisa el cuerpo, las imágenes y las métricas de búsqueda. Si te gusta, pasa al Paso 3.",
+    lblPickTitle:"Elige un título", lblMetrics:"Métricas de búsqueda", lblPreview:"Vista previa", lblImages:"Imágenes generadas",
+    metricsEmpty:"Añade claves de API de búsqueda para ver el volumen mensual y la puntuación de oportunidad.",
+    mSearch:"búsq.", mScore:"Oportunidad",
+    s3desc:"Copia el texto final o descarga las imágenes y pégalos en <b>el blog que quieras</b>: WordPress, Medium, Ghost y más.",
+    btnHtml:"📋 Copiar como HTML", btnMd:"📋 Copiar Markdown", btnText:"📋 Copiar texto", btnZip:"⬇ Descargar imágenes (zip)",
+    note3:"💡 En la mayoría de editores, <b>Copiar como HTML</b> pega más limpio (mantiene párrafos y formato). Descarga las imágenes en zip y colócalas en orden en cada <b>marcador 📷 de foto</b> del cuerpo.",
+    photo:"Foto", imgHere:"lugar de la imagen",
+    tNeed:"Añade una historia o al menos una captura", tDemo:"Demo de vista previa (generación real con el servidor conectado)",
+    tHtml:"✅ ¡Copiado como HTML! Pégalo en tu editor de blog.", tMd:"✅ ¡Markdown copiado!", tText:"✅ ¡Texto copiado!",
+    tNoImg:"No hay imágenes para descargar (modo demo o servidor no conectado).", tZip:"⬇ ¡Zip de imágenes listo!",
+    tZipServer:"La descarga de imágenes funciona con el servidor conectado.",
+    tNetErr:"No se pudo conectar con el servidor. Espera un momento e inténtalo de nuevo.", tServer:"Error del servidor",
+    login:"Iniciar sesión", logout:"Cerrar sesión", thisMonth:"Este mes",
+    loginTitle:"Inicia sesión para empezar", loginDesc:"Te enviamos un enlace de acceso por email, sin contraseña. Posts gratis cada mes.",
+    emailPh:"you@email.com", sendMagic:"Enviarme un enlace de acceso", orDivider:"o", googleBtn:"Continuar con Google",
+    loginNote:"Haz clic en el enlace del email y volverás aquí.",
+    magicSent:"Revisa tu correo — te enviamos un enlace de acceso.", loginNeeded:"Primero inicia sesión.",
+    emailInvalid:"Escribe tu dirección de email.", authErr:"Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
+    limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.",
+    regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
+    stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando"
+  }
+};
+
+const SUPPORTED = ["en","ko","ja","zh","es"];
+let LANG = "en";
+function pickLang(){
+  let saved=null;
+  try{ saved=localStorage.getItem("rb_lang"); }catch(e){}
+  if(saved && SUPPORTED.includes(saved)) return saved;
+  const nav=(navigator.languages && navigator.languages[0]) || navigator.language || "en";
+  const base=nav.toLowerCase().split("-")[0];
+  if(SUPPORTED.includes(base)) return base;
+  return "en";
+}
+function T(key){ return (I18N[LANG] && I18N[LANG][key]) || I18N.en[key] || key; }
+
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.title = LANG==="ko" ? "러너 블로그 스튜디오"
+                 : LANG==="ja" ? "ランナー ブログ スタジオ"
+                 : LANG==="zh" ? "跑者博客工作室"
+                 : LANG==="es" ? "Estudio de Blog para Corredores"
+                 : "Runner's Blog Studio";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = T(el.getAttribute("data-i18n")); });
+  document.querySelectorAll("[data-i18n-html]").forEach(el=>{ el.innerHTML = T(el.getAttribute("data-i18n-html")); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{ el.setAttribute("placeholder", T(el.getAttribute("data-i18n-ph"))); });
+  const btn=document.getElementById("genBtn");
+  if(btn && !btn.disabled) btn.textContent = T("genBtn");
+  if(typeof updateAuthUI==="function") updateAuthUI();
+  if(current) render(current); // re-render dynamic content in new language
+}
+
+/* ============================ demo ============================ */
+const DEMO={
+  title:"한강 10km 러닝 후기, 러닝 초보가 페이스 지키는 법",
+  title_options:[
+    "한강 10km 러닝 후기, 러닝 초보가 페이스 지키는 법",
+    "새벽 러닝 3주차, 몸이 바뀌기 시작한 순간들",
+    "러닝 초보의 첫 10km, 힘들었지만 남은 건 뿌듯함"
+  ],
+  main_keyword:"한강 러닝",
+  keyword_report:[
+    {keyword:"한강 러닝",volume:12400,docs:33000,golden:0.38},
+    {keyword:"러닝 초보",volume:9800,docs:26000,golden:0.38},
+    {keyword:"10km 페이스",volume:4200,docs:15000,golden:0.28},
+    {keyword:"새벽 러닝",volume:7300,docs:41000,golden:0.18}
+  ],
+  hashtags:["#한강러닝","#10km완주","#러닝초보","#러닝일기","#새벽러닝","#러닝스타그램","#달리기","#러닝기록"],
+  body:
+`오늘 새벽 5시 반, 알람 끄고 그냥 잘까 딱 3초 고민했어요.
+
+근데 결국 일어나서 한강으로 나갔죠.
+
+[사진1]
+
+목표는 10km. 사실 지난주까지만 해도 7km에서 숨이 턱까지 찼거든요.
+
+[사진2]
+
+초반 3km가 제일 힘들었어요.
+다리가 무겁고 '오늘도 실패인가' 싶었죠.
+
+[사진3]
+
+근데 반환점을 돌고 나니 신기하게 몸이 풀리더라고요. 페이스가 살아났어요.
+
+[사진4]
+
+3주 전엔 5km도 겨우였는데, 오늘 10km를 완주했어요. 확실히 몸이 바뀌고 있어요.
+
+[사진5]
+
+러닝 끝나고 마신 아이스 아메리카노 한 잔. 그 맛을 위해 또 나올 것 같아요.
+
+[사진6]`,
+  images:[
+    {id:1,type:"thumbnail",label:"대표 썸네일"},
+    {id:2,type:"stat_compare",label:"오늘 기록 (거리·시간)"},
+    {id:3,type:"bar",label:"구간별 페이스"},
+    {id:4,type:"photo",label:"러닝 코스 사진"},
+    {id:5,type:"before_after",label:"3주 전 vs 지금"},
+    {id:6,type:"summary",label:"세 줄 요약"}
+  ]
+};
+
+const $=s=>document.querySelector(s);
+const toast=(m)=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2600);};
+const setStep=(n)=>{[1,2,3].forEach(i=>$('#ps'+i).classList.toggle('active',i<=n));};
+
+const files=[];
+$('#drop').onclick=()=>$('#fileInput').click();
+function addThumb(f){files.push(f);const img=document.createElement('img');img.src=URL.createObjectURL(f);$('#thumbs').appendChild(img);}
+$('#fileInput').onchange=e=>{for(const f of e.target.files)addThumb(f);};
+['dragover','dragleave','drop'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();if(ev==='drop')for(const f of e.dataTransfer.files)addThumb(f);}));
+
+let current=null;
+
+// ===== 진행률 바 (예상 진행률: 초반 빠르게 → 후반 천천히, 완료 시 100%) =====
+let progTimer=null, progStart=0;
+function setProg(pct){
+  $('#progBar').style.width=pct.toFixed(1)+'%';
+  $('#progPct').textContent=Math.round(pct)+'%';
+  const stg = pct>=82?'stg4' : pct>=55?'stg3' : pct>=22?'stg2' : 'stg1';
+  $('#progLabelText').textContent=T(stg);
+}
+function progStart_(){
+  $('#progWrap').style.display='block';
+  progStart=performance.now(); setProg(0);
+  if(progTimer) clearInterval(progTimer);
+  progTimer=setInterval(()=>{
+    const t=(performance.now()-progStart)/1000;           // 경과(초)
+    const pct=92*(1-Math.exp(-t/14));                      // ~30s에 약 80%, 92% 넘지 않음
+    setProg(pct);
+  }, 120);
+}
+function progStop(done){
+  if(progTimer){ clearInterval(progTimer); progTimer=null; }
+  if(done){ setProg(100); setTimeout(()=>{ $('#progWrap').style.display='none'; }, 400); }
+  else { $('#progWrap').style.display='none'; }
+}
+
+$('#langSel').onchange=e=>{
+  LANG=e.target.value;
+  try{ localStorage.setItem("rb_lang",LANG); }catch(_){}
+  applyI18n();
+};
+
+$('#genBtn').onclick=async()=>{
+  const text=$('#srcText').value.trim();
+  if(!text && files.length===0){toast(T('tNeed'));return;}
+  if(AUTH.enabled && !AUTH.session){ openLogin(); return; }   // 로그인 필요
+  const btn=$('#genBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>'+T('genLoading');
+  const reset=()=>{progStop(false);btn.disabled=false;btn.textContent=T('genBtn');};
+  progStart_();
+  let data=null;
+  try{
+    const fd=new FormData();
+    fd.append('text',text);fd.append('keywords',$('#keywords').value);
+    fd.append('length',$('#length').value);fd.append('proof',$('#proof').value);
+    fd.append('lang',LANG);
+    files.forEach(f=>fd.append('shots',f));
+    const headers={};
+    if(AUTH.session && AUTH.session.access_token) headers['Authorization']='Bearer '+AUTH.session.access_token;
+    const res=await fetch('/api/generate',{method:'POST',body:fd,headers});
+    try{ data=await res.json(); }catch(_){ data=null; }
+    if(res.status===401){ AUTH.session=null; updateAuthUI(); openLogin(); toast(T('loginNeeded')); reset(); return; }
+    if(res.status===402){ const n=(data&&data.limit)||AUTH.freeLimit; toast('⚠ '+T('limitMsg').replace('{n}',n)); updateUsage(data); reset(); return; }
+    if(!res.ok){
+      const msg=(data&&data.error)?data.error:(T('tServer')+' ('+res.status+')');
+      toast('⚠ '+msg); reset(); return;   // 실패 시 가짜 글로 바꿔치기 금지 — 진짜 에러를 보여줌
+    }
+  }catch(e){
+    toast('⚠ '+T('tNetErr')); reset(); return;   // 서버에 도달 못함 — 데모로 위장하지 않음
+  }
+  // 서버가 준 진짜 결과만 사용
+  current=data;
+  progStop(true);
+  render(current);
+  if(data.usage) updateUsage(data.usage);
+  $('#step2').classList.remove('hidden');$('#step3').classList.remove('hidden');
+  setStep(2);$('#step2').scrollIntoView({behavior:'smooth'});
+  btn.disabled=false; btn.textContent=T('genBtn');
+};
+
+function render(d){
+  const tw=$('#titles');tw.innerHTML='';
+  (d.title_options||[d.title]).forEach((t,i)=>{
+    const sel = (d.title ? t===d.title : i===0);
+    const el=document.createElement('div');el.className='title-opt'+(sel?' sel':'');
+    el.innerHTML=`<div class="radio"></div><span></span>`;
+    el.querySelector('span').textContent=t;
+    el.onclick=()=>{[...tw.children].forEach(c=>c.classList.remove('sel'));el.classList.add('sel');current.title=t;};
+    tw.appendChild(el);
+  });
+  const mw=$('#metrics');mw.innerHTML='';
+  const rep=(d.keyword_report||[]).slice(0,4);
+  if(rep.length){
+    rep.forEach(r=>{const el=document.createElement('div');el.className='metric';
+      el.innerHTML=`<div class="k"></div><div class="v">${(r.volume||0).toLocaleString()}<span style="font-size:12px;color:var(--muted)"> ${T('mSearch')}</span></div>
+        <div class="k" style="margin-top:8px">${T('mScore')} <b class="v good" style="font-size:15px">${r.golden??'-'}</b></div>`;
+      el.querySelector('.k').textContent=r.keyword;
+      mw.appendChild(el);});
+  }else{const el=document.createElement('div');el.className='metric';el.style.cssText='grid-column:1/-1;color:var(--muted)';el.textContent=T('metricsEmpty');mw.appendChild(el);}
+  const bp=$('#bodyPreview');
+  const photoW=T('photo');
+  let html=esc(d.body||'').replace(/\[사진(\d+)\]/g,(m,n)=>{
+    const im=(d.images||[]).find(x=>x.id==n);const lab=im?(im.label||im.type):photoW;
+    return `<div class="imgmark"><div class="box">🖼️</div>[${photoW}${n}] · ${esc(lab)}</div>`;});
+  bp.innerHTML=html+`<div class="hashtags">${esc((d.hashtags||[]).join(' '))}</div>`;
+  const g=$('#gallery');g.innerHTML='';
+  (d.images||[]).forEach(im=>{const cell=document.createElement('div');cell.className='g';
+    const cap=`[${photoW}${im.id}] ${im.label||im.type}`;
+    if(im.url){cell.innerHTML=`<img src="${im.url}"><div class="cap"></div>`;cell.querySelector('.cap').textContent=cap;}
+    else{cell.innerHTML=`<div class="g ph">🖼️<br></div>`;cell.querySelector('.ph').insertAdjacentText('beforeend',cap);}
+    g.appendChild(cell);});
+}
+
+// ===== 결과 화면 툴바: 다시 생성 / 새로 쓰기 =====
+$('#regenBtn').onclick=()=>{ $('#genBtn').click(); };   // 같은 소재로 다른 버전 (사용량 1편 차감)
+function resetAll(){
+  $('#srcText').value=''; $('#keywords').value='';
+  files.length=0; $('#thumbs').innerHTML=''; $('#fileInput').value='';
+  current=null;
+  $('#titles').innerHTML=''; $('#metrics').innerHTML=''; $('#bodyPreview').innerHTML=''; $('#gallery').innerHTML='';
+  $('#step2').classList.add('hidden'); $('#step3').classList.add('hidden');
+  setStep(1);
+  window.scrollTo({top:0, behavior:'smooth'});
+  toast(T('resetDone'));
+}
+$('#newBtn').onclick=resetAll;
+
+// ===== export (platform-agnostic) =====
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function slotText(n){return `📷 [${T('photo')}${n}] ${T('imgHere')}`;}
+function buildHTML(d){
+  let h=`<h1>${esc(d.title)}</h1>\n`;
+  (d.body||'').split(/\n{2,}/).forEach(block=>{
+    const m=block.trim().match(/^\[사진(\d+)\]$/);
+    if(m){h+=`<p>${esc(slotText(m[1]))}</p>\n`;}
+    else{h+=`<p>${esc(block).replace(/\n/g,'<br>')}</p>\n`;}
+  });
+  if((d.hashtags||[]).length) h+=`<p>${esc(d.hashtags.join(' '))}</p>\n`;
+  return h;
+}
+function buildMD(d){
+  let t=`# ${d.title}\n\n`;
+  (d.body||'').split(/\n{2,}/).forEach(block=>{
+    const m=block.trim().match(/^\[사진(\d+)\]$/);
+    t+= m?`> ${slotText(m[1])}\n\n`:block+"\n\n";
+  });
+  if((d.hashtags||[]).length) t+=d.hashtags.join(' ')+"\n";
+  return t;
+}
+function buildText(d){
+  const body=(d.body||'').replace(/\[사진(\d+)\]/g,(m,n)=>slotText(n));
+  return (d.title||'')+"\n\n"+body+"\n\n"+((d.hashtags||[]).join(' '));
+}
+async function copyRich(html, plain){
+  try{
+    if(navigator.clipboard && window.ClipboardItem){
+      await navigator.clipboard.write([new ClipboardItem({
+        'text/html':new Blob([html],{type:'text/html'}),
+        'text/plain':new Blob([plain],{type:'text/plain'})
+      })]);
+    }else{ await navigator.clipboard.writeText(plain); }
+    return true;
+  }catch(e){ try{await navigator.clipboard.writeText(plain);return true;}catch(_){return false;} }
+}
+$('#copyHtmlBtn').onclick=async()=>{ await copyRich(buildHTML(current), buildText(current)); toast(T('tHtml')); };
+$('#copyMdBtn').onclick=async()=>{ await navigator.clipboard.writeText(buildMD(current)); toast(T('tMd')); };
+$('#copyTextBtn').onclick=async()=>{ await navigator.clipboard.writeText(buildText(current)); toast(T('tText')); };
+$('#dlImagesBtn').onclick=async()=>{
+  const flist=(current.images||[]).map(i=>i.file).filter(Boolean);
+  if(!flist.length){toast(T('tNoImg'));return;}
+  try{
+    const res=await fetch('/api/export/images',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files:flist})});
+    if(!res.ok) throw new Error();
+    const blob=await res.blob();
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='running-blog-images.zip';a.click();
+    toast(T('tZip'));
+  }catch(e){toast(T('tZipServer'));}
+};
+
+// ===== auth (P3) =====
+let SB=null;
+const AUTH={enabled:false, session:null, freeLimit:3, url:"", anon:""};
+
+async function initAuth(){
+  try{
+    const cfg=await (await fetch('/api/config')).json();
+    AUTH.enabled=!!cfg.authEnabled; AUTH.freeLimit=cfg.freeLimit||3;
+    AUTH.url=cfg.supabaseUrl||""; AUTH.anon=cfg.supabaseAnonKey||"";
+  }catch(e){ AUTH.enabled=false; }
+  if(AUTH.enabled && AUTH.url && AUTH.anon && window.supabase){
+    SB=window.supabase.createClient(AUTH.url, AUTH.anon);
+    try{ const {data}=await SB.auth.getSession(); AUTH.session=data.session||null; }catch(_){}
+    SB.auth.onAuthStateChange((_e,s)=>{ AUTH.session=s||null; updateAuthUI(); });
+  }
+  $('#authWrap').style.display = AUTH.enabled ? 'flex' : 'none';
+  updateAuthUI();
+}
+function openLogin(){ if(AUTH.enabled) $('#loginModal').style.display='flex'; }
+function closeLogin(){ $('#loginModal').style.display='none'; }
+function updateAuthUI(){
+  if(!AUTH.enabled) return;
+  const lb=$('#loginBtn'), uc=$('#userChip');
+  if(lb) lb.textContent=T('login');
+  if($('#logoutBtn')) $('#logoutBtn').textContent=T('logout');
+  const s=AUTH.session;
+  if(s && s.user){
+    if(lb) lb.style.display='none';
+    if(uc) uc.style.display='flex';
+    if($('#userEmail')) $('#userEmail').textContent=s.user.email||'';
+  }else{
+    if(lb) lb.style.display='';
+    if(uc) uc.style.display='none';
+    if($('#usageChip')) $('#usageChip').style.display='none';
+  }
+}
+function updateUsage(u){
+  if(!u || u.used==null || u.limit==null) return;
+  const chip=$('#usageChip');
+  chip.style.display='inline-block';
+  chip.textContent=`${T('thisMonth')} ${u.used}/${u.limit}`;
+}
+$('#loginBtn').onclick=openLogin;
+$('#modalClose').onclick=closeLogin;
+$('#loginModal').addEventListener('click',e=>{ if(e.target===$('#loginModal')) closeLogin(); });
+$('#logoutBtn').onclick=async()=>{ if(SB) try{ await SB.auth.signOut(); }catch(_){} AUTH.session=null; updateAuthUI(); toast(T('logoutDone')); };
+$('#magicBtn').onclick=async()=>{
+  const email=$('#emailInput').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast(T('emailInvalid')); return; }
+  if(!SB){ toast('⚠ '+T('authErr')); return; }
+  const b=$('#magicBtn'); b.disabled=true; b.innerHTML='<span class="spin"></span>'+T('sendMagic');
+  try{
+    const {error}=await SB.auth.signInWithOtp({email, options:{emailRedirectTo:location.origin}});
+    if(error) throw error;
+    toast(T('magicSent')); closeLogin();
+  }catch(e){ toast('⚠ '+T('authErr')); }
+  b.disabled=false; b.textContent=T('sendMagic');
+};
+$('#googleBtn').onclick=async()=>{
+  if(!SB){ toast('⚠ '+T('authErr')); return; }
+  try{
+    const {error}=await SB.auth.signInWithOAuth({provider:'google', options:{redirectTo:location.origin}});
+    if(error) throw error;
+  }catch(e){ toast('⚠ '+T('authErr')); }
+};
+
+// ===== boot =====
+LANG=pickLang();
+$('#langSel').value=LANG;
+applyI18n();
+initAuth();
+</script>
+</body>
+</html>
