@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>러너들의 공기의 흔적을 남깁니다</title>
+<style>
+  :root{
+    --bg:#070a0b; --panel:#0f1416; --panel2:#141b1d; --field-bg:#0c1113;
+    --border:#213033; --border2:#2c3d40;
+    --text:#eef4f3; --muted:#7f9298; --muted2:#5d6f74;
+    --mint:#2ed6c6; --mint2:#49e9d9; --mint-press:#1fbcae; --ink:#04211e;
+    --blue:#3aa0ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1100px 520px at 78% -8%,#0f2b2a 0%,transparent 60%),
+      radial-gradient(900px 500px at 10% 0%,#0c2230 0%,var(--bg) 55%);
+    color:var(--text);font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;padding:30px 18px 90px;min-height:100vh}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  /* header */
+  .top{display:flex;align-items:center;gap:14px;padding:2px 6px}
+  .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--mint),#1f9fd6);
+    display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:0 8px 20px rgba(46,214,198,.28)}
+  .brandbox{display:flex;flex-direction:column;line-height:1.1}
+  .brand{font-size:23px;font-weight:800;letter-spacing:-.4px}
+  .brand b{color:var(--mint)}
+  .brand-sub{color:var(--muted);font-size:12.5px;margin-top:3px;font-weight:500}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:22px 6px 8px}
+  .chip{border:1px solid rgba(46,214,198,.4);color:var(--mint);background:rgba(46,214,198,.07);
+    font-weight:700;font-size:13px;padding:7px 13px;border-radius:10px;display:inline-flex;align-items:center;gap:6px}
+  .lede{color:var(--muted);font-size:14.5px;margin:14px 6px 22px;line-height:1.6;max-width:760px}
+
+  /* progress */
+  .steps{display:flex;gap:8px;margin:0 6px 20px}
+  .steps .s{flex:1;display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--border);font-size:13.5px;color:var(--muted);font-weight:600}
+  .steps .s .n{width:22px;height:22px;border-radius:7px;background:var(--border2);color:var(--text);
+    display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:none}
+  .steps .s.active{border-color:var(--mint);color:var(--text)}
+  .steps .s.active .n{background:var(--mint);color:var(--ink)}
+
+  /* card */
+  .card{background:linear-gradient(180deg,#111819,#0e1416);border:1px solid var(--border);
+    border-radius:20px;padding:30px 32px;margin-bottom:20px}
+  .head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .tab{padding:5px 12px;border-radius:8px;background:rgba(46,214,198,.12);color:var(--mint);
+    font-size:12.5px;font-weight:800;letter-spacing:.3px}
+  .head h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px}
+  .head-desc{color:var(--muted);font-size:14px;margin:2px 0 22px;line-height:1.55}
+
+  label.fl{display:block;font-weight:700;font-size:14.5px;margin:20px 0 9px}
+  label.fl .dim{color:var(--muted);font-weight:500;font-size:13px}
+  textarea,input.txt,select{width:100%;background:var(--field-bg);border:1px solid var(--border);
+    color:var(--text);border-radius:12px;padding:15px 17px;font-size:14.5px;font-family:inherit;outline:none;transition:.15s}
+  textarea{min-height:200px;resize:vertical;line-height:1.6}
+  textarea::placeholder,input.txt::placeholder{color:var(--muted2)}
+  textarea:focus,input.txt:focus,select:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(46,214,198,.14)}
+
+  .drop{border:1.5px dashed var(--border2);border-radius:14px;padding:38px 20px;text-align:center;
+    color:var(--muted);cursor:pointer;transition:.15s}
+  .drop:hover{border-color:var(--mint);background:rgba(46,214,198,.04)}
+  .drop .ico{font-size:30px;margin-bottom:12px}
+  .drop b{color:var(--mint)}
+  .drop .hint{color:var(--muted2);font-size:12.5px;margin-top:8px}
+  .thumbs{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+  .thumbs img{width:70px;height:70px;object-fit:cover;border-radius:9px;border:1px solid var(--border)}
+
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237f9298' stroke-width='2.4'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 15px center;padding-right:40px}
+
+  .cta{width:100%;margin-top:28px;background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border:none;border-radius:14px;
+    padding:19px;font-size:17px;font-weight:900;cursor:pointer;letter-spacing:-.2px;transition:.12s;
+    box-shadow:0 10px 26px rgba(46,214,198,.24)}
+  .cta:hover{filter:brightness(1.06);transform:translateY(-1px)}
+  .cta:active{transform:translateY(0)}
+  .cta[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none;filter:none}
+
+  .hidden{display:none}
+  .titles{display:flex;flex-direction:column;gap:9px}
+  .title-opt{display:flex;gap:12px;align-items:center;background:var(--field-bg);border:1px solid var(--border);
+    border-radius:11px;padding:13px 15px;cursor:pointer;transition:.12s}
+  .title-opt:hover{border-color:var(--mint)}
+  .title-opt.sel{border-color:var(--mint);background:rgba(46,214,198,.07)}
+  .title-opt .radio{width:17px;height:17px;border-radius:999px;border:2px solid var(--muted);flex:none}
+  .title-opt.sel .radio{border-color:var(--mint);background:var(--mint);box-shadow:inset 0 0 0 3px var(--field-bg)}
+  .title-opt span{font-weight:700;font-size:15px}
+
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+  .metric{background:var(--field-bg);border:1px solid var(--border);border-radius:13px;padding:15px}
+  .metric .k{color:var(--muted);font-size:12px;margin-bottom:6px}
+  .metric .v{font-size:22px;font-weight:900;letter-spacing:-.5px}
+  .metric .v.good{color:var(--mint)}
+
+  .preview-body{background:#fbfdfc;color:#1a2321;border-radius:13px;padding:28px 28px;line-height:1.75;
+    font-size:14.5px;max-height:500px;overflow:auto;white-space:pre-wrap}
+  .imgmark{display:flex;align-items:center;gap:10px;background:#e2f7f4;border:1px dashed #96d6cd;color:#276b62;
+    border-radius:10px;padding:10px 14px;margin:13px 0;font-weight:700;font-size:13px}
+  .imgmark .box{width:38px;height:38px;border-radius:8px;background:var(--mint);display:flex;align-items:center;justify-content:center}
+  .hashtags{margin-top:8px;color:#1f8f84;font-size:13px}
+
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+  .gallery .g{border:1px solid var(--border);border-radius:11px;overflow:hidden;background:var(--field-bg)}
+  .gallery .g img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover}
+  .gallery .g .cap{padding:8px 10px;font-size:11.5px;color:var(--muted)}
+  .g.ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:var(--muted2);
+    font-size:12px;text-align:center;padding:10px}
+
+  .actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+  .btn{flex:1;min-width:200px;border-radius:13px;padding:17px;font-size:15.5px;font-weight:800;cursor:pointer;
+    border:1px solid var(--border2);background:var(--panel2);color:var(--text);transition:.12s}
+  .btn:hover{border-color:var(--mint)}
+  .btn.primary{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border-color:transparent}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .note{color:var(--muted);font-size:12.5px;margin-top:13px;line-height:1.6}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#0f1a1b;border:1px solid var(--mint);
+    color:var(--text);padding:13px 22px;border-radius:12px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.45);display:none;z-index:50}
+  .spin{width:17px;height:17px;border:2.5px solid rgba(4,33,30,.35);border-top-color:var(--ink);border-radius:999px;
+    display:inline-block;vertical-align:-3px;margin-right:8px;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media(max-width:720px){.row2,.metrics,.gallery{grid-template-columns:1fr 1fr}.steps{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="logo">✍️</div>
+    <div class="brandbox">
+      <div class="brand">러너들의 <b>공기의 흔적</b>을 남깁니다</div>
+      <div class="brand-sub">그러면 근사한 블로그 글이 자동으로 완성됩니다</div>
+    </div>
+  </div>
+
+  <div class="chips">
+    <span class="chip">◆ 초안 생성</span>
+    <span class="chip">◆ 이미지 자동 첨부</span>
+    <span class="chip">◆ 검색량 데이터</span>
+    <span class="chip">◆ SEO 자동 배치</span>
+  </div>
+
+  <div class="lede">당신의 데일리 러닝 이야기와 사진을 간단하게 넣어주세요. 아주 탄탄한 스토리의 블로그로 나옵니다.</div>
+
+  <div class="steps">
+    <div class="s active" id="ps1"><span class="n">1</span>소재 넣기</div>
+    <div class="s" id="ps2"><span class="n">2</span>결과 다듬기</div>
+    <div class="s" id="ps3"><span class="n">3</span>내보내기</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="card">
+    <div class="head"><span class="tab">STEP 1</span><h2>소재 넣기</h2></div>
+    <div class="head-desc">당신이 인스타, 스레드, X에 올린 러닝 피드 이야기를 여기 넣으면 됩니다. 당신의 러닝 순간의 사진이 있다면 그 사진도 넣어주세요 :)</div>
+
+    <label class="fl">러닝 이야기 <span class="dim">— 인스타·스레드·메모 (사진만 올릴 거면 비워도 됨)</span></label>
+    <textarea id="srcText" placeholder="예) 오늘 새벽 한강 10km. 초반 3km가 유독 무거웠는데, 반환점 돌고 나니 다리가 풀리면서 페이스가 살아났다. 끝나고 마신 아이스 아메리카노 한 잔이 그렇게 달 수가 없었다..."></textarea>
+
+    <label class="fl">참고 캡처 <span class="dim">— 여러 장 가능 · AI가 글자를 읽어 반영</span></label>
+    <div class="drop" id="drop">
+      <div class="ico">📎</div>
+      <div>이미지를 끌어다 놓거나 <b>여기를 눌러 선택</b></div>
+      <div class="hint">PNG · JPG · WEBP · 글자가 또렷한 캡처가 좋아요 (여러 장 OK)</div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    </div>
+    <div class="thumbs" id="thumbs"></div>
+
+    <label class="fl">노리는 키워드 <span class="dim">— 최대 3개, 비워두면 AI가 알아서 고름</span></label>
+    <input class="txt" id="keywords" placeholder="예) 한강 러닝, 10km 페이스, 러닝 초보">
+
+    <div class="row2">
+      <div>
+        <label class="fl">원고 분량</label>
+        <select id="length">
+          <option value="2800">상위노출형 · 약 2,800자</option>
+          <option value="3200">깊이형 · 약 3,200자</option>
+          <option value="2000">간결형 · 약 2,000자</option>
+        </select>
+      </div>
+      <div>
+        <label class="fl">문장 다듬기</label>
+        <select id="proof">
+          <option value="basic">표준 · 생성하며 교정</option>
+          <option value="strict">정밀 · 한 번 더 손질</option>
+          <option value="off">교정 안 함</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="cta" id="genBtn">⚡ 원고 자동 생성 시작</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card hidden" id="step2">
+    <div class="head"><span class="tab">STEP 2</span><h2>결과 다듬기</h2></div>
+    <div class="head-desc">제목을 하나 고르고, 본문·이미지·검색 지표를 훑어보세요. 괜찮으면 아래 3단계로 넘어갑니다.</div>
+
+    <label class="fl">제목 고르기</label>
+    <div class="titles" id="titles"></div>
+
+    <label class="fl">키워드 검색 지표</label>
+    <div class="metrics" id="metrics"></div>
+
+    <label class="fl">원고 미리보기</label>
+    <div class="preview-body" id="bodyPreview"></div>
+
+    <label class="fl">함께 만든 이미지</label>
+    <div class="gallery" id="gallery"></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card hidden" id="step3">
+    <div class="head"><span class="tab">STEP 3</span><h2>내보내기</h2></div>
+    <div class="head-desc">완성본을 복사하거나 이미지를 내려받아, 워드프레스·티스토리·미디엄 등 <b>원하는 블로그 어디든</b> 붙여넣으세요.</div>
+    <div class="actions">
+      <button class="btn primary" id="copyHtmlBtn">📋 HTML로 복사</button>
+      <button class="btn" id="copyMdBtn">📋 마크다운 복사</button>
+      <button class="btn" id="copyTextBtn">📋 텍스트 복사</button>
+      <button class="btn" id="dlImagesBtn">⬇ 이미지 전체 다운로드(zip)</button>
+    </div>
+    <div class="note">💡 대부분 블로그 편집기엔 <b>HTML로 복사</b>가 제일 깔끔해요(문단·서식 유지). 이미지는 zip으로 받아, 본문 속 <b>📷 [사진N] 표시</b> 자리에 순서대로 올리면 됩니다.</div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DEMO={
+  title:"한강 10km 러닝 후기, 러닝 초보가 페이스 지키는 법",
+  title_options:[
+    "한강 10km 러닝 후기, 러닝 초보가 페이스 지키는 법",
+    "새벽 러닝 3주차, 몸이 바뀌기 시작한 순간들",
+    "러닝 초보의 첫 10km, 힘들었지만 남은 건 뿌듯함"
+  ],
+  main_keyword:"한강 러닝",
+  keyword_report:[
+    {keyword:"한강 러닝",volume:12400,docs:33000,golden:0.38},
+    {keyword:"러닝 초보",volume:9800,docs:26000,golden:0.38},
+    {keyword:"10km 페이스",volume:4200,docs:15000,golden:0.28},
+    {keyword:"새벽 러닝",volume:7300,docs:41000,golden:0.18}
+  ],
+  hashtags:["#한강러닝","#10km완주","#러닝초보","#러닝일기","#새벽러닝","#러닝스타그램","#달리기","#러닝기록"],
+  body:
+`오늘 새벽 5시 반, 알람 끄고 그냥 잘까 딱 3초 고민했어요.
+
+근데 결국 일어나서 한강으로 나갔죠.
+
+[사진1]
+
+목표는 10km. 사실 지난주까지만 해도 7km에서 숨이 턱까지 찼거든요.
+
+[사진2]
+
+초반 3km가 제일 힘들었어요.
+다리가 무겁고 '오늘도 실패인가' 싶었죠.
+
+[사진3]
+
+근데 반환점을 돌고 나니 신기하게 몸이 풀리더라고요. 페이스가 살아났어요.
+
+[사진4]
+
+3주 전엔 5km도 겨우였는데, 오늘 10km를 완주했어요. 확실히 몸이 바뀌고 있어요.
+
+[사진5]
+
+러닝 끝나고 마신 아이스 아메리카노 한 잔. 그 맛을 위해 또 나올 것 같아요.
+
+[사진6]`,
+  images:[
+    {id:1,type:"thumbnail",label:"대표 썸네일"},
+    {id:2,type:"stat_compare",label:"오늘 기록 (거리·시간)"},
+    {id:3,type:"bar",label:"구간별 페이스"},
+    {id:4,type:"photo",label:"러닝 코스 사진"},
+    {id:5,type:"before_after",label:"3주 전 vs 지금"},
+    {id:6,type:"summary",label:"세 줄 요약"}
+  ]
+};
+
+const $=s=>document.querySelector(s);
+const toast=(m)=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2600);};
+const setStep=(n)=>{[1,2,3].forEach(i=>$('#ps'+i).classList.toggle('active',i<=n));};
+
+const files=[];
+$('#drop').onclick=()=>$('#fileInput').click();
+function addThumb(f){files.push(f);const img=document.createElement('img');img.src=URL.createObjectURL(f);$('#thumbs').appendChild(img);}
+$('#fileInput').onchange=e=>{for(const f of e.target.files)addThumb(f);};
+['dragover','dragleave','drop'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();if(ev==='drop')for(const f of e.dataTransfer.files)addThumb(f);}));
+
+let current=null;
+
+$('#genBtn').onclick=async()=>{
+  const text=$('#srcText').value.trim();
+  if(!text && files.length===0){toast('기사 내용이나 캡처를 하나는 넣어주세요');return;}
+  const btn=$('#genBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>원고·이미지·지표 만드는 중...';
+  try{
+    const fd=new FormData();
+    fd.append('text',text);fd.append('keywords',$('#keywords').value);
+    fd.append('length',$('#length').value);fd.append('proof',$('#proof').value);
+    files.forEach(f=>fd.append('shots',f));
+    const res=await fetch('/api/generate',{method:'POST',body:fd});
+    if(!res.ok) throw new Error('no-backend');
+    current=await res.json();
+  }catch(e){
+    await new Promise(r=>setTimeout(r,850));
+    current=JSON.parse(JSON.stringify(DEMO));
+    toast('미리보기 데모입니다 (서버 연결 시 실제 생성)');
+  }
+  render(current);
+  $('#step2').classList.remove('hidden');$('#step3').classList.remove('hidden');
+  setStep(2);$('#step2').scrollIntoView({behavior:'smooth'});
+  btn.disabled=false;btn.innerHTML='⚡ 원고 자동 생성 시작';
+};
+
+function render(d){
+  const tw=$('#titles');tw.innerHTML='';
+  (d.title_options||[d.title]).forEach((t,i)=>{
+    const el=document.createElement('div');el.className='title-opt'+(i===0?' sel':'');
+    el.innerHTML=`<div class="radio"></div><span>${t}</span>`;
+    el.onclick=()=>{[...tw.children].forEach(c=>c.classList.remove('sel'));el.classList.add('sel');current.title=t;};
+    tw.appendChild(el);
+  });
+  const mw=$('#metrics');mw.innerHTML='';
+  const rep=(d.keyword_report||[]).slice(0,4);
+  if(rep.length){
+    rep.forEach(r=>{const el=document.createElement('div');el.className='metric';
+      el.innerHTML=`<div class="k">${r.keyword}</div><div class="v">${(r.volume||0).toLocaleString()}<span style="font-size:12px;color:var(--muted)"> 검색</span></div>
+        <div class="k" style="margin-top:8px">골든점수 <b class="v good" style="font-size:15px">${r.golden??'-'}</b></div>`;
+      mw.appendChild(el);});
+  }else{mw.innerHTML='<div class="metric" style="grid-column:1/-1;color:var(--muted)">네이버 검색/검색광고 API 키를 넣으면 월간검색량·골든점수가 표시됩니다.</div>';}
+  const bp=$('#bodyPreview');
+  let html=(d.body||'').replace(/\[사진(\d+)\]/g,(m,n)=>{
+    const im=(d.images||[]).find(x=>x.id==n);const lab=im?(im.label||im.type):'이미지';
+    return `<div class="imgmark"><div class="box">🖼️</div>[사진${n}] · ${lab}</div>`;});
+  bp.innerHTML=html+`<div class="hashtags">${(d.hashtags||[]).join(' ')}</div>`;
+  const g=$('#gallery');g.innerHTML='';
+  (d.images||[]).forEach(im=>{const cell=document.createElement('div');cell.className='g';
+    if(im.url){cell.innerHTML=`<img src="${im.url}"><div class="cap">[사진${im.id}] ${im.label||im.type}</div>`;}
+    else{cell.innerHTML=`<div class="g ph">🖼️<br>[사진${im.id}]<br>${im.label||im.type}</div>`;}
+    g.appendChild(cell);});
+}
+
+// ===== 내보내기 (플랫폼 무관) =====
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function buildHTML(d){
+  let h=`<h1>${esc(d.title)}</h1>\n`;
+  (d.body||'').split(/\n{2,}/).forEach(block=>{
+    const m=block.match(/^\[사진(\d+)\]$/);
+    if(m){h+=`<p>📷 [사진${m[1]}] 이미지 자리</p>\n`;}
+    else{h+=`<p>${esc(block).replace(/\n/g,'<br>')}</p>\n`;}
+  });
+  if((d.hashtags||[]).length) h+=`<p>${esc(d.hashtags.join(' '))}</p>\n`;
+  return h;
+}
+function buildMD(d){
+  let t=`# ${d.title}\n\n`;
+  (d.body||'').split(/\n{2,}/).forEach(block=>{
+    const m=block.match(/^\[사진(\d+)\]$/);
+    t+= m?`> 📷 [사진${m[1]}] 이미지 자리\n\n`:block+"\n\n";
+  });
+  if((d.hashtags||[]).length) t+=d.hashtags.join(' ')+"\n";
+  return t;
+}
+function buildText(d){
+  return (d.title||'')+"\n\n"+(d.body||'')+"\n\n"+((d.hashtags||[]).join(' '));
+}
+async function copyRich(html, plain){
+  try{
+    if(navigator.clipboard && window.ClipboardItem){
+      await navigator.clipboard.write([new ClipboardItem({
+        'text/html':new Blob([html],{type:'text/html'}),
+        'text/plain':new Blob([plain],{type:'text/plain'})
+      })]);
+    }else{ await navigator.clipboard.writeText(plain); }
+    return true;
+  }catch(e){ try{await navigator.clipboard.writeText(plain);return true;}catch(_){return false;} }
+}
+$('#copyHtmlBtn').onclick=async()=>{ await copyRich(buildHTML(current), buildText(current)); toast('✅ HTML로 복사됐어요! 블로그 편집기에 붙여넣으세요.'); };
+$('#copyMdBtn').onclick=async()=>{ await navigator.clipboard.writeText(buildMD(current)); toast('✅ 마크다운 복사됐어요!'); };
+$('#copyTextBtn').onclick=async()=>{ await navigator.clipboard.writeText(buildText(current)); toast('✅ 텍스트 복사됐어요!'); };
+$('#dlImagesBtn').onclick=async()=>{
+  const files=(current.images||[]).map(i=>i.file).filter(Boolean);
+  if(!files.length){toast('내려받을 이미지가 없어요 (데모 상태거나 서버 미연결).');return;}
+  try{
+    const res=await fetch('/api/export/images',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files})});
+    if(!res.ok) throw new Error();
+    const blob=await res.blob();
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='running-blog-images.zip';a.click();
+    toast('⬇ 이미지 zip을 받았어요!');
+  }catch(e){toast('이미지 다운로드는 서버 연결 시 작동해요.');}
+};
+</script>
+</body>
+</html>

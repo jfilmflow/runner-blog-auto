@@ -1,0 +1,7 @@
+flask>=3.0
+gunicorn>=21.2
+anthropic>=0.40.0
+openai>=1.40.0
+matplotlib>=3.7
+pillow>=10.0
+python-dotenv>=1.0

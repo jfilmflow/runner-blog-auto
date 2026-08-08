@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: runner-blog
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT --timeout 120
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ENGINE_PROVIDER
+        value: claude
