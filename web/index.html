@@ -130,6 +130,14 @@
   @keyframes sp{to{transform:rotate(360deg)}}
   @media(max-width:720px){.row2,.metrics,.gallery{grid-template-columns:1fr 1fr}.steps{flex-direction:column}}
 
+  /* result toolbar */
+  .mini-actions{display:flex;gap:9px;margin:-4px 0 22px;flex-wrap:wrap}
+  .mini-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-weight:700;
+    font-size:13.5px;padding:10px 15px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s;
+    display:inline-flex;align-items:center;gap:7px}
+  .mini-btn:hover{border-color:var(--mint)}
+  .mini-btn.accent{border-color:rgba(46,214,198,.45);color:var(--mint);background:rgba(46,214,198,.07)}
+
   /* auth */
   .auth-wrap{display:flex;align-items:center;gap:10px;margin-left:10px}
   .usage-chip{font-size:12px;font-weight:700;color:var(--mint);background:rgba(46,214,198,.09);
@@ -253,6 +261,11 @@
     <div class="head"><span class="tab">STEP 2</span><h2 data-i18n="step2"></h2></div>
     <div class="head-desc" data-i18n="s2desc"></div>
 
+    <div class="mini-actions">
+      <button class="mini-btn accent" id="regenBtn">🔄 <span data-i18n="regen"></span></button>
+      <button class="mini-btn" id="newBtn">✏️ <span data-i18n="newPost"></span></button>
+    </div>
+
     <label class="fl" data-i18n="lblPickTitle"></label>
     <div class="titles" id="titles"></div>
 
@@ -341,7 +354,8 @@ const I18N = {
     loginNote:"Click the link in the email and you'll come right back here.",
     magicSent:"Check your inbox — we sent a login link.", loginNeeded:"Please log in first.",
     emailInvalid:"Please enter your email address.", authErr:"Login had a problem. Please try again.",
-    limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out."
+    limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.",
+    regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post."
   },
   ko:{
     brand:"러너들의 <b>공기의 흔적</b>을 남깁니다",
@@ -379,7 +393,8 @@ const I18N = {
     loginNote:"메일의 링크를 누르면 이 화면으로 바로 돌아와요.",
     magicSent:"메일함을 확인하세요 — 로그인 링크를 보냈어요.", loginNeeded:"먼저 로그인해 주세요.",
     emailInvalid:"이메일 주소를 입력해 주세요.", authErr:"로그인 중 문제가 생겼어요. 다시 시도해 주세요.",
-    limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요."
+    limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.",
+    regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료."
   },
   ja:{
     brand:"ランナーの<b>息づかい</b>を記録に残す",
@@ -417,7 +432,8 @@ const I18N = {
     loginNote:"メールのリンクを押すと、この画面に戻ってきます。",
     magicSent:"メールを確認してください — ログインリンクを送りました。", loginNeeded:"先にログインしてください。",
     emailInvalid:"メールアドレスを入力してください。", authErr:"ログインで問題が発生しました。もう一度お試しください。",
-    limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。"
+    limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。",
+    regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。"
   },
   zh:{
     brand:"留下每一次<b>奔跑的呼吸</b>印记",
@@ -455,7 +471,8 @@ const I18N = {
     loginNote:"点击邮件中的链接，就会回到此页面。",
     magicSent:"请查收邮箱 — 我们已发送登录链接。", loginNeeded:"请先登录。",
     emailInvalid:"请输入你的邮箱地址。", authErr:"登录出现问题，请重试。",
-    limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。"
+    limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。",
+    regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。"
   },
   es:{
     brand:"Deja la huella del <b>aliento de cada corredor</b>",
@@ -493,7 +510,8 @@ const I18N = {
     loginNote:"Haz clic en el enlace del email y volverás aquí.",
     magicSent:"Revisa tu correo — te enviamos un enlace de acceso.", loginNeeded:"Primero inicia sesión.",
     emailInvalid:"Escribe tu dirección de email.", authErr:"Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
-    limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada."
+    limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.",
+    regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post."
   }
 };
 
@@ -664,6 +682,20 @@ function render(d){
     else{cell.innerHTML=`<div class="g ph">🖼️<br></div>`;cell.querySelector('.ph').insertAdjacentText('beforeend',cap);}
     g.appendChild(cell);});
 }
+
+// ===== 결과 화면 툴바: 다시 생성 / 새로 쓰기 =====
+$('#regenBtn').onclick=()=>{ $('#genBtn').click(); };   // 같은 소재로 다른 버전 (사용량 1편 차감)
+function resetAll(){
+  $('#srcText').value=''; $('#keywords').value='';
+  files.length=0; $('#thumbs').innerHTML=''; $('#fileInput').value='';
+  current=null;
+  $('#titles').innerHTML=''; $('#metrics').innerHTML=''; $('#bodyPreview').innerHTML=''; $('#gallery').innerHTML='';
+  $('#step2').classList.add('hidden'); $('#step3').classList.add('hidden');
+  setStep(1);
+  window.scrollTo({top:0, behavior:'smooth'});
+  toast(T('resetDone'));
+}
+$('#newBtn').onclick=resetAll;
 
 // ===== export (platform-agnostic) =====
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
