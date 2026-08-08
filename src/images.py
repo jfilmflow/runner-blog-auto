@@ -26,9 +26,11 @@ _FOOTER_BY_LANG = {
 
 
 def set_lang(lang):
-    """카드 하단 브랜드 문구를 UI 언어에 맞춤. (모르는 코드는 한국어 유지)"""
-    global BRAND_FOOTER
-    BRAND_FOOTER = _FOOTER_BY_LANG.get((lang or "").lower(), _FOOTER_BY_LANG["ko"])
+    """카드 하단 브랜드 문구 + 사진 안내 문구를 UI 언어에 맞춤. (모르는 코드는 한국어 유지)"""
+    global BRAND_FOOTER, PH_GUIDE
+    key = (lang or "").lower()
+    BRAND_FOOTER = _FOOTER_BY_LANG.get(key, _FOOTER_BY_LANG["ko"])
+    PH_GUIDE = _PH_GUIDE_BY_LANG.get(key, _PH_GUIDE_BY_LANG["ko"])
 
 
 W, H = 1200, 900
@@ -115,28 +117,59 @@ def _tag(ax, text, color=BLUE):
     ax.text(60, 70, text, fontproperties=F["black"], fontsize=20, color=color, va="center")
 
 
+def _fit(ax, x, y, text, fp, size, max_w, color, va="center", ha="left", min_size=16, **kw):
+    """글자가 max_w(px)를 넘으면 폰트를 줄여가며 상자 안에 맞춘다. (겹침·넘침 방지)"""
+    text = "" if text is None else str(text)
+    fig = ax.figure
+    try:
+        r = fig.canvas.get_renderer()
+    except Exception:
+        fig.canvas.draw(); r = fig.canvas.get_renderer()
+    s = size
+    while s > min_size:
+        t = ax.text(x, y, text, fontproperties=fp, fontsize=s, color=color, va=va, ha=ha, **kw)
+        try:
+            w = t.get_window_extent(renderer=r).width
+        except Exception:
+            return t
+        if w <= max_w:
+            return t
+        t.remove(); s -= 3
+    return ax.text(x, y, text, fontproperties=fp, fontsize=s, color=color, va=va, ha=ha, **kw)
+
+
+# 사진 자리 안내 문구(언어별) — Unsplash 키가 없을 때 빈칸 대신 안내 카드로
+_PH_GUIDE_BY_LANG = {
+    "en": "Drop your own running photo here",
+    "ko": "이 자리에 러닝 사진을 넣어보세요",
+    "ja": "ここにランニング写真を入れてください",
+    "zh": "在此处放入你的跑步照片",
+    "es": "Coloca aquí tu foto de running",
+}
+PH_GUIDE = _PH_GUIDE_BY_LANG["ko"]
+
+
 def render_thumbnail(s, path):
     fig, ax = _newfig(THUMB_BG)
     ax.add_patch(Rectangle((0, 0), W, H, color=THUMB_BG))
-    ax.text(60, 110, s.get("tag", "러너 블로그"), fontproperties=F["black"],
-            fontsize=26, color=THUMB_ACCENT, va="center")
-    ax.text(60, 255, s.get("line1", ""), fontproperties=F["black"], fontsize=86, color="#fff", va="center")
-    ax.text(60, 390, s.get("line2", ""), fontproperties=F["black"], fontsize=86, color="#fff", va="center")
+    _fit(ax, 60, 110, s.get("tag", "러너 블로그"), F["black"], 26, W - 120, THUMB_ACCENT, va="center", ha="left")
+    _fit(ax, 60, 255, s.get("line1", ""), F["black"], 86, W - 120, "#fff", va="center", ha="left", min_size=44)
+    _fit(ax, 60, 390, s.get("line2", ""), F["black"], 86, W - 120, "#fff", va="center", ha="left", min_size=44)
     if s.get("highlight"):
-        ax.text(60, 530, s["highlight"], fontproperties=F["black"], fontsize=96, color=THUMB_HL, va="center")
+        _fit(ax, 60, 530, s["highlight"], F["black"], 96, W - 120, THUMB_HL, va="center", ha="left", min_size=48)
         y3 = 650
     else:
         y3 = 530
-    ax.text(60, y3, s.get("line3", ""), fontproperties=F["black"], fontsize=58, color="#fff", va="center")
+    _fit(ax, 60, y3, s.get("line3", ""), F["black"], 58, W - 120, "#fff", va="center", ha="left", min_size=34)
     ax.add_patch(Rectangle((60, y3 + 62), 300, 8, color=THUMB_ACCENT))
-    ax.text(60, y3 + 140, s.get("sub", ""), fontproperties=F["med"], fontsize=26, color="#c7c7c7", va="center")
+    _fit(ax, 60, y3 + 140, s.get("sub", ""), F["med"], 26, W - 120, "#c7c7c7", va="center", ha="left")
     fig.savefig(path, facecolor=THUMB_BG); plt.close(fig)
 
 
 def render_stat_compare(s, path):
     fig, ax = _newfig()
     _tag(ax, s.get("title", ""))
-    ax.text(60, 150, s.get("headline", ""), fontproperties=F["black"], fontsize=44, color=INK, va="center")
+    _fit(ax, 60, 150, s.get("headline", ""), F["black"], 44, W - 120, INK, va="center", ha="left")
     bx, by, bw, bh = 60, 240, W - 120, 90
     # 단위가 같은 두 값(예: 개 vs 개)일 때만 비율 막대를 그린다. 거리 vs 시간처럼 단위가 다르면 생략.
     same_unit = bool(s.get("left_unit")) and s.get("left_unit") == s.get("right_unit")
@@ -146,9 +179,9 @@ def render_stat_compare(s, path):
     def block(x, label, num, unit, color):
         ax.add_patch(FancyBboxPatch((x, 430), 510, 300, boxstyle="round,pad=0,rounding_size=24",
                                     fc="#ffffff", ec=GRID, lw=2))
-        ax.text(x + 40, 500, label, fontproperties=F["bold"], fontsize=26, color=SUB, va="center")
-        ax.text(x + 40, 600, str(num), fontproperties=F["black"], fontsize=92, color=color, va="center")
-        ax.text(x + 40, 690, unit, fontproperties=F["med"], fontsize=25, color=MUTED, va="center")
+        _fit(ax, x + 40, 500, label, F["bold"], 26, 430, SUB, va="center", ha="left")
+        _fit(ax, x + 40, 600, str(num), F["black"], 92, 430, color, va="center", ha="left", min_size=30)
+        _fit(ax, x + 40, 690, unit, F["med"], 25, 430, MUTED, va="center", ha="left")
     block(60, s.get("left_label", ""), s.get("left_num", ""), s.get("left_unit", ""), ACCENT)
     block(630, s.get("right_label", ""), s.get("right_num", ""), s.get("right_unit", ""), BLUE)
     # 비율 바 (단위가 같을 때만)
@@ -168,19 +201,22 @@ def render_stat_compare(s, path):
 def render_before_after(s, path):
     fig, ax = _newfig()
     _tag(ax, s.get("title", ""))
-    ax.text(60, 150, s.get("headline", ""), fontproperties=F["black"], fontsize=44, color=INK, va="center")
+    _fit(ax, 60, 150, s.get("headline", ""), F["black"], 44, W - 120, INK, va="center", ha="left")
+    # 좌: 2년 전(흰 상자) — 라벨은 위, 값은 아래. 값이 길면 상자 폭(약 360px)에 맞춰 자동 축소
     ax.add_patch(FancyBboxPatch((60, 270), 440, 220, boxstyle="round,pad=0,rounding_size=24", fc="#fff", ec=GRID, lw=2))
-    ax.text(280, 330, s.get("from_label", ""), fontproperties=F["bold"], fontsize=26, color=SUB, ha="center", va="center")
-    ax.text(280, 420, str(s.get("from_val", "")), fontproperties=F["black"], fontsize=66, color=SUB, ha="center", va="center")
-    ax.annotate("", xy=(690, 380), xytext=(520, 380),
-                arrowprops=dict(arrowstyle="-|>", color=ACCENT, lw=6, mutation_scale=40))
+    _fit(ax, 280, 328, s.get("from_label", ""), F["bold"], 26, 360, SUB, ha="center", va="center")
+    _fit(ax, 280, 420, s.get("from_val", ""), F["black"], 60, 360, SUB, ha="center", va="center", min_size=22)
+    # 화살표
+    ax.annotate("", xy=(688, 380), xytext=(516, 380),
+                arrowprops=dict(arrowstyle="-|>", color=ACCENT, lw=6, mutation_scale=36))
+    # 우: 지금(민트 상자)
     ax.add_patch(FancyBboxPatch((700, 270), 440, 220, boxstyle="round,pad=0,rounding_size=24", fc=ACCENT, ec="none"))
-    ax.text(920, 330, s.get("to_label", ""), fontproperties=F["bold"], fontsize=26, color="#dffaf6", ha="center", va="center")
-    ax.text(920, 420, str(s.get("to_val", "")), fontproperties=F["black"], fontsize=66, color="#fff", ha="center", va="center")
+    _fit(ax, 920, 328, s.get("to_label", ""), F["bold"], 26, 360, "#dffaf6", ha="center", va="center")
+    _fit(ax, 920, 420, s.get("to_val", ""), F["black"], 60, 360, "#fff", ha="center", va="center", min_size=22)
     if s.get("delta"):
-        ax.text(60, 600, s["delta"], fontproperties=F["black"], fontsize=74, color=ACCENT, va="center")
+        _fit(ax, 60, 600, s["delta"], F["black"], 70, W - 120, ACCENT, va="center", ha="left")
     if s.get("foot"):
-        ax.text(60, 690, s["foot"], fontproperties=F["med"], fontsize=24, color=SUB, va="center")
+        _fit(ax, 60, 690, s["foot"], F["med"], 24, W - 120, SUB, va="center", ha="left")
     _brandbar(ax); fig.savefig(path, facecolor=SURFACE); plt.close(fig)
 
 
@@ -223,16 +259,38 @@ def render_bar(s, path):
 def render_summary(s, path):
     fig, ax = _newfig()
     _tag(ax, s.get("title", "오늘의 3줄 요약"))
-    ax.text(60, 150, s.get("headline", "이것만 기억하세요"), fontproperties=F["black"], fontsize=46, color=INK, va="center")
+    _fit(ax, 60, 150, s.get("headline", "이것만 기억하세요"), F["black"], 46, W - 120, INK, va="center", ha="left")
     y = 270
     for row in s.get("lines", [])[:3]:
         n, a, b = (list(row) + ["", "", ""])[:3]
         ax.add_patch(FancyBboxPatch((60, y), W - 120, 175, boxstyle="round,pad=0,rounding_size=20", fc="#fff", ec=GRID, lw=2))
         ax.add_patch(plt.Circle((130, y + 87), 42, color=BLUE))
         ax.text(130, y + 87, str(n), fontproperties=F["black"], fontsize=40, color="#fff", ha="center", va="center")
-        ax.text(210, y + 58, a, fontproperties=F["bold"], fontsize=27, color=INK, va="center")
-        ax.text(210, y + 118, b, fontproperties=F["med"], fontsize=24, color=RED, va="center")
+        _fit(ax, 210, y + 58, a, F["bold"], 27, W - 300, INK, va="center", ha="left")
+        _fit(ax, 210, y + 118, b, F["med"], 24, W - 300, RED, va="center", ha="left")
         y += 195
+    _brandbar(ax); fig.savefig(path, facecolor=SURFACE); plt.close(fig)
+
+
+def render_photo_placeholder(s, path):
+    """Unsplash 키가 없을 때, 빈칸 대신 '여기에 러닝 사진을 넣어보세요' 안내 카드."""
+    fig, ax = _newfig(SURFACE)
+    # 민트 점선 라운드 프레임
+    ax.add_patch(FancyBboxPatch((70, 70), W - 140, H - 210,
+                                boxstyle="round,pad=0,rounding_size=28",
+                                fc="#f2fbf9", ec=ACCENT, lw=3, linestyle=(0, (6, 6))))
+    cx, cy = W / 2, (H - 140) / 2 + 30
+    # 카메라 아이콘(간단 도형)
+    ax.add_patch(FancyBboxPatch((cx - 95, cy - 128), 190, 130,
+                                boxstyle="round,pad=0,rounding_size=22", fc=ACCENT, ec="none"))
+    ax.add_patch(FancyBboxPatch((cx - 34, cy - 150), 68, 30,
+                                boxstyle="round,pad=0,rounding_size=10", fc=ACCENT, ec="none"))
+    ax.add_patch(plt.Circle((cx, cy - 63), 40, fc="#f2fbf9", ec="none"))
+    ax.add_patch(plt.Circle((cx, cy - 63), 24, fc=ACCENT, ec="none"))
+    _fit(ax, cx, cy + 40, PH_GUIDE, F["bold"], 40, W - 220, INK, va="center", ha="center", min_size=24)
+    cap = s.get("caption") or ""
+    if cap:
+        _fit(ax, cx, cy + 110, cap, F["med"], 26, W - 240, MUTED, va="center", ha="center", min_size=18)
     _brandbar(ax); fig.savefig(path, facecolor=SURFACE); plt.close(fig)
 
 

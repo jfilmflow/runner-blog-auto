@@ -29,7 +29,7 @@
 러닝 블로그에 어울리게 고른다. 실제 러닝 사진(photo)과 기록 카드를 섞는 게 좋다.
 - thumbnail: {tag, line1, line2, highlight, line3, sub}  // 감성 대표 썸네일. highlight는 강조 문구(예: "10km 완주").
 - stat_compare: {title, headline, left_label, left_num, left_unit, right_label, right_num, right_unit, foot}  // 두 기록 비교(예: 거리 vs 시간, 목표 vs 실제)
-- before_after: {title, headline, from_label, from_val, to_label, to_val, delta, foot}  // 지난주 vs 이번주, 3주 전 vs 지금 같은 성장
+- before_after: {title, headline, from_label, from_val, to_label, to_val, delta, foot}  // 지난주 vs 이번주, 3주 전 vs 지금 같은 성장. ★from_val·to_val은 짧은 값만(예: "5km","42.195km","4:26:33","58분"). 문장·긴 설명 금지 — 그런 내용은 headline이나 foot에.
 - bar: {title, headline, unit, items:[[label, number], ...], foot}  // 구간별 페이스, 요일별 거리 등 (양수)
 - summary: {title, headline, lines:[[번호, 윗줄, 아랫줄], ...]}  // 오늘의 3줄 정리
 - photo: {query, caption}  // Unsplash 사진. query는 영어(예: "running by the han river at sunrise", "runner tying shoes on track"). 코스·분위기 컷용.

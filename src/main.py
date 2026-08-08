@@ -66,7 +66,13 @@ def prepare_images(result, user_photos=None):
             if got:
                 paths.append(got)
             else:
-                print(f"  [사진{sid}] Unsplash 건너뜀(키 없음/실패) — 이 자리엔 이미지 없이 진행")
+                # Unsplash 키 없음/실패 → 빈칸 대신 '여기에 러닝 사진' 안내 카드로 채움
+                ph = os.path.join(IMG_DIR, f"{sid:02d}_photo.png")
+                try:
+                    images_mod.render_photo_placeholder(s, ph); paths.append(ph)
+                    print(f"  [사진{sid}] Unsplash 없음 → 사진 안내 카드로 대체")
+                except Exception as e:
+                    print(f"  [사진{sid}] 사진 안내 카드 생성 실패: {e}")
         else:
             p = os.path.join(IMG_DIR, f"{sid:02d}_{t}.png")
             if os.path.exists(p):
