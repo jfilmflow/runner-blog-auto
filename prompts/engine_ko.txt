@@ -38,6 +38,10 @@ Schema:
 - If there is no record, stay vague ("just an easy shakeout today") instead of making up a number.
 - Sensory and emotional coloring may be written naturally, but must stay consistent with the given facts.
 
+=== FORMATTING (plain-text body) ===
+- The body is PLAIN TEXT. Use 2-3 short subheads, each on its OWN line starting with "## " (e.g. "## The hard stretch"). Put the main keyword in at least one subhead.
+- Do NOT use any other Markdown: no single '#'/'###', no **bold**, no _italics_, no bullet or numbered-list syntax, no links. Just sentences, line breaks, and the "## " subheads.
+
 === IMAGE MARKERS ===
 - Put [사진1]..[사진6] each on its own line between paragraphs of the body. KEEP THEM LITERALLY as [사진1], [사진2]... (do NOT translate or renumber these tokens — the app depends on them).
 - There are ALWAYS exactly 6 images, no blanks. [사진1] should be the emotional cover (thumbnail).

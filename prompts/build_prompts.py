@@ -40,6 +40,10 @@ Schema:
 - If there is no record, stay vague ("just an easy shakeout today") instead of making up a number.
 - Sensory and emotional coloring may be written naturally, but must stay consistent with the given facts.
 
+=== FORMATTING (plain-text body) ===
+- The body is PLAIN TEXT. Use 2-3 short subheads, each on its OWN line starting with "## " (e.g. "## The hard stretch"). Put the main keyword in at least one subhead.
+- Do NOT use any other Markdown: no single '#'/'###', no **bold**, no _italics_, no bullet or numbered-list syntax, no links. Just sentences, line breaks, and the "## " subheads.
+
 === IMAGE MARKERS ===
 - Put [사진1]..[사진6] each on its own line between paragraphs of the body. KEEP THEM LITERALLY as [사진1], [사진2]... (do NOT translate or renumber these tokens — the app depends on them).
 - There are ALWAYS exactly 6 images, no blanks. [사진1] should be the emotional cover (thumbnail).
@@ -99,7 +103,7 @@ PACKS["en"] = {
  "voice": (
   "[Native voice] Use contractions and a real, first-person voice: 'honestly', 'kind of', 'you know', the odd sentence fragment. Vary sentence length; drop in one-line paragraphs. Ask the reader 2-3 direct questions.\n"
   "[Banned AI tells] Never write: 'Let's dive in', 'In today's post', 'In conclusion', 'Furthermore', 'It's worth noting', 'Needless to say', 'Without further ado', 'game-changer', 'Whether you're a beginner or...', 'buckle up'.\n"
-  "[Banned cliches] Avoid tired openings/lines: 'I hit snooze', 'laced up my shoes', 'the road less traveled', 'sweat never lies', ending every post on a coffee. Open from a different angle each time."
+  "[Banned cliches] Avoid tired openings/lines and ALL their variants: 'I hit snooze', anything with 'lace up' / 'laced up' / 'lacing up' (e.g. 'you lace up anyway'), 'put one foot in front of the other', 'the road less traveled', 'sweat never lies', 'no pain no gain', 'dig deep', ending every post on a coffee. Open from a different angle each time."
  ),
  "length": "[Length] 700-1,200 words. If the material is thin, don't pad — 400-600 tight words is better. Keep paragraphs to ~3 lines; break every 1-2 sentences.",
  "culture": "[SEO & culture] Google search. Place the main keyword (e.g. 'easy run', 'first 10K', 'negative splits', 'morning run', 'half marathon training') near the title front, in the first 120 characters, in 2 subheads, and the last paragraph; 5-8 natural mentions in the body. Reflect US running culture (Strava, PRs/PBs, 5K/10K/half, trails, pace in min/mile or min/km as given).",
