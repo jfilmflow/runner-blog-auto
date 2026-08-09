@@ -59,11 +59,12 @@ def _lang_directive(lang):
 
 
 def _free_tier_directive():
-    """무료 플랜: 짧은 글 + 이미지 2장 (Pro 업셀용 품질 게이팅)."""
-    return ("\n\n[FREE TIER — 필수]\n"
-            "본문(body)은 공백 포함 약 1,100~1,300자로 짧게 써라(무료 플랜).\n"
-            "이미지는 정확히 2장만 만든다: [사진1] 대표 썸네일 + [사진2] 카드 1개. "
-            "[사진3] 이상은 body에도 넣지 말고 images 목록에도 만들지 마라.")
+    """무료 플랜: 짧은 글 + 이미지 2장 (Pro 업셀용 품질 게이팅). 언어 중립 지시."""
+    return ("\n\n[FREE TIER — REQUIRED]\n"
+            "Keep the body SHORT: about 1,100-1,300 characters (or ~200-260 words for English/Spanish).\n"
+            "Make EXACTLY 2 images: [사진1] cover thumbnail + [사진2] one card. "
+            "Do NOT put [사진3] or higher in the body or in the images list. "
+            "(Keep the [사진N] markers literally as-is.)")
 
 
 def _apply_free_limits(result):
@@ -137,6 +138,7 @@ def images(fname):
 def api_generate():
     text = (request.form.get("text") or "").strip()
     lang = (request.form.get("lang") or "").strip()
+    answers = (request.form.get("answers") or "").strip()   # 스마트 후속답변(프론트에서 조립한 재료)
     provider = os.getenv("ENGINE_PROVIDER", "claude")
 
     # ── 로그인·사용량(P3) ── 로그인 기능이 켜져 있으면 검증 + 무료 한도 확인
@@ -171,11 +173,14 @@ def api_generate():
     if not text and not photos:
         return jsonify({"error": "러닝 이야기(글) 또는 러닝 사진 중 하나는 넣어주세요."}), 400
 
-    story = text + _lang_directive(lang)   # 사용자 원문 + 출력 언어 지시
+    story = text                            # 언어별 네이티브 프롬프트가 출력 언어를 처리
+    if lang and lang.lower() not in ("ko", "en", "ja", "zh", "es"):
+        story += _lang_directive(lang)      # 지원 목록 밖 언어일 때만 보조 지시
     if plan != "pro":                       # 무료 플랜: 짧은 글 + 이미지 2장
         story += _free_tier_directive()
     try:
-        result = engine_mod.generate(story, provider=provider, photo_paths=photos)
+        result = engine_mod.generate(story, provider=provider, photo_paths=photos,
+                                     lang=lang, extra_context=answers or None)
     except Exception as e:
         import traceback; traceback.print_exc()
         return jsonify({"error": f"글 생성 실패 [{type(e).__name__}]: {e}"}), 500
