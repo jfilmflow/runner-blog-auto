@@ -27,6 +27,17 @@ def free_limit():
         return 3
 
 
+def pro_limit():
+    try:
+        return int(os.getenv("PRO_LIMIT", "35"))
+    except Exception:
+        return 35
+
+
+def limit_for_plan(plan):
+    return pro_limit() if plan == "pro" else free_limit()
+
+
 def enabled():
     """로그인·사용량 기능 켜짐 여부.
        URL + anon 키만 있으면 ON. (사용량은 로그인한 사용자 토큰으로 DB 함수 호출 →
@@ -88,6 +99,35 @@ def get_usage(token, period):
         except Exception:
             return 0
     return 0
+
+
+def get_plan(token):
+    """로그인 사용자의 현재 플랜('free'/'pro'). DB 함수 my_plan()을 사용자 토큰으로 호출."""
+    if not enabled() or not token:
+        return "free"
+    st, data = _req(f"{SUPABASE_URL}/rest/v1/rpc/my_plan", method="POST",
+                    headers={"apikey": ANON, "Authorization": f"Bearer {token}"},
+                    data={})
+    if st in (200, 201) and isinstance(data, str) and data:
+        return data
+    return "free"
+
+
+def set_plan(uid, plan, status=None, renews_at=None):
+    """결제 웹훅에서 호출 — 서비스 키로 subscriptions 테이블에 유저 플랜 기록(upsert).
+       서비스 키가 없으면 False (플랜 자동반영 불가)."""
+    if not (SUPABASE_URL and SERVICE and uid):
+        return False
+    url = f"{SUPABASE_URL}/rest/v1/subscriptions?on_conflict=user_id"
+    headers = {"apikey": SERVICE, "Authorization": f"Bearer {SERVICE}",
+               "Prefer": "resolution=merge-duplicates,return=minimal"}
+    row = {"user_id": uid, "plan": plan}
+    if status is not None:
+        row["status"] = status
+    if renews_at is not None:
+        row["renews_at"] = renews_at
+    st, _ = _req(url, method="POST", headers=headers, data=[row])
+    return st in (200, 201, 204)
 
 
 def increment_usage(token, period):

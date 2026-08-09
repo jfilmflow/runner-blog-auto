@@ -53,3 +53,31 @@ $$;
 -- 로그인한 사용자만 이 함수들을 실행할 수 있게 허용
 grant execute on function public.my_usage(text)  to authenticated;
 grant execute on function public.bump_usage(text) to authenticated;
+
+
+-- ============================================================
+-- P4 결제/구독 : 유저 플랜(free/pro) 저장
+-- ============================================================
+create table if not exists public.subscriptions (
+  user_id    uuid        primary key,
+  plan       text        not null default 'free',   -- 'free' | 'pro'
+  status     text,                                   -- LS 상태(active/cancelled/expired 등)
+  renews_at  timestamptz,
+  updated_at timestamptz not null default now()
+);
+
+-- RLS: 사용자는 직접 못 건드림. 서버(service_role)만 웹훅으로 기록.
+alter table public.subscriptions enable row level security;
+
+-- 로그인한 '나'의 현재 플랜 조회 (없으면 free)
+create or replace function public.my_plan()
+returns text
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select coalesce((select plan from public.subscriptions where user_id = auth.uid()), 'free');
+$$;
+
+grant execute on function public.my_plan() to authenticated;

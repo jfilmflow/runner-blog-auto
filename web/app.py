@@ -87,9 +87,11 @@ def api_usage():
     user = authz.verify_token(token)
     if not user:
         return jsonify({}), 401
-    lim = authz.free_limit()
+    plan = authz.get_plan(token)
+    lim = authz.limit_for_plan(plan)
     used = authz.get_usage(token, _period())
-    return jsonify({"used": used, "limit": lim, "remaining": max(0, lim - used), "email": user.get("email")})
+    return jsonify({"used": used, "limit": lim, "remaining": max(0, lim - used),
+                    "plan": plan, "email": user.get("email")})
 
 
 @app.route("/images/<path:fname>")
@@ -106,16 +108,18 @@ def api_generate():
     # ── 로그인·사용량(P3) ── 로그인 기능이 켜져 있으면 검증 + 무료 한도 확인
     user = None
     token = _bearer()
+    plan = "free"
     if authz.enabled():
         user = authz.verify_token(token)
         if not user:
             return jsonify({"error": "로그인이 필요해요.", "auth_required": True}), 401
-        limit = authz.free_limit()
+        plan = authz.get_plan(token)
+        limit = authz.limit_for_plan(plan)
         used = authz.get_usage(token, _period())
         if used >= limit:
             return jsonify({
-                "error": f"이번 달 무료 {limit}편을 모두 사용했어요.",
-                "limit_reached": True, "used": used, "limit": limit,
+                "error": f"이번 달 {limit}편을 모두 사용했어요.",
+                "limit_reached": True, "used": used, "limit": limit, "plan": plan,
             }), 402
 
     # 업로드된 러닝 사진 저장 (AI가 읽고 본문에 삽입)
@@ -160,9 +164,10 @@ def api_generate():
     usage = None
     if user:
         new_count = authz.increment_usage(token, _period())
-        lim = authz.free_limit()
+        lim = authz.limit_for_plan(plan)
         cnt = new_count if new_count is not None else authz.get_usage(token, _period())
-        usage = {"used": cnt, "limit": lim, "remaining": max(0, lim - cnt), "email": user.get("email")}
+        usage = {"used": cnt, "limit": lim, "remaining": max(0, lim - cnt),
+                 "plan": plan, "email": user.get("email")}
 
     return jsonify({
         "title": result.get("title"),
@@ -191,6 +196,38 @@ def export_images():
     mem.seek(0)
     return send_file(mem, mimetype="application/zip", as_attachment=True,
                      download_name="running-blog-images.zip")
+
+
+@app.route("/api/lemon-webhook", methods=["POST"])
+def lemon_webhook():
+    """Lemon Squeezy 결제 웹훅 — 결제/구독 상태에 따라 유저 플랜(pro/free)을 자동 반영.
+       서명(X-Signature)을 LEMON_WEBHOOK_SECRET으로 검증한다."""
+    import hmac, hashlib
+    secret = os.getenv("LEMON_WEBHOOK_SECRET", "")
+    raw = request.get_data()
+    if secret:
+        sig = request.headers.get("X-Signature", "")
+        digest = hmac.new(secret.encode("utf-8"), raw, hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(digest, sig):
+            return jsonify({"error": "bad signature"}), 401
+
+    data = request.get_json(force=True, silent=True) or {}
+    meta = data.get("meta", {}) or {}
+    event = meta.get("event_name", "")
+    custom = meta.get("custom_data", {}) or {}
+    uid = custom.get("user_id")
+    attrs = (data.get("data", {}) or {}).get("attributes", {}) or {}
+    status = attrs.get("status", "")          # active, on_trial, past_due, cancelled, expired, unpaid, paused
+    renews_at = attrs.get("renews_at")
+
+    # 접근 유지 상태 = pro, 그 외(만료/미납/일시정지) = free
+    active_like = {"active", "on_trial", "past_due", "cancelled"}
+    if event.startswith("subscription"):
+        plan = "pro" if status in active_like else "free"
+        if uid:
+            ok = authz.set_plan(uid, plan, status=status, renews_at=renews_at)
+            print(f"[webhook] {event} status={status} user={uid} -> plan={plan} ok={ok}")
+    return jsonify({"received": True}), 200
 
 
 @app.route("/healthz")

@@ -178,6 +178,36 @@
   .gbtn:hover{filter:brightness(.97)}
   .gicon{width:19px;height:19px}
   .modal-note{color:var(--muted2);font-size:11.5px;margin-top:14px;line-height:1.5;text-align:center}
+
+  /* upgrade */
+  .up-btn{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border:none;font-weight:800;
+    font-size:12.5px;padding:8px 13px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .up-btn:hover{filter:brightness(1.06)}
+  .plans{display:flex;flex-direction:column;gap:11px;margin-top:18px}
+  .plan-card{position:relative;text-align:left;background:var(--field-bg);border:1.5px solid var(--border2);border-radius:14px;
+    padding:15px 18px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:space-between;font-family:inherit;color:var(--text);width:100%}
+  .plan-card:hover{border-color:var(--mint);background:rgba(46,214,198,.05)}
+  .plan-card.best{border-color:var(--mint);background:rgba(46,214,198,.06)}
+  .plan-card .nm{font-weight:800;font-size:15.5px}
+  .plan-card .mo{color:var(--muted);font-size:12.5px;margin-top:3px}
+  .plan-card .pr{font-weight:900;font-size:20px;letter-spacing:-.5px;text-align:right}
+  .plan-card .sv{color:var(--mint);font-size:12px;font-weight:800;margin-top:2px;text-align:right}
+  .plan-badge{position:absolute;top:-9px;right:14px;background:var(--mint);color:var(--ink);font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:7px}
+  /* 할인 사다리 (무료→1→6→12) */
+  .ladder{display:flex;align-items:stretch;gap:5px;margin-top:16px}
+  .ladder .lad{flex:1;text-align:center;border:1px solid var(--border2);border-radius:11px;padding:9px 3px;background:var(--field-bg)}
+  .ladder .lad .lt{font-size:11px;color:var(--muted);font-weight:700}
+  .ladder .lad .ld{font-size:14px;font-weight:900;margin-top:3px;color:var(--muted2)}
+  .ladder .lad.off1{border-color:rgba(46,214,198,.38);background:rgba(46,214,198,.06)}
+  .ladder .lad.off1 .ld{color:var(--mint2)}
+  .ladder .lad.off2{border-color:var(--mint);background:rgba(46,214,198,.14);box-shadow:0 0 0 1px var(--mint) inset}
+  .ladder .lad.off2 .ld{color:var(--mint)}
+  .ladder .arw{align-self:center;color:var(--muted2);font-size:13px;font-weight:900}
+  .plan-card .base{color:var(--muted2);text-decoration:line-through;font-size:12px;margin-right:6px}
+  .sv-chip{display:inline-block;font-weight:800;font-size:12px;border-radius:7px;padding:2px 8px;margin-top:3px}
+  .sv-chip.s1{color:var(--mint2);background:rgba(46,214,198,.10)}
+  .sv-chip.s2{color:var(--ink);background:var(--mint)}
+  .sv-flat{color:var(--muted2);font-size:12px;margin-top:3px}
 </style>
 </head>
 <body>
@@ -199,6 +229,7 @@
       </select>
     </div>
     <div class="auth-wrap" id="authWrap" style="display:none">
+      <button class="up-btn" id="upBtn" style="display:none"></button>
       <span class="usage-chip" id="usageChip" style="display:none"></span>
       <button class="auth-btn" id="loginBtn"></button>
       <span class="user-chip" id="userChip" style="display:none">
@@ -301,6 +332,14 @@
     <div class="note" data-i18n-html="note3"></div>
   </div>
 
+  <!-- 요금제 (항상 보임) -->
+  <div class="card" id="pricingCard">
+    <div class="head"><span class="tab" data-i18n="pricingTab"></span><h2 data-i18n="pricingTitle"></h2></div>
+    <div class="head-desc" data-i18n="pricingDesc"></div>
+    <div class="ladder" id="pricingLadder"></div>
+    <div class="plans" id="pricingPlans"></div>
+  </div>
+
 </div>
 
 <!-- 로그인 모달 -->
@@ -334,6 +373,30 @@
       <div class="prog-track"><div class="prog-bar" id="progBar"></div></div>
     </div>
     <div class="modal-note" id="genNote" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- 업그레이드(요금제) 모달 -->
+<div class="modal-bg" id="upgradeModal" style="display:none">
+  <div class="modal">
+    <button class="modal-x" id="upClose">✕</button>
+    <div class="modal-logo" style="background:linear-gradient(135deg,var(--mint),#1f9fd6)">✨</div>
+    <div class="modal-h" id="upTitle"></div>
+    <div class="modal-d" id="upSub"></div>
+    <div class="ladder" id="upLadder"></div>
+    <div class="plans" id="plans"></div>
+    <div class="modal-note" id="upNote"></div>
+  </div>
+</div>
+
+<!-- 무료 한도 초과 모달 (화면 중앙 고정) -->
+<div class="modal-bg" id="limitModal" style="display:none">
+  <div class="modal">
+    <button class="modal-x" id="limitClose">✕</button>
+    <div class="modal-logo" style="background:linear-gradient(135deg,#ffcf6b,#ff9f43)">🔒</div>
+    <div class="modal-h" id="limitTitle"></div>
+    <div class="modal-d" id="limitDesc"></div>
+    <button class="cta" id="limitOkBtn" style="margin-top:8px;background:linear-gradient(135deg,#ffcf6b,#ff9f43)"></button>
   </div>
 </div>
 
@@ -380,6 +443,12 @@ const I18N = {
     magicSent:"Check your inbox — we sent a login link.", loginNeeded:"Please log in first.",
     emailInvalid:"Please enter your email address.", authErr:"Login had a problem. Please try again.",
     limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.",
+    limitTitle:"Free limit reached", limitOk:"See plans",
+    upgradeBtn:"✨ Upgrade", upTitle:"Upgrade to Pro", upSub:"Free is 3 posts/month → Pro is 35 posts/month.",
+    up1:"1 month", up6:"6 months", up12:"12 months", upBest:"Best value", perMo:"/mo",
+    planFree:"Free", offWord:"off", baseWord:"base",
+    pricingTab:"PLANS", pricingTitle:"Start free, go Pro when ready", pricingDesc:"Free is 3 posts/month. Pro is 35/month — the longer you commit, the cheaper per month.",
+    upNote:"Payments are handled securely by Lemon Squeezy. Cancel anytime.",
     regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
     stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing",
     genTitle:"Creating your blog post", genNote:"Please keep this open — usually 20–40 seconds."
@@ -421,6 +490,12 @@ const I18N = {
     magicSent:"메일함을 확인하세요 — 로그인 링크를 보냈어요.", loginNeeded:"먼저 로그인해 주세요.",
     emailInvalid:"이메일 주소를 입력해 주세요.", authErr:"로그인 중 문제가 생겼어요. 다시 시도해 주세요.",
     limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.",
+    limitTitle:"무료 사용 한도에 도달했어요", limitOk:"요금제 보기",
+    upgradeBtn:"✨ 업그레이드", upTitle:"Pro로 업그레이드", upSub:"무료는 월 3편 → Pro는 월 35편이에요.",
+    up1:"1개월", up6:"6개월", up12:"12개월", upBest:"최대 할인", perMo:"/월",
+    planFree:"무료", offWord:"할인", baseWord:"기준가",
+    pricingTab:"요금제", pricingTitle:"무료로 시작, 필요하면 Pro", pricingDesc:"무료는 월 3편, Pro는 월 35편이에요. 길게 약정할수록 월 단가가 더 저렴해져요.",
+    upNote:"결제는 Lemon Squeezy에서 안전하게 처리돼요. 언제든 취소 가능.",
     regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
     stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리",
     genTitle:"블로그를 만들고 있어요", genNote:"창을 닫지 말고 잠시만 기다려 주세요 (보통 20~40초)."
@@ -462,6 +537,12 @@ const I18N = {
     magicSent:"メールを確認してください — ログインリンクを送りました。", loginNeeded:"先にログインしてください。",
     emailInvalid:"メールアドレスを入力してください。", authErr:"ログインで問題が発生しました。もう一度お試しください。",
     limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。",
+    limitTitle:"無料利用の上限に達しました", limitOk:"プランを見る",
+    upgradeBtn:"✨ アップグレード", upTitle:"Proにアップグレード", upSub:"無料は月3本 → Proは月35本です。",
+    up1:"1ヶ月", up6:"6ヶ月", up12:"12ヶ月", upBest:"最もお得", perMo:"/月",
+    planFree:"無料", offWord:"割引", baseWord:"基準",
+    pricingTab:"料金プラン", pricingTitle:"無料で開始、必要ならPro", pricingDesc:"無料は月3本、Proは月35本。長く契約するほど月あたりが安くなります。",
+    upNote:"決済はLemon Squeezyが安全に処理します。いつでも解約可能。",
     regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
     stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中",
     genTitle:"ブログを作成中です", genNote:"この画面を閉じずにお待ちください（通常20〜40秒）。"
@@ -503,6 +584,12 @@ const I18N = {
     magicSent:"请查收邮箱 — 我们已发送登录链接。", loginNeeded:"请先登录。",
     emailInvalid:"请输入你的邮箱地址。", authErr:"登录出现问题，请重试。",
     limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。",
+    limitTitle:"已达免费使用上限", limitOk:"查看方案",
+    upgradeBtn:"✨ 升级", upTitle:"升级到 Pro", upSub:"免费版每月3篇 → Pro每月35篇。",
+    up1:"1个月", up6:"6个月", up12:"12个月", upBest:"最划算", perMo:"/月",
+    planFree:"免费", offWord:"优惠", baseWord:"基准",
+    pricingTab:"价格方案", pricingTitle:"免费开始，需要时升级 Pro", pricingDesc:"免费每月3篇，Pro每月35篇。承诺越久，每月越便宜。",
+    upNote:"付款由 Lemon Squeezy 安全处理，可随时取消。",
     regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
     stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾",
     genTitle:"正在生成你的博客", genNote:"请不要关闭本窗口，通常需要20~40秒。"
@@ -544,6 +631,12 @@ const I18N = {
     magicSent:"Revisa tu correo — te enviamos un enlace de acceso.", loginNeeded:"Primero inicia sesión.",
     emailInvalid:"Escribe tu dirección de email.", authErr:"Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
     limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.",
+    limitTitle:"Límite gratuito alcanzado", limitOk:"Ver planes",
+    upgradeBtn:"✨ Mejorar", upTitle:"Mejora a Pro", upSub:"Gratis son 3 posts/mes → Pro son 35 posts/mes.",
+    up1:"1 mes", up6:"6 meses", up12:"12 meses", upBest:"Mejor precio", perMo:"/mes",
+    planFree:"Gratis", offWord:"dto.", baseWord:"base",
+    pricingTab:"PLANES", pricingTitle:"Empieza gratis, pasa a Pro cuando quieras", pricingDesc:"Gratis son 3 posts/mes, Pro 35/mes. Cuanto más largo el plan, más barato por mes.",
+    upNote:"Los pagos los gestiona Lemon Squeezy de forma segura. Cancela cuando quieras.",
     regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
     stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando",
     genTitle:"Creando tu entrada de blog", genNote:"No cierres esto — suele tardar 20–40 s."
@@ -576,6 +669,7 @@ function applyI18n(){
   const btn=document.getElementById("genBtn");
   if(btn && !btn.disabled) btn.textContent = T("genBtn");
   if(typeof updateAuthUI==="function") updateAuthUI();
+  if(typeof renderPricing==="function") renderPricing();   // 메인 요금제 섹션 갱신
   if(current) render(current); // re-render dynamic content in new language
 }
 
@@ -670,6 +764,18 @@ function progStop(done){
   else { $('#genModal').style.display='none'; }
 }
 
+// 무료 한도 초과 — 화면 중앙 고정 팝업
+function showLimit(n){
+  $('#limitTitle').textContent=T('limitTitle');
+  $('#limitDesc').textContent=T('limitMsg').replace('{n}', n);
+  $('#limitOkBtn').textContent=T('limitOk');
+  $('#limitModal').style.display='flex';
+}
+function closeLimit(){ $('#limitModal').style.display='none'; }
+$('#limitClose').onclick=closeLimit;
+$('#limitOkBtn').onclick=()=>{ closeLimit(); openUpgrade(); };   // 한도 → 요금제 보기
+$('#limitModal').addEventListener('click',e=>{ if(e.target===$('#limitModal')) closeLimit(); });
+
 $('#langSel').onchange=e=>{
   LANG=e.target.value;
   try{ localStorage.setItem("rb_lang",LANG); }catch(_){}
@@ -695,7 +801,7 @@ $('#genBtn').onclick=async()=>{
     const res=await fetch('/api/generate',{method:'POST',body:fd,headers});
     try{ data=await res.json(); }catch(_){ data=null; }
     if(res.status===401){ AUTH.session=null; updateAuthUI(); openLogin(); toast(T('loginNeeded')); reset(); return; }
-    if(res.status===402){ const n=(data&&data.limit)||AUTH.freeLimit; toast('⚠ '+T('limitMsg').replace('{n}',n)); updateUsage(data); reset(); return; }
+    if(res.status===402){ const n=(data&&data.limit)||AUTH.freeLimit; progStop(false); updateUsage(data); showLimit(n); btn.disabled=false; btn.textContent=T('genBtn'); return; }
     if(!res.ok){
       const msg=(data&&data.error)?data.error:(T('tServer')+' ('+res.status+')');
       toast('⚠ '+msg); reset(); return;   // 실패 시 가짜 글로 바꿔치기 금지 — 진짜 에러를 보여줌
@@ -847,15 +953,106 @@ function updateAuthUI(){
     if(lb) lb.style.display='';
     if(uc) uc.style.display='none';
     if($('#usageChip')) $('#usageChip').style.display='none';
+    PLAN='free';
   }
+  if(typeof refreshUpBtn==='function') refreshUpBtn();
 }
+let PLAN='free';
 function updateUsage(u){
-  if(!u || u.used==null || u.limit==null) return;
+  if(!u) return;
+  if(u.plan){ PLAN=u.plan; refreshUpBtn(); }
+  if(u.used==null || u.limit==null) return;
   const chip=$('#usageChip');
   chip.style.display='inline-block';
   const remain = (u.remaining!=null) ? u.remaining : Math.max(0, u.limit-u.used);
-  chip.textContent=`${T('thisMonth')} ${u.used}/${u.limit} · ${T('remain')} ${remain}`;
+  const tag = (PLAN==='pro') ? 'Pro · ' : '';
+  chip.textContent=`${tag}${T('thisMonth')} ${u.used}/${u.limit} · ${T('remain')} ${remain}`;
 }
+function refreshUpBtn(){
+  const b=$('#upBtn'); if(!b) return;
+  b.textContent=T('upgradeBtn');
+  b.style.display = (AUTH.enabled && AUTH.session && PLAN!=='pro') ? 'inline-block' : 'none';
+}
+
+// ===== 업그레이드(요금제) 팝업 =====
+const CHECKOUT = {
+  '1m':  'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/e22ebe6b-d374-4e67-923b-68594b1a29b7',
+  '6m':  'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/42e8fbea-4b03-41a1-b864-9afebd4fbbc2',
+  '12m': 'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/8c63135d-38f5-4c92-81e8-a0609ac3f81c',
+};
+const PLAN_DATA = [
+  {k:'1m',  nameKey:'up1',  total:'$12', permo:'$12'},
+  {k:'6m',  nameKey:'up6',  total:'$60', permo:'$10', save:'17%'},
+  {k:'12m', nameKey:'up12', total:'$96', permo:'$8',  save:'33%', best:true},
+];
+function buildCheckout(k){
+  let u=CHECKOUT[k]; if(!u) return '#';
+  const p=[];
+  if(AUTH.session && AUTH.session.user){
+    const usr=AUTH.session.user;
+    if(usr.email) p.push('checkout[email]='+encodeURIComponent(usr.email));
+    if(usr.id)    p.push('checkout[custom][user_id]='+encodeURIComponent(usr.id));
+  }
+  return u + (p.length ? ('?'+p.join('&')) : '');
+}
+function planClick(k){
+  if(AUTH.enabled && !AUTH.session){ openLogin(); return; }   // 로그인부터
+  window.open(buildCheckout(k), '_blank');
+}
+// 할인 사다리: 무료 → 1개월 → 6개월 → 12개월 (오른쪽으로 갈수록 할인↑)
+function buildLadder(lw){
+  if(!lw) return;
+  const LAD=[
+    {t:T('planFree'), d:T('baseWord'), cls:''},
+    {t:T('up1'),      d:T('baseWord'), cls:''},
+    {t:T('up6'),      d:'17%↓',        cls:'off1'},
+    {t:T('up12'),     d:'33%↓',        cls:'off2'},
+  ];
+  lw.innerHTML='';
+  LAD.forEach((x,i)=>{
+    if(i>0){ const a=document.createElement('div'); a.className='arw'; a.textContent='›'; lw.appendChild(a); }
+    const el=document.createElement('div'); el.className=('lad '+x.cls).trim();
+    el.innerHTML=`<div class="lt"></div><div class="ld"></div>`;
+    el.querySelector('.lt').textContent=x.t; el.querySelector('.ld').textContent=x.d;
+    lw.appendChild(el);
+  });
+}
+function buildPlanCards(wrap){
+  if(!wrap) return;
+  const pm=T('perMo');
+  wrap.innerHTML='';
+  PLAN_DATA.forEach(p=>{
+    const card=document.createElement('button');
+    card.className='plan-card'+(p.best?' best':'');
+    const badge=p.best?`<div class="plan-badge">${T('upBest')}</div>`:'';
+    const base=p.save?`<span class="base">$12${pm}</span>`:'';
+    const right = p.save
+      ? `<div class="pr">${p.permo}${pm}</div><div style="margin-top:3px">${base}<span class="sv-chip ${p.best?'s2':'s1'}">${p.save} ${T('offWord')}</span></div>`
+      : `<div class="pr">${p.permo}${pm}</div><div class="sv-flat">${T('baseWord')}</div>`;
+    card.innerHTML=`${badge}
+      <div><div class="nm">${T(p.nameKey)}</div><div class="mo">${p.total}</div></div>
+      <div style="text-align:right">${right}</div>`;
+    card.onclick=()=>planClick(p.k);
+    wrap.appendChild(card);
+  });
+}
+function renderPricing(){   // 메인 화면 요금제 섹션(항상 보임)
+  buildLadder($('#pricingLadder'));
+  buildPlanCards($('#pricingPlans'));
+}
+function openUpgrade(){
+  if(!AUTH.enabled){ return; }
+  $('#upTitle').textContent=T('upTitle');
+  $('#upSub').textContent=T('upSub');
+  $('#upNote').textContent=T('upNote');
+  buildLadder($('#upLadder'));
+  buildPlanCards($('#plans'));
+  $('#upgradeModal').style.display='flex';
+}
+function closeUpgrade(){ $('#upgradeModal').style.display='none'; }
+$('#upBtn').onclick=openUpgrade;
+$('#upClose').onclick=closeUpgrade;
+$('#upgradeModal').addEventListener('click',e=>{ if(e.target===$('#upgradeModal')) closeUpgrade(); });
 async function fetchUsage(){   // 로그인 직후/새로고침 시 남은 횟수 즉시 표시
   if(!AUTH.enabled || !AUTH.session || !AUTH.session.access_token) return;
   try{
