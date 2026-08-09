@@ -283,6 +283,14 @@
   .plan-card .pr{font-weight:900;font-size:20px;letter-spacing:-.5px;text-align:right}
   .plan-card .sv{color:var(--mint);font-size:12px;font-weight:800;margin-top:2px;text-align:right}
   .plan-badge{position:absolute;top:-9px;right:14px;background:var(--mint);color:var(--ink);font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:7px}
+  /* USDT(크립토) 결제 옵션 */
+  .crypto-row{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+  .crypto-label{color:var(--muted);font-size:12.5px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .crypto-btns{display:flex;gap:8px;flex-wrap:wrap}
+  .crypto-btn{flex:1;min-width:92px;background:var(--glass);border:1px solid var(--glass-bd);color:var(--glass-tx);
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:11px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.12s}
+  .crypto-btn:hover{border-color:var(--glass-bd2);filter:brightness(1.08)}
   /* footer */
   .site-foot{text-align:center;margin:26px 6px 0;color:var(--muted2);font-size:12.5px}
   .site-foot a{color:var(--muted);text-decoration:none}
@@ -1124,6 +1132,20 @@ function planClick(k){
   if(AUTH.enabled && !AUTH.session){ openLogin(); return; }   // 로그인부터
   window.open(buildCheckout(k), '_blank');
 }
+// USDT(크립토) 결제 — NOWPayments 인보이스 생성 후 결제 페이지 열기
+const CRYPTO_LABEL={ko:'또는 USDT(크립토)로 결제',en:'Or pay with USDT (crypto)',ja:'またはUSDT（暗号資産）で支払う',zh:'或用USDT（加密货币）支付',es:'O paga con USDT (cripto)'};
+function cryptoLabel(){return CRYPTO_LABEL[LANG]||CRYPTO_LABEL.en;}
+async function cryptoClick(k){
+  if(AUTH.enabled && !AUTH.session){ openLogin(); return; }
+  const headers={'Content-Type':'application/json'};
+  if(AUTH.session && AUTH.session.access_token) headers['Authorization']='Bearer '+AUTH.session.access_token;
+  try{
+    const r=await fetch('/api/crypto/create',{method:'POST',headers,body:JSON.stringify({plan:k})});
+    const d=await r.json().catch(()=>({}));
+    if(d.invoice_url){ window.open(d.invoice_url,'_blank'); }
+    else{ toast('⚠ '+(d.error||'crypto error')); }
+  }catch(e){ toast('⚠ '+T('tNetErr')); }
+}
 // 할인 사다리: 무료 → 1개월 → 6개월 → 12개월 (오른쪽으로 갈수록 할인↑)
 function buildLadder(lw){
   if(!lw) return;
@@ -1160,6 +1182,13 @@ function buildPlanCards(wrap){
     card.onclick=()=>planClick(p.k);
     wrap.appendChild(card);
   });
+  // USDT(크립토) 결제 옵션 행
+  const cr=document.createElement('div');cr.className='crypto-row';
+  cr.innerHTML=`<div class="crypto-label">💠 ${cryptoLabel()}</div>`;
+  const cb=document.createElement('div');cb.className='crypto-btns';
+  PLAN_DATA.forEach(p=>{const b=document.createElement('button');b.className='crypto-btn';
+    b.textContent=`${T(p.nameKey)} ${p.total}`;b.onclick=()=>cryptoClick(p.k);cb.appendChild(b);});
+  cr.appendChild(cb);wrap.appendChild(cr);
 }
 function renderPricing(){   // 메인 화면 요금제 섹션(항상 보임)
   buildLadder($('#pricingLadder'));
