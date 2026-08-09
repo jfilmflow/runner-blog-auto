@@ -15,13 +15,13 @@ SURFACE = "#fcfcfb"; INK = "#141414"; SUB = "#52514e"; MUTED = "#8a8880"
 RED = "#d03b3b"; RED_LT = "#e06a6a"; BLUE = "#2a78d6"; GRID = "#e6e5df"
 ACCENT = "#12b5a6"; ACCENT_LT = "#5fd6c9"  # 러닝 성장 강조색(민트)
 THUMB_BG = "#111214"; THUMB_ACCENT = "#6fa8ff"; THUMB_HL = "#ff5a5a"
-BRAND_FOOTER = "러너들의 공기의 흔적을 남깁니다"
+BRAND_FOOTER = "달린 기록은 반드시 가치가 된다"
 _FOOTER_BY_LANG = {
-    "en": "Runner's Blog Studio",
-    "ko": "러너들의 공기의 흔적을 남깁니다",
-    "ja": "ランナーの息づかいを記録に残す",
-    "zh": "留下每一次奔跑的呼吸印记",
-    "es": "Estudio de Blog para Corredores",
+    "en": "Every run you log becomes value",
+    "ko": "달린 기록은 반드시 가치가 된다",
+    "ja": "走った記録は必ず価値になる",
+    "zh": "跑过的记录终将成为价值",
+    "es": "Cada carrera registrada se vuelve valor",
 }
 
 
