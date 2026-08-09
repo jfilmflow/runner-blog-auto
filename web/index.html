@@ -14,6 +14,15 @@
     --text:#eef4f3; --muted:#7f9298; --muted2:#5d6f74;
     --mint:#2ed6c6; --mint2:#49e9d9; --mint-press:#1fbcae; --ink:#04211e;
     --blue:#3aa0ff;
+    /* ===== 글래스(반투명 민트블루) 디자인 토큰 ===== */
+    --glass:linear-gradient(180deg,rgba(74,233,217,.20),rgba(46,214,198,.085));
+    --glass-2:linear-gradient(180deg,rgba(80,238,222,.36),rgba(46,214,198,.16));
+    --glass-bd:rgba(120,240,226,.32);
+    --glass-bd2:rgba(130,244,230,.55);
+    --glass-sheen:inset 0 1px 0 rgba(255,255,255,.22);
+    --glass-glow:0 6px 18px rgba(46,214,198,.14);
+    --glass-tx:#e9fffb;
+    --blur:blur(10px) saturate(1.35);
   }
   *{box-sizing:border-box}
   body{margin:0;background:
@@ -32,30 +41,34 @@
   .brand b{color:var(--mint)}
   .brand-sub{color:var(--muted);font-size:12.5px;margin-top:3px;font-weight:500}
   .lang-wrap{margin-left:auto;position:relative}
-  .lang-sel{appearance:none;background:var(--panel2);border:1px solid var(--border2);color:var(--text);
-    font-weight:700;font-size:13px;padding:9px 34px 9px 14px;border-radius:11px;cursor:pointer;font-family:inherit;outline:none;
+  .lang-sel{appearance:none;background-color:rgba(46,214,198,.12);border:1px solid var(--glass-bd);color:var(--text);
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-weight:700;font-size:13px;padding:9px 34px 9px 14px;border-radius:12px;cursor:pointer;font-family:inherit;outline:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237f9298' stroke-width='2.4'><path d='M6 9l6 6 6-6'/></svg>");
     background-repeat:no-repeat;background-position:right 12px center;transition:.15s}
-  .lang-sel:hover{border-color:var(--mint)}
+  .lang-sel:hover{border-color:var(--glass-bd2)}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin:22px 6px 8px}
-  .chip{border:1px solid rgba(46,214,198,.4);color:var(--mint);background:rgba(46,214,198,.07);
-    font-weight:700;font-size:13px;padding:7px 13px;border-radius:10px;display:inline-flex;align-items:center;gap:6px}
+  .chip{border:1px solid var(--glass-bd);color:var(--glass-tx);background:var(--glass);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);box-shadow:var(--glass-sheen),var(--glass-glow);
+    font-weight:700;font-size:13px;padding:8px 14px;border-radius:12px;display:inline-flex;align-items:center;gap:6px}
   .lede{color:var(--muted);font-size:14.5px;margin:14px 6px 22px;line-height:1.6;max-width:760px}
 
   /* progress */
   .steps{display:flex;gap:8px;margin:0 6px 20px}
-  .steps .s{flex:1;display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:12px;
-    background:var(--panel);border:1px solid var(--border);font-size:13.5px;color:var(--muted);font-weight:600}
-  .steps .s .n{width:22px;height:22px;border-radius:7px;background:var(--border2);color:var(--text);
+  .steps .s{flex:1;display:flex;align-items:center;gap:9px;padding:12px 15px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-bd);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    box-shadow:var(--glass-sheen);font-size:13.5px;color:var(--muted);font-weight:600;transition:.15s}
+  .steps .s .n{width:22px;height:22px;border-radius:8px;background:rgba(255,255,255,.14);color:var(--text);
     display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:none}
-  .steps .s.active{border-color:var(--mint);color:var(--text)}
+  .steps .s.active{border-color:var(--glass-bd2);background:var(--glass-2);color:var(--text);box-shadow:var(--glass-sheen),var(--glass-glow)}
   .steps .s.active .n{background:var(--mint);color:var(--ink)}
 
   /* card */
   .card{background:linear-gradient(180deg,#111819,#0e1416);border:1px solid var(--border);
     border-radius:20px;padding:30px 32px;margin-bottom:20px}
   .head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .tab{padding:5px 12px;border-radius:8px;background:rgba(46,214,198,.12);color:var(--mint);
+  .tab{padding:6px 13px;border-radius:10px;background:var(--glass-2);color:var(--glass-tx);border:1px solid var(--glass-bd);
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     font-size:12.5px;font-weight:800;letter-spacing:.3px}
   .head h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px}
   .head-desc{color:var(--muted);font-size:14px;margin:2px 0 22px;line-height:1.55}
@@ -90,22 +103,25 @@
 
   .hidden{display:none}
   .titles{display:flex;flex-direction:column;gap:9px}
-  .title-opt{display:flex;gap:12px;align-items:center;background:var(--field-bg);border:1px solid var(--border);
-    border-radius:11px;padding:13px 15px;cursor:pointer;transition:.12s}
-  .title-opt:hover{border-color:var(--mint)}
-  .title-opt.sel{border-color:var(--mint);background:rgba(46,214,198,.07)}
+  .title-opt{display:flex;gap:12px;align-items:center;background:var(--glass);border:1px solid var(--glass-bd);
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    border-radius:13px;padding:14px 16px;cursor:pointer;transition:.12s}
+  .title-opt:hover{border-color:var(--glass-bd2)}
+  .title-opt.sel{border-color:var(--glass-bd2);background:var(--glass-2);box-shadow:var(--glass-sheen),var(--glass-glow)}
   .title-opt .radio{width:17px;height:17px;border-radius:999px;border:2px solid var(--muted);flex:none}
   .title-opt.sel .radio{border-color:var(--mint);background:var(--mint);box-shadow:inset 0 0 0 3px var(--field-bg)}
   .title-opt span{font-weight:700;font-size:15px}
 
   .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
-  .metric{background:var(--field-bg);border:1px solid var(--border);border-radius:13px;padding:15px}
+  .metric{background:var(--glass);border:1px solid var(--glass-bd);box-shadow:var(--glass-sheen);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:15px;padding:16px}
   .metric .k{color:var(--muted);font-size:12px;margin-bottom:6px}
   .metric .v{font-size:22px;font-weight:900;letter-spacing:-.5px}
   .metric .v.good{color:var(--mint)}
 
   .preview-body{background:#fbfdfc;color:#1a2321;border-radius:13px;padding:28px 28px;line-height:1.75;
     font-size:14.5px;max-height:500px;overflow:auto;white-space:pre-wrap}
+  .preview-body .subhead{font-weight:800;font-size:16.5px;color:#123330;margin:20px 0 6px;letter-spacing:-.2px}
   .imgmark{display:flex;align-items:center;gap:10px;background:#e2f7f4;border:1px dashed #96d6cd;color:#276b62;
     border-radius:10px;padding:10px 14px;margin:13px 0;font-weight:700;font-size:13px}
   .imgmark .box{width:38px;height:38px;border-radius:8px;background:var(--mint);display:flex;align-items:center;justify-content:center}
@@ -119,9 +135,10 @@
     font-size:12px;text-align:center;padding:10px}
 
   .actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
-  .btn{flex:1;min-width:200px;border-radius:13px;padding:17px;font-size:15.5px;font-weight:800;cursor:pointer;
-    border:1px solid var(--border2);background:var(--panel2);color:var(--text);transition:.12s}
-  .btn:hover{border-color:var(--mint)}
+  .btn{flex:1;min-width:200px;border-radius:14px;padding:17px;font-size:15.5px;font-weight:800;cursor:pointer;
+    border:1px solid var(--glass-bd);background:var(--glass);color:var(--glass-tx);box-shadow:var(--glass-sheen),var(--glass-glow);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);transition:.12s}
+  .btn:hover{border-color:var(--glass-bd2);filter:brightness(1.08)}
   .btn.primary{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border-color:transparent}
   .btn.primary:hover{filter:brightness(1.06)}
   .note{color:var(--muted);font-size:12.5px;margin-top:13px;line-height:1.6}
@@ -205,19 +222,22 @@
 
   /* result toolbar */
   .mini-actions{display:flex;gap:9px;margin:-4px 0 22px;flex-wrap:wrap}
-  .mini-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-weight:700;
-    font-size:13.5px;padding:10px 15px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s;
+  .mini-btn{background:var(--glass);border:1px solid var(--glass-bd);color:var(--glass-tx);font-weight:700;
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-size:13.5px;padding:10px 15px;border-radius:12px;cursor:pointer;font-family:inherit;transition:.15s;
     display:inline-flex;align-items:center;gap:7px}
-  .mini-btn:hover{border-color:var(--mint)}
-  .mini-btn.accent{border-color:rgba(46,214,198,.45);color:var(--mint);background:rgba(46,214,198,.07)}
+  .mini-btn:hover{border-color:var(--glass-bd2);filter:brightness(1.08)}
+  .mini-btn.accent{border-color:var(--glass-bd2);color:var(--glass-tx);background:var(--glass-2);box-shadow:var(--glass-sheen),var(--glass-glow)}
 
   /* auth */
   .auth-wrap{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
-  .usage-chip{font-size:12px;font-weight:700;color:var(--mint);background:rgba(46,214,198,.09);
-    border:1px solid rgba(46,214,198,.3);padding:7px 11px;border-radius:10px;white-space:nowrap}
-  .auth-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-weight:700;
-    font-size:13px;padding:9px 15px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s}
-  .auth-btn:hover{border-color:var(--mint)}
+  .usage-chip{font-size:12px;font-weight:700;color:var(--glass-tx);background:var(--glass);
+    border:1px solid var(--glass-bd);box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    padding:8px 12px;border-radius:11px;white-space:nowrap}
+  .auth-btn{background:var(--glass);border:1px solid var(--glass-bd);color:var(--glass-tx);font-weight:700;
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-size:13px;padding:9px 15px;border-radius:12px;cursor:pointer;font-family:inherit;transition:.15s}
+  .auth-btn:hover{border-color:var(--glass-bd2);filter:brightness(1.08)}
   .user-chip{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted)}
   .user-chip b{color:var(--text);font-weight:700;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .auth-link{background:none;border:none;color:var(--muted);font-weight:700;font-size:12.5px;cursor:pointer;
@@ -247,19 +267,30 @@
   .up-btn{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border:none;font-weight:800;
     font-size:12.5px;padding:8px 13px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap}
   .up-btn:hover{filter:brightness(1.06)}
-  .invite-btn{background:rgba(255,207,107,.12);border:1px solid rgba(255,207,107,.4);color:#ffcf6b;font-weight:800;
-    font-size:12.5px;padding:8px 13px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap}
-  .invite-btn:hover{background:rgba(255,207,107,.2)}
+  .invite-btn{background:linear-gradient(180deg,rgba(255,216,128,.28),rgba(255,207,107,.12));
+    border:1px solid rgba(255,216,140,.5);color:#ffe1a4;font-weight:800;box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-size:12.5px;padding:9px 14px;border-radius:12px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .invite-btn:hover{filter:brightness(1.08)}
   .plans{display:flex;flex-direction:column;gap:11px;margin-top:18px}
-  .plan-card{position:relative;text-align:left;background:var(--field-bg);border:1.5px solid var(--border2);border-radius:14px;
+  .plan-card{position:relative;text-align:left;background:var(--glass);border:1px solid var(--glass-bd);border-radius:15px;
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     padding:15px 18px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:space-between;font-family:inherit;color:var(--text);width:100%}
-  .plan-card:hover{border-color:var(--mint);background:rgba(46,214,198,.05)}
-  .plan-card.best{border-color:var(--mint);background:rgba(46,214,198,.06)}
+  .plan-card:hover{border-color:var(--glass-bd2);filter:brightness(1.06)}
+  .plan-card.best{border-color:var(--glass-bd2);background:var(--glass-2);box-shadow:var(--glass-sheen),var(--glass-glow)}
   .plan-card .nm{font-weight:800;font-size:15.5px}
   .plan-card .mo{color:var(--muted);font-size:12.5px;margin-top:3px}
   .plan-card .pr{font-weight:900;font-size:20px;letter-spacing:-.5px;text-align:right}
   .plan-card .sv{color:var(--mint);font-size:12px;font-weight:800;margin-top:2px;text-align:right}
   .plan-badge{position:absolute;top:-9px;right:14px;background:var(--mint);color:var(--ink);font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:7px}
+  /* USDT(크립토) 결제 옵션 */
+  .crypto-row{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+  .crypto-label{color:var(--muted);font-size:12.5px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .crypto-btns{display:flex;gap:8px;flex-wrap:wrap}
+  .crypto-btn{flex:1;min-width:92px;background:var(--glass);border:1px solid var(--glass-bd);color:var(--glass-tx);
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-weight:800;font-size:12.5px;padding:9px 10px;border-radius:11px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.12s}
+  .crypto-btn:hover{border-color:var(--glass-bd2);filter:brightness(1.08)}
   /* footer */
   .site-foot{text-align:center;margin:26px 6px 0;color:var(--muted2);font-size:12.5px}
   .site-foot a{color:var(--muted);text-decoration:none}
@@ -268,12 +299,13 @@
   .site-foot .foot-copy{margin-top:8px;color:var(--muted2);font-size:11.5px}
   /* 할인 사다리 (무료→1→6→12) */
   .ladder{display:flex;align-items:stretch;gap:5px;margin-top:16px}
-  .ladder .lad{flex:1;text-align:center;border:1px solid var(--border2);border-radius:11px;padding:9px 3px;background:var(--field-bg)}
+  .ladder .lad{flex:1;text-align:center;border:1px solid var(--glass-bd);border-radius:12px;padding:10px 3px;
+    background:var(--glass);box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
   .ladder .lad .lt{font-size:11px;color:var(--muted);font-weight:700}
   .ladder .lad .ld{font-size:14px;font-weight:900;margin-top:3px;color:var(--muted2)}
-  .ladder .lad.off1{border-color:rgba(46,214,198,.38);background:rgba(46,214,198,.06)}
+  .ladder .lad.off1{border-color:var(--glass-bd2);background:var(--glass-2)}
   .ladder .lad.off1 .ld{color:var(--mint2)}
-  .ladder .lad.off2{border-color:var(--mint);background:rgba(46,214,198,.14);box-shadow:0 0 0 1px var(--mint) inset}
+  .ladder .lad.off2{border-color:var(--glass-bd2);background:var(--glass-2);box-shadow:var(--glass-sheen),var(--glass-glow)}
   .ladder .lad.off2 .ld{color:var(--mint)}
   .ladder .arw{align-self:center;color:var(--muted2);font-size:13px;font-weight:900}
   .plan-card .base{color:var(--muted2);text-decoration:line-through;font-size:12px;margin-right:6px}
@@ -489,10 +521,10 @@
 /* ============================ i18n ============================ */
 const I18N = {
   en:{
-    brand:"Leave the trace of every <b>runner's breath</b>",
-    brandSub:"And a polished blog post is written for you, automatically",
+    brand:"Every run you log <b>becomes value</b>",
+    brandSub:"Where your social records turn into value",
     chip1:"Draft generation", chip2:"Auto image attach", chip3:"Search-volume data", chip4:"Auto SEO placement",
-    lede:"Just drop in your daily running story and a few photos. Out comes a solid, well-structured blog post.",
+    lede:"'A society where records become value, and value becomes freedom.' Drop in your running feed from social media and turn it into records that matter.",
     step1:"Add material", step2:"Refine result", step3:"Export",
     s1desc:"Paste the running feed you posted on Instagram, Threads, or X. If you have photos from your run, add them too :)",
     lblStory:"Your running story", lblStoryDim:"— Instagram · Threads · notes (leave empty if uploading photos only)",
@@ -531,7 +563,7 @@ const I18N = {
     planFree:"Free", offWord:"off", baseWord:"base",
     pricingTab:"PLANS", pricingTitle:"Start free, go Pro when ready", pricingDesc:"Free is 3 posts/month. Pro is 35/month — the longer you commit, the cheaper per month.",
     plansBtn:"🏷 Plans", plansTitle:"Plans", proNote:"You're on Pro. You can change anytime.",
-    footTerms:"Terms", footPrivacy:"Privacy", footRefund:"Refunds", footCopy:"© Runner's Blog Studio",
+    footTerms:"Terms", footPrivacy:"Privacy", footRefund:"Refunds", footCopy:"© Every run you log becomes value",
     inviteBtn:"🎁 Invite · 20%",
     upNote:"Payments are handled securely by Lemon Squeezy. Cancel anytime.",
     regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
@@ -539,10 +571,10 @@ const I18N = {
     genTitle:"Creating your blog post", genNote:"Please keep this open — usually 20–40 seconds."
   },
   ko:{
-    brand:"러너들의 <b>공기의 흔적</b>을 남깁니다",
-    brandSub:"그러면 근사한 블로그 글이 자동으로 완성됩니다",
+    brand:"달린 기록은 반드시 <b>가치</b>가 된다",
+    brandSub:"SNS 기록이 가치가 되는 곳",
     chip1:"초안 생성", chip2:"이미지 자동 첨부", chip3:"검색량 데이터", chip4:"SEO 자동 배치",
-    lede:"당신의 데일리 러닝 이야기와 사진을 간단하게 넣어주세요. 아주 탄탄한 스토리의 블로그로 나옵니다.",
+    lede:"'기록이 가치가 되고, 가치가 자유가 되는 소사이어티.' 당신의 SNS 러닝 피드를 넣고 가치 있는 기록을 만드세요.",
     step1:"소재 넣기", step2:"결과 다듬기", step3:"내보내기",
     s1desc:"당신이 인스타, 스레드, X에 올린 러닝 피드 이야기를 여기 넣으면 됩니다. 당신의 러닝 순간의 사진이 있다면 그 사진도 넣어주세요 :)",
     lblStory:"러닝 이야기", lblStoryDim:"— 인스타·스레드·메모 (사진만 올릴 거면 비워도 됨)",
@@ -581,7 +613,7 @@ const I18N = {
     planFree:"무료", offWord:"할인", baseWord:"기준가",
     pricingTab:"요금제", pricingTitle:"무료로 시작, 필요하면 Pro", pricingDesc:"무료는 월 3편, Pro는 월 35편이에요. 길게 약정할수록 월 단가가 더 저렴해져요.",
     plansBtn:"🏷 요금제", plansTitle:"요금제", proNote:"현재 Pro 이용 중이에요. 언제든 변경할 수 있어요.",
-    footTerms:"이용약관", footPrivacy:"개인정보처리방침", footRefund:"환불정책", footCopy:"© 러너들의 공기의 흔적을 남깁니다",
+    footTerms:"이용약관", footPrivacy:"개인정보처리방침", footRefund:"환불정책", footCopy:"© 달린 기록은 반드시 가치가 된다",
     inviteBtn:"🎁 친구초대 20%",
     upNote:"결제는 Lemon Squeezy에서 안전하게 처리돼요. 언제든 취소 가능.",
     regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
@@ -589,10 +621,10 @@ const I18N = {
     genTitle:"블로그를 만들고 있어요", genNote:"창을 닫지 말고 잠시만 기다려 주세요 (보통 20~40초)."
   },
   ja:{
-    brand:"ランナーの<b>息づかい</b>を記録に残す",
-    brandSub:"すると、素敵なブログ記事が自動で仕上がります",
+    brand:"走った記録は必ず<b>価値</b>になる",
+    brandSub:"SNSの記録が価値になる場所",
     chip1:"下書き生成", chip2:"画像を自動添付", chip3:"検索ボリューム", chip4:"SEO自動配置",
-    lede:"あなたの毎日のランニングの話と写真を入れるだけ。しっかりしたストーリーのブログになります。",
+    lede:"「記録が価値になり、価値が自由になるソサエティ。」あなたのSNSランニングフィードを入れて、価値ある記録を作りましょう。",
     step1:"素材を入れる", step2:"結果を整える", step3:"書き出す",
     s1desc:"インスタ・スレッズ・Xに投稿したランニングの話をここに入れてください。ランニング中の写真があれば、それも一緒にどうぞ :)",
     lblStory:"ランニングの話", lblStoryDim:"— インスタ・スレッズ・メモ（写真だけなら空欄でOK）",
@@ -631,7 +663,7 @@ const I18N = {
     planFree:"無料", offWord:"割引", baseWord:"基準",
     pricingTab:"料金プラン", pricingTitle:"無料で開始、必要ならPro", pricingDesc:"無料は月3本、Proは月35本。長く契約するほど月あたりが安くなります。",
     plansBtn:"🏷 料金プラン", plansTitle:"料金プラン", proNote:"現在Proをご利用中です。いつでも変更できます。",
-    footTerms:"利用規約", footPrivacy:"プライバシー", footRefund:"返金ポリシー", footCopy:"© Runner's Blog Studio",
+    footTerms:"利用規約", footPrivacy:"プライバシー", footRefund:"返金ポリシー", footCopy:"© 走った記録は必ず価値になる",
     inviteBtn:"🎁 友達招待 20%",
     upNote:"決済はLemon Squeezyが安全に処理します。いつでも解約可能。",
     regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
@@ -639,10 +671,10 @@ const I18N = {
     genTitle:"ブログを作成中です", genNote:"この画面を閉じずにお待ちください（通常20〜40秒）。"
   },
   zh:{
-    brand:"留下每一次<b>奔跑的呼吸</b>印记",
-    brandSub:"然后一篇精彩的博客文章会自动生成",
+    brand:"跑过的记录终将<b>成为价值</b>",
+    brandSub:"让社交记录成为价值的地方",
     chip1:"生成草稿", chip2:"自动配图", chip3:"搜索量数据", chip4:"SEO自动布局",
-    lede:"只需放入你每天的跑步故事和照片，就能生成结构扎实的博客文章。",
+    lede:"'记录成为价值，价值成为自由的社群。'放入你的社交跑步动态，创造有价值的记录。",
     step1:"添加素材", step2:"优化结果", step3:"导出",
     s1desc:"把你发在 Instagram、Threads、X 上的跑步动态贴进来。如果有跑步时的照片，也一起放进来吧 :)",
     lblStory:"你的跑步故事", lblStoryDim:"— Instagram · Threads · 笔记（只上传照片可留空）",
@@ -681,7 +713,7 @@ const I18N = {
     planFree:"免费", offWord:"优惠", baseWord:"基准",
     pricingTab:"价格方案", pricingTitle:"免费开始，需要时升级 Pro", pricingDesc:"免费每月3篇，Pro每月35篇。承诺越久，每月越便宜。",
     plansBtn:"🏷 价格方案", plansTitle:"价格方案", proNote:"你正在使用 Pro，可随时更改。",
-    footTerms:"服务条款", footPrivacy:"隐私政策", footRefund:"退款政策", footCopy:"© Runner's Blog Studio",
+    footTerms:"服务条款", footPrivacy:"隐私政策", footRefund:"退款政策", footCopy:"© 跑过的记录终将成为价值",
     inviteBtn:"🎁 邀请好友 20%",
     upNote:"付款由 Lemon Squeezy 安全处理，可随时取消。",
     regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
@@ -689,10 +721,10 @@ const I18N = {
     genTitle:"正在生成你的博客", genNote:"请不要关闭本窗口，通常需要20~40秒。"
   },
   es:{
-    brand:"Deja la huella del <b>aliento de cada corredor</b>",
-    brandSub:"Y una entrada de blog pulida se escribe automáticamente",
+    brand:"Cada carrera registrada <b>se vuelve valor</b>",
+    brandSub:"Donde tus registros en redes se convierten en valor",
     chip1:"Generar borrador", chip2:"Imágenes automáticas", chip3:"Datos de búsqueda", chip4:"SEO automático",
-    lede:"Solo pon tu historia diaria de running y algunas fotos. Obtendrás una entrada de blog sólida y bien estructurada.",
+    lede:"'Una comunidad donde los registros se vuelven valor, y el valor se vuelve libertad.' Añade tu feed de running de redes sociales y crea registros que valen.",
     step1:"Añadir material", step2:"Refinar resultado", step3:"Exportar",
     s1desc:"Pega el feed de running que publicaste en Instagram, Threads o X. Si tienes fotos de tu carrera, añádelas también :)",
     lblStory:"Tu historia de running", lblStoryDim:"— Instagram · Threads · notas (déjalo vacío si solo subes fotos)",
@@ -731,7 +763,7 @@ const I18N = {
     planFree:"Gratis", offWord:"dto.", baseWord:"base",
     pricingTab:"PLANES", pricingTitle:"Empieza gratis, pasa a Pro cuando quieras", pricingDesc:"Gratis son 3 posts/mes, Pro 35/mes. Cuanto más largo el plan, más barato por mes.",
     plansBtn:"🏷 Planes", plansTitle:"Planes", proNote:"Tienes Pro. Puedes cambiar cuando quieras.",
-    footTerms:"Términos", footPrivacy:"Privacidad", footRefund:"Reembolsos", footCopy:"© Runner's Blog Studio",
+    footTerms:"Términos", footPrivacy:"Privacidad", footRefund:"Reembolsos", footCopy:"© Cada carrera registrada se vuelve valor",
     inviteBtn:"🎁 Invitar · 20%",
     upNote:"Los pagos los gestiona Lemon Squeezy de forma segura. Cancela cuando quieras.",
     regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
@@ -939,7 +971,8 @@ function render(d){
   const photoW=T('photo');
   let html=esc(d.body||'').replace(/\[사진(\d+)\]/g,(m,n)=>{
     const im=(d.images||[]).find(x=>x.id==n);const lab=im?(im.label||im.type):photoW;
-    return `<div class="imgmark"><div class="box">🖼️</div>[${photoW}${n}] · ${esc(lab)}</div>`;});
+    return `<div class="imgmark"><div class="box">🖼️</div>[${photoW}${n}] · ${esc(lab)}</div>`;})
+    .replace(/(^|\n)##\s*([^\n]+)/g,(m,pre,t)=>`${pre}<div class="subhead">${t}</div>`);
   bp.innerHTML=html+`<div class="hashtags">${esc((d.hashtags||[]).join(' '))}</div>`;
   const g=$('#gallery');g.innerHTML='';
   (d.images||[]).forEach(im=>{const cell=document.createElement('div');cell.className='g';
@@ -968,6 +1001,8 @@ function slotText(n){return `📷 [${T('photo')}${n}] ${T('imgHere')}`;}
 function buildHTML(d){
   let h=`<h1>${esc(d.title)}</h1>\n`;
   (d.body||'').split(/\n{2,}/).forEach(block=>{
+    const hm=block.trim().match(/^##\s*(.+)$/);
+    if(hm){h+=`<h2>${esc(hm[1])}</h2>\n`;return;}
     const m=block.trim().match(/^\[사진(\d+)\]$/);
     if(m){h+=`<p>${esc(slotText(m[1]))}</p>\n`;}
     else{h+=`<p>${esc(block).replace(/\n/g,'<br>')}</p>\n`;}
@@ -985,7 +1020,7 @@ function buildMD(d){
   return t;
 }
 function buildText(d){
-  const body=(d.body||'').replace(/\[사진(\d+)\]/g,(m,n)=>slotText(n));
+  const body=(d.body||'').replace(/^##\s*/gm,'').replace(/\[사진(\d+)\]/g,(m,n)=>slotText(n));
   return (d.title||'')+"\n\n"+body+"\n\n"+((d.hashtags||[]).join(' '));
 }
 async function copyRich(html, plain){
@@ -1097,6 +1132,20 @@ function planClick(k){
   if(AUTH.enabled && !AUTH.session){ openLogin(); return; }   // 로그인부터
   window.open(buildCheckout(k), '_blank');
 }
+// USDT(크립토) 결제 — NOWPayments 인보이스 생성 후 결제 페이지 열기
+const CRYPTO_LABEL={ko:'또는 USDT(크립토)로 결제',en:'Or pay with USDT (crypto)',ja:'またはUSDT（暗号資産）で支払う',zh:'或用USDT（加密货币）支付',es:'O paga con USDT (cripto)'};
+function cryptoLabel(){return CRYPTO_LABEL[LANG]||CRYPTO_LABEL.en;}
+async function cryptoClick(k){
+  if(AUTH.enabled && !AUTH.session){ openLogin(); return; }
+  const headers={'Content-Type':'application/json'};
+  if(AUTH.session && AUTH.session.access_token) headers['Authorization']='Bearer '+AUTH.session.access_token;
+  try{
+    const r=await fetch('/api/crypto/create',{method:'POST',headers,body:JSON.stringify({plan:k})});
+    const d=await r.json().catch(()=>({}));
+    if(d.invoice_url){ window.open(d.invoice_url,'_blank'); }
+    else{ toast('⚠ '+(d.error||'crypto error')); }
+  }catch(e){ toast('⚠ '+T('tNetErr')); }
+}
 // 할인 사다리: 무료 → 1개월 → 6개월 → 12개월 (오른쪽으로 갈수록 할인↑)
 function buildLadder(lw){
   if(!lw) return;
@@ -1133,6 +1182,13 @@ function buildPlanCards(wrap){
     card.onclick=()=>planClick(p.k);
     wrap.appendChild(card);
   });
+  // USDT(크립토) 결제 옵션 행
+  const cr=document.createElement('div');cr.className='crypto-row';
+  cr.innerHTML=`<div class="crypto-label">💠 ${cryptoLabel()}</div>`;
+  const cb=document.createElement('div');cb.className='crypto-btns';
+  PLAN_DATA.forEach(p=>{const b=document.createElement('button');b.className='crypto-btn';
+    b.textContent=`${T(p.nameKey)} ${p.total}`;b.onclick=()=>cryptoClick(p.k);cb.appendChild(b);});
+  cr.appendChild(cb);wrap.appendChild(cr);
 }
 function renderPricing(){   // 메인 화면 요금제 섹션(항상 보임)
   buildLadder($('#pricingLadder'));

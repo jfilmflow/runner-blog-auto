@@ -273,6 +273,88 @@ def lemon_webhook():
     return jsonify({"received": True}), 200
 
 
+# ── USDT(크립토) 결제: NOWPayments ─────────────────────────────
+import json as _json, calendar
+CRYPTO_PLANS = {"1m": (12, 1), "6m": (60, 6), "12m": (96, 12)}   # 요금제키 → (USD 가격, 개월수)
+
+
+def _add_months(dt, months):
+    y = dt.year + (dt.month - 1 + months) // 12
+    m = (dt.month - 1 + months) % 12 + 1
+    d = min(dt.day, calendar.monthrange(y, m)[1])
+    return dt.replace(year=y, month=m, day=d)
+
+
+def _app_base():
+    return (os.getenv("APP_BASE_URL") or request.host_url or "https://runner-blog-auto.onrender.com").rstrip("/")
+
+
+@app.route("/api/crypto/create", methods=["POST"])
+def crypto_create():
+    """로그인 유저용 NOWPayments USDT 인보이스 생성 → 결제 페이지 URL 반환."""
+    key = os.getenv("NOWPAYMENTS_API_KEY", "")
+    if not key:
+        return jsonify({"error": "크립토 결제가 아직 설정되지 않았어요."}), 503
+    token = _bearer()
+    user = authz.verify_token(token) if authz.enabled() else None
+    if authz.enabled() and not user:
+        return jsonify({"error": "로그인이 필요해요.", "auth_required": True}), 401
+    body = request.get_json(force=True, silent=True) or {}
+    plan_key = body.get("plan") or request.form.get("plan")
+    if plan_key not in CRYPTO_PLANS:
+        return jsonify({"error": "요금제를 확인해주세요."}), 400
+    price, months = CRYPTO_PLANS[plan_key]
+    uid = (user or {}).get("id", "anon")
+    base = _app_base()
+    payload = {
+        "price_amount": price, "price_currency": "usd",
+        "order_id": f"{uid}|{months}",
+        "order_description": f"Runner Blog Pro · {months} month(s)",
+        "ipn_callback_url": base + "/api/nowpayments-webhook",
+        "success_url": base + "/?paid=1", "cancel_url": base + "/?canceled=1",
+        "is_fixed_rate": True,
+    }
+    import urllib.request, urllib.error
+    req = urllib.request.Request(
+        "https://api.nowpayments.io/v1/invoice",
+        data=_json.dumps(payload).encode("utf-8"), method="POST",
+        headers={"x-api-key": key, "Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            inv = _json.loads(r.read().decode("utf-8"))
+        return jsonify({"invoice_url": inv.get("invoice_url"), "id": inv.get("id")})
+    except urllib.error.HTTPError as e:
+        return jsonify({"error": f"NOWPayments 오류({e.code})", "detail": e.read().decode("utf-8")[:300]}), 502
+    except Exception as e:
+        return jsonify({"error": str(e)}), 502
+
+
+@app.route("/api/nowpayments-webhook", methods=["POST"])
+def nowpayments_webhook():
+    """NOWPayments IPN — 결제 완료(finished) 시 유저를 Pro로(개월수만큼 만료일 부여)."""
+    import hmac, hashlib
+    secret = os.getenv("NOWPAYMENTS_IPN_SECRET", "")
+    data = request.get_json(force=True, silent=True) or {}
+    if secret:
+        sig = request.headers.get("x-nowpayments-sig", "")
+        sorted_body = _json.dumps(data, sort_keys=True, separators=(",", ":"))
+        digest = hmac.new(secret.encode("utf-8"), sorted_body.encode("utf-8"), hashlib.sha512).hexdigest()
+        if not hmac.compare_digest(digest, sig):
+            return jsonify({"error": "bad signature"}), 401
+    status = (data.get("payment_status") or "").lower()
+    order_id = data.get("order_id") or ""
+    if status == "finished" and "|" in order_id:
+        uid, _, months_s = order_id.partition("|")
+        try:
+            months = int(months_s)
+        except Exception:
+            months = 1
+        renews = _add_months(datetime.now(timezone.utc), months).isoformat()
+        ok = authz.set_plan(uid, "pro", status="crypto", renews_at=renews)
+        print(f"[nowpayments] finished user={uid} +{months}mo -> pro ok={ok}")
+    return jsonify({"received": True}), 200
+
+
 @app.route("/healthz")
 def healthz():
     return "ok"
