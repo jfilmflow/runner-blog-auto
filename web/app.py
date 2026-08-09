@@ -58,6 +58,25 @@ def _lang_directive(lang):
     )
 
 
+def _free_tier_directive():
+    """무료 플랜: 짧은 글 + 이미지 2장 (Pro 업셀용 품질 게이팅)."""
+    return ("\n\n[FREE TIER — 필수]\n"
+            "본문(body)은 공백 포함 약 1,100~1,300자로 짧게 써라(무료 플랜).\n"
+            "이미지는 정확히 2장만 만든다: [사진1] 대표 썸네일 + [사진2] 카드 1개. "
+            "[사진3] 이상은 body에도 넣지 말고 images 목록에도 만들지 마라.")
+
+
+def _apply_free_limits(result):
+    """무료 플랜 결과 후처리 — 이미지 2장 초과 제거 + body의 [사진3+] 마커 제거."""
+    import re
+    result["images"] = [im for im in result.get("images", []) if int(im.get("id", 0) or 0) <= 2]
+    body = result.get("body", "") or ""
+    body = re.sub(r"\[사진(?:[3-9]|\d{2,})\]", "", body)
+    body = re.sub(r"\n{3,}", "\n\n", body).strip()
+    result["body"] = body
+    return result
+
+
 @app.route("/")
 def index():
     return send_from_directory(HERE, "index.html")
@@ -153,11 +172,15 @@ def api_generate():
         return jsonify({"error": "러닝 이야기(글) 또는 러닝 사진 중 하나는 넣어주세요."}), 400
 
     story = text + _lang_directive(lang)   # 사용자 원문 + 출력 언어 지시
+    if plan != "pro":                       # 무료 플랜: 짧은 글 + 이미지 2장
+        story += _free_tier_directive()
     try:
         result = engine_mod.generate(story, provider=provider, photo_paths=photos)
     except Exception as e:
         import traceback; traceback.print_exc()
         return jsonify({"error": f"글 생성 실패 [{type(e).__name__}]: {e}"}), 500
+    if plan != "pro":
+        result = _apply_free_limits(result)
 
     kws = [result.get("main_keyword", "")] + result.get("sub_keywords", [])
     result["keyword_report"] = keyword_mod.analyze([k for k in kws if k])

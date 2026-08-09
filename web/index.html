@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Runner's Blog Studio</title>
+<!-- Lemon Squeezy 제휴(affiliate) 추적 -->
+<script>window.lemonSqueezyAffiliateConfig = { store: "runner-blog-auto" };</script>
+<script src="https://lmsqueezy.com/affiliate.js" defer></script>
 <style>
   :root{
     --bg:#070a0b; --panel:#0f1416; --panel2:#141b1d; --field-bg:#0c1113;
@@ -183,6 +186,9 @@
   .up-btn{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border:none;font-weight:800;
     font-size:12.5px;padding:8px 13px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap}
   .up-btn:hover{filter:brightness(1.06)}
+  .invite-btn{background:rgba(255,207,107,.12);border:1px solid rgba(255,207,107,.4);color:#ffcf6b;font-weight:800;
+    font-size:12.5px;padding:8px 13px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .invite-btn:hover{background:rgba(255,207,107,.2)}
   .plans{display:flex;flex-direction:column;gap:11px;margin-top:18px}
   .plan-card{position:relative;text-align:left;background:var(--field-bg);border:1.5px solid var(--border2);border-radius:14px;
     padding:15px 18px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:space-between;font-family:inherit;color:var(--text);width:100%}
@@ -235,6 +241,7 @@
       </select>
     </div>
     <div class="auth-wrap" id="authWrap" style="display:none">
+      <button class="invite-btn" id="inviteBtn" data-i18n="inviteBtn"></button>
       <button class="up-btn" id="upBtn" style="display:none"></button>
       <span class="usage-chip" id="usageChip" style="display:none"></span>
       <button class="auth-btn" id="loginBtn"></button>
@@ -308,8 +315,7 @@
     <div class="head-desc" data-i18n="s2desc"></div>
 
     <div class="mini-actions">
-      <button class="mini-btn accent" id="regenBtn">🔄 <span data-i18n="regen"></span></button>
-      <button class="mini-btn" id="newBtn">✏️ <span data-i18n="newPost"></span></button>
+      <button class="mini-btn accent" id="newBtn">✏️ <span data-i18n="newPost"></span></button>
     </div>
 
     <label class="fl" data-i18n="lblPickTitle"></label>
@@ -459,12 +465,13 @@ const I18N = {
     emailInvalid:"Please enter your email address.", authErr:"Login had a problem. Please try again.",
     limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.",
     limitTitle:"Free limit reached", limitOk:"See plans",
-    upgradeBtn:"✨ Upgrade", upTitle:"Upgrade to Pro", upSub:"Free is 3 posts/month → Pro is 35 posts/month.",
+    upgradeBtn:"✨ Upgrade", upTitle:"Upgrade to Pro", upSub:"Free: short posts · 2 images · 3/month. Pro: full-length · 6 images · 35/month.",
     up1:"1 month", up6:"6 months", up12:"12 months", upBest:"Best value", perMo:"/mo",
     planFree:"Free", offWord:"off", baseWord:"base",
     pricingTab:"PLANS", pricingTitle:"Start free, go Pro when ready", pricingDesc:"Free is 3 posts/month. Pro is 35/month — the longer you commit, the cheaper per month.",
     plansBtn:"🏷 Plans", plansTitle:"Plans", proNote:"You're on Pro. You can change anytime.",
     footTerms:"Terms", footPrivacy:"Privacy", footRefund:"Refunds", footCopy:"© Runner's Blog Studio",
+    inviteBtn:"🎁 Invite · 20%",
     upNote:"Payments are handled securely by Lemon Squeezy. Cancel anytime.",
     regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
     stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing",
@@ -508,12 +515,13 @@ const I18N = {
     emailInvalid:"이메일 주소를 입력해 주세요.", authErr:"로그인 중 문제가 생겼어요. 다시 시도해 주세요.",
     limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.",
     limitTitle:"무료 사용 한도에 도달했어요", limitOk:"요금제 보기",
-    upgradeBtn:"✨ 업그레이드", upTitle:"Pro로 업그레이드", upSub:"무료는 월 3편 → Pro는 월 35편이에요.",
+    upgradeBtn:"✨ 업그레이드", upTitle:"Pro로 업그레이드", upSub:"무료: 짧은 글·이미지 2장·월 3편 → Pro: 긴 글·이미지 6장·월 35편!",
     up1:"1개월", up6:"6개월", up12:"12개월", upBest:"최대 할인", perMo:"/월",
     planFree:"무료", offWord:"할인", baseWord:"기준가",
     pricingTab:"요금제", pricingTitle:"무료로 시작, 필요하면 Pro", pricingDesc:"무료는 월 3편, Pro는 월 35편이에요. 길게 약정할수록 월 단가가 더 저렴해져요.",
     plansBtn:"🏷 요금제", plansTitle:"요금제", proNote:"현재 Pro 이용 중이에요. 언제든 변경할 수 있어요.",
     footTerms:"이용약관", footPrivacy:"개인정보처리방침", footRefund:"환불정책", footCopy:"© 러너들의 공기의 흔적을 남깁니다",
+    inviteBtn:"🎁 친구초대 20%",
     upNote:"결제는 Lemon Squeezy에서 안전하게 처리돼요. 언제든 취소 가능.",
     regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
     stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리",
@@ -557,12 +565,13 @@ const I18N = {
     emailInvalid:"メールアドレスを入力してください。", authErr:"ログインで問題が発生しました。もう一度お試しください。",
     limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。",
     limitTitle:"無料利用の上限に達しました", limitOk:"プランを見る",
-    upgradeBtn:"✨ アップグレード", upTitle:"Proにアップグレード", upSub:"無料は月3本 → Proは月35本です。",
+    upgradeBtn:"✨ アップグレード", upTitle:"Proにアップグレード", upSub:"無料：短い記事・画像2枚・月3本 → Pro：長文・画像6枚・月35本！",
     up1:"1ヶ月", up6:"6ヶ月", up12:"12ヶ月", upBest:"最もお得", perMo:"/月",
     planFree:"無料", offWord:"割引", baseWord:"基準",
     pricingTab:"料金プラン", pricingTitle:"無料で開始、必要ならPro", pricingDesc:"無料は月3本、Proは月35本。長く契約するほど月あたりが安くなります。",
     plansBtn:"🏷 料金プラン", plansTitle:"料金プラン", proNote:"現在Proをご利用中です。いつでも変更できます。",
     footTerms:"利用規約", footPrivacy:"プライバシー", footRefund:"返金ポリシー", footCopy:"© Runner's Blog Studio",
+    inviteBtn:"🎁 友達招待 20%",
     upNote:"決済はLemon Squeezyが安全に処理します。いつでも解約可能。",
     regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
     stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中",
@@ -606,12 +615,13 @@ const I18N = {
     emailInvalid:"请输入你的邮箱地址。", authErr:"登录出现问题，请重试。",
     limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。",
     limitTitle:"已达免费使用上限", limitOk:"查看方案",
-    upgradeBtn:"✨ 升级", upTitle:"升级到 Pro", upSub:"免费版每月3篇 → Pro每月35篇。",
+    upgradeBtn:"✨ 升级", upTitle:"升级到 Pro", upSub:"免费版：短文·2张图·每月3篇 → Pro：长文·6张图·每月35篇！",
     up1:"1个月", up6:"6个月", up12:"12个月", upBest:"最划算", perMo:"/月",
     planFree:"免费", offWord:"优惠", baseWord:"基准",
     pricingTab:"价格方案", pricingTitle:"免费开始，需要时升级 Pro", pricingDesc:"免费每月3篇，Pro每月35篇。承诺越久，每月越便宜。",
     plansBtn:"🏷 价格方案", plansTitle:"价格方案", proNote:"你正在使用 Pro，可随时更改。",
     footTerms:"服务条款", footPrivacy:"隐私政策", footRefund:"退款政策", footCopy:"© Runner's Blog Studio",
+    inviteBtn:"🎁 邀请好友 20%",
     upNote:"付款由 Lemon Squeezy 安全处理，可随时取消。",
     regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
     stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾",
@@ -655,12 +665,13 @@ const I18N = {
     emailInvalid:"Escribe tu dirección de email.", authErr:"Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
     limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.",
     limitTitle:"Límite gratuito alcanzado", limitOk:"Ver planes",
-    upgradeBtn:"✨ Mejorar", upTitle:"Mejora a Pro", upSub:"Gratis son 3 posts/mes → Pro son 35 posts/mes.",
+    upgradeBtn:"✨ Mejorar", upTitle:"Mejora a Pro", upSub:"Gratis: textos cortos · 2 imágenes · 3/mes → Pro: textos completos · 6 imágenes · 35/mes.",
     up1:"1 mes", up6:"6 meses", up12:"12 meses", upBest:"Mejor precio", perMo:"/mes",
     planFree:"Gratis", offWord:"dto.", baseWord:"base",
     pricingTab:"PLANES", pricingTitle:"Empieza gratis, pasa a Pro cuando quieras", pricingDesc:"Gratis son 3 posts/mes, Pro 35/mes. Cuanto más largo el plan, más barato por mes.",
     plansBtn:"🏷 Planes", plansTitle:"Planes", proNote:"Tienes Pro. Puedes cambiar cuando quieras.",
     footTerms:"Términos", footPrivacy:"Privacidad", footRefund:"Reembolsos", footCopy:"© Runner's Blog Studio",
+    inviteBtn:"🎁 Invitar · 20%",
     upNote:"Los pagos los gestiona Lemon Squeezy de forma segura. Cancela cuando quieras.",
     regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
     stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando",
@@ -877,8 +888,7 @@ function render(d){
     g.appendChild(cell);});
 }
 
-// ===== 결과 화면 툴바: 다시 생성 / 새로 쓰기 =====
-$('#regenBtn').onclick=()=>{ $('#genBtn').click(); };   // 같은 소재로 다른 버전 (사용량 1편 차감)
+// ===== 결과 화면 툴바: 새로 쓰기 =====
 function resetAll(){
   $('#srcText').value=''; $('#keywords').value='';
   files.length=0; $('#thumbs').innerHTML=''; $('#fileInput').value='';
@@ -1088,6 +1098,9 @@ async function fetchUsage(){   // 로그인 직후/새로고침 시 남은 횟�
     if(r.ok){ const u=await r.json(); if(u && u.limit!=null) updateUsage(u); }
   }catch(_){}
 }
+// 친구 초대(제휴 20%) — LS 제휴 가입 페이지로
+const AFFILIATE_URL='https://runner-blog-auto.lemonsqueezy.com/affiliates';
+$('#inviteBtn').onclick=()=>window.open(AFFILIATE_URL,'_blank');
 $('#loginBtn').onclick=openLogin;
 $('#modalClose').onclick=closeLogin;
 $('#loginModal').addEventListener('click',e=>{ if(e.target===$('#loginModal')) closeLogin(); });
