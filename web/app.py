@@ -63,6 +63,21 @@ def index():
     return send_from_directory(HERE, "index.html")
 
 
+@app.route("/terms")
+def terms():
+    return send_from_directory(HERE, "terms.html")
+
+
+@app.route("/privacy")
+def privacy():
+    return send_from_directory(HERE, "privacy.html")
+
+
+@app.route("/refund")
+def refund():
+    return send_from_directory(HERE, "refund.html")
+
+
 @app.route("/api/config")
 def api_config():
     """프론트가 로그인 붙일 때 필요한 공개 설정(URL·anon키·무료한도)."""

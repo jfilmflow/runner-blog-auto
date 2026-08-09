@@ -193,6 +193,12 @@
   .plan-card .pr{font-weight:900;font-size:20px;letter-spacing:-.5px;text-align:right}
   .plan-card .sv{color:var(--mint);font-size:12px;font-weight:800;margin-top:2px;text-align:right}
   .plan-badge{position:absolute;top:-9px;right:14px;background:var(--mint);color:var(--ink);font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:7px}
+  /* footer */
+  .site-foot{text-align:center;margin:26px 6px 0;color:var(--muted2);font-size:12.5px}
+  .site-foot a{color:var(--muted);text-decoration:none}
+  .site-foot a:hover{color:var(--mint);text-decoration:underline}
+  .site-foot .dot{margin:0 8px;color:var(--muted2)}
+  .site-foot .foot-copy{margin-top:8px;color:var(--muted2);font-size:11.5px}
   /* 할인 사다리 (무료→1→6→12) */
   .ladder{display:flex;align-items:stretch;gap:5px;margin-top:16px}
   .ladder .lad{flex:1;text-align:center;border:1px solid var(--border2);border-radius:11px;padding:9px 3px;background:var(--field-bg)}
@@ -340,6 +346,15 @@
     <div class="plans" id="pricingPlans"></div>
   </div>
 
+  <footer class="site-foot">
+    <a href="/terms" target="_blank" data-i18n="footTerms"></a>
+    <span class="dot">·</span>
+    <a href="/privacy" target="_blank" data-i18n="footPrivacy"></a>
+    <span class="dot">·</span>
+    <a href="/refund" target="_blank" data-i18n="footRefund"></a>
+    <div class="foot-copy" data-i18n="footCopy"></div>
+  </footer>
+
 </div>
 
 <!-- 로그인 모달 -->
@@ -448,6 +463,8 @@ const I18N = {
     up1:"1 month", up6:"6 months", up12:"12 months", upBest:"Best value", perMo:"/mo",
     planFree:"Free", offWord:"off", baseWord:"base",
     pricingTab:"PLANS", pricingTitle:"Start free, go Pro when ready", pricingDesc:"Free is 3 posts/month. Pro is 35/month — the longer you commit, the cheaper per month.",
+    plansBtn:"🏷 Plans", plansTitle:"Plans", proNote:"You're on Pro. You can change anytime.",
+    footTerms:"Terms", footPrivacy:"Privacy", footRefund:"Refunds", footCopy:"© Runner's Blog Studio",
     upNote:"Payments are handled securely by Lemon Squeezy. Cancel anytime.",
     regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
     stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing",
@@ -495,6 +512,8 @@ const I18N = {
     up1:"1개월", up6:"6개월", up12:"12개월", upBest:"최대 할인", perMo:"/월",
     planFree:"무료", offWord:"할인", baseWord:"기준가",
     pricingTab:"요금제", pricingTitle:"무료로 시작, 필요하면 Pro", pricingDesc:"무료는 월 3편, Pro는 월 35편이에요. 길게 약정할수록 월 단가가 더 저렴해져요.",
+    plansBtn:"🏷 요금제", plansTitle:"요금제", proNote:"현재 Pro 이용 중이에요. 언제든 변경할 수 있어요.",
+    footTerms:"이용약관", footPrivacy:"개인정보처리방침", footRefund:"환불정책", footCopy:"© 러너들의 공기의 흔적을 남깁니다",
     upNote:"결제는 Lemon Squeezy에서 안전하게 처리돼요. 언제든 취소 가능.",
     regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
     stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리",
@@ -542,6 +561,8 @@ const I18N = {
     up1:"1ヶ月", up6:"6ヶ月", up12:"12ヶ月", upBest:"最もお得", perMo:"/月",
     planFree:"無料", offWord:"割引", baseWord:"基準",
     pricingTab:"料金プラン", pricingTitle:"無料で開始、必要ならPro", pricingDesc:"無料は月3本、Proは月35本。長く契約するほど月あたりが安くなります。",
+    plansBtn:"🏷 料金プラン", plansTitle:"料金プラン", proNote:"現在Proをご利用中です。いつでも変更できます。",
+    footTerms:"利用規約", footPrivacy:"プライバシー", footRefund:"返金ポリシー", footCopy:"© Runner's Blog Studio",
     upNote:"決済はLemon Squeezyが安全に処理します。いつでも解約可能。",
     regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
     stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中",
@@ -589,6 +610,8 @@ const I18N = {
     up1:"1个月", up6:"6个月", up12:"12个月", upBest:"最划算", perMo:"/月",
     planFree:"免费", offWord:"优惠", baseWord:"基准",
     pricingTab:"价格方案", pricingTitle:"免费开始，需要时升级 Pro", pricingDesc:"免费每月3篇，Pro每月35篇。承诺越久，每月越便宜。",
+    plansBtn:"🏷 价格方案", plansTitle:"价格方案", proNote:"你正在使用 Pro，可随时更改。",
+    footTerms:"服务条款", footPrivacy:"隐私政策", footRefund:"退款政策", footCopy:"© Runner's Blog Studio",
     upNote:"付款由 Lemon Squeezy 安全处理，可随时取消。",
     regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
     stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾",
@@ -636,6 +659,8 @@ const I18N = {
     up1:"1 mes", up6:"6 meses", up12:"12 meses", upBest:"Mejor precio", perMo:"/mes",
     planFree:"Gratis", offWord:"dto.", baseWord:"base",
     pricingTab:"PLANES", pricingTitle:"Empieza gratis, pasa a Pro cuando quieras", pricingDesc:"Gratis son 3 posts/mes, Pro 35/mes. Cuanto más largo el plan, más barato por mes.",
+    plansBtn:"🏷 Planes", plansTitle:"Planes", proNote:"Tienes Pro. Puedes cambiar cuando quieras.",
+    footTerms:"Términos", footPrivacy:"Privacidad", footRefund:"Reembolsos", footCopy:"© Runner's Blog Studio",
     upNote:"Los pagos los gestiona Lemon Squeezy de forma segura. Cancela cuando quieras.",
     regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
     stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando",
@@ -970,8 +995,10 @@ function updateUsage(u){
 }
 function refreshUpBtn(){
   const b=$('#upBtn'); if(!b) return;
-  b.textContent=T('upgradeBtn');
-  b.style.display = (AUTH.enabled && AUTH.session && PLAN!=='pro') ? 'inline-block' : 'none';
+  if(!(AUTH.enabled && AUTH.session)){ b.style.display='none'; return; }
+  // 결제 후에도 요금제를 볼 수 있게 버튼 유지 (Pro면 "요금제", 무료면 "✨ 업그레이드")
+  b.style.display='inline-block';
+  b.textContent = (PLAN==='pro') ? T('plansBtn') : T('upgradeBtn');
 }
 
 // ===== 업그레이드(요금제) 팝업 =====
@@ -1042,8 +1069,9 @@ function renderPricing(){   // 메인 화면 요금제 섹션(항상 보임)
 }
 function openUpgrade(){
   if(!AUTH.enabled){ return; }
-  $('#upTitle').textContent=T('upTitle');
-  $('#upSub').textContent=T('upSub');
+  const isPro = (PLAN==='pro');
+  $('#upTitle').textContent = isPro ? T('plansTitle') : T('upTitle');
+  $('#upSub').textContent   = isPro ? T('proNote')    : T('upSub');
   $('#upNote').textContent=T('upNote');
   buildLadder($('#upLadder'));
   buildPlanCards($('#plans'));
