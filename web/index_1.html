@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Runner's Blog Studio</title>
+<!-- Lemon Squeezy 제휴(affiliate) 추적 -->
+<script>window.lemonSqueezyAffiliateConfig = { store: "runner-blog-auto" };</script>
+<script src="https://lmsqueezy.com/affiliate.js" defer></script>
 <style>
   :root{
     --bg:#070a0b; --panel:#0f1416; --panel2:#141b1d; --field-bg:#0c1113;
@@ -11,17 +14,26 @@
     --text:#eef4f3; --muted:#7f9298; --muted2:#5d6f74;
     --mint:#2ed6c6; --mint2:#49e9d9; --mint-press:#1fbcae; --ink:#04211e;
     --blue:#3aa0ff;
+    /* ===== 글래스(반투명 민트블루) 디자인 토큰 ===== */
+    --glass:linear-gradient(180deg,rgba(74,233,217,.20),rgba(46,214,198,.085));
+    --glass-2:linear-gradient(180deg,rgba(80,238,222,.36),rgba(46,214,198,.16));
+    --glass-bd:rgba(120,240,226,.32);
+    --glass-bd2:rgba(130,244,230,.55);
+    --glass-sheen:inset 0 1px 0 rgba(255,255,255,.22);
+    --glass-glow:0 6px 18px rgba(46,214,198,.14);
+    --glass-tx:#e9fffb;
+    --blur:blur(10px) saturate(1.35);
   }
   *{box-sizing:border-box}
   body{margin:0;background:
       radial-gradient(1100px 520px at 78% -8%,#0f2b2a 0%,transparent 60%),
       radial-gradient(900px 500px at 10% 0%,#0c2230 0%,var(--bg) 55%);
     color:var(--text);font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif;
-    -webkit-font-smoothing:antialiased;padding:30px 18px 90px;min-height:100vh}
+    -webkit-font-smoothing:antialiased;padding:30px 18px 90px;min-height:100vh;overflow-x:hidden}
   .wrap{max-width:1080px;margin:0 auto}
 
   /* header */
-  .top{display:flex;align-items:center;gap:14px;padding:2px 6px}
+  .top{display:flex;align-items:center;gap:14px;padding:2px 6px;flex-wrap:wrap}
   .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--mint),#1f9fd6);
     display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:0 8px 20px rgba(46,214,198,.28);flex:none}
   .brandbox{display:flex;flex-direction:column;line-height:1.1}
@@ -29,30 +41,34 @@
   .brand b{color:var(--mint)}
   .brand-sub{color:var(--muted);font-size:12.5px;margin-top:3px;font-weight:500}
   .lang-wrap{margin-left:auto;position:relative}
-  .lang-sel{appearance:none;background:var(--panel2);border:1px solid var(--border2);color:var(--text);
-    font-weight:700;font-size:13px;padding:9px 34px 9px 14px;border-radius:11px;cursor:pointer;font-family:inherit;outline:none;
+  .lang-sel{appearance:none;background-color:rgba(46,214,198,.12);border:1px solid var(--glass-bd);color:var(--text);
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-weight:700;font-size:13px;padding:9px 34px 9px 14px;border-radius:12px;cursor:pointer;font-family:inherit;outline:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237f9298' stroke-width='2.4'><path d='M6 9l6 6 6-6'/></svg>");
     background-repeat:no-repeat;background-position:right 12px center;transition:.15s}
-  .lang-sel:hover{border-color:var(--mint)}
+  .lang-sel:hover{border-color:var(--glass-bd2)}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin:22px 6px 8px}
-  .chip{border:1px solid rgba(46,214,198,.4);color:var(--mint);background:rgba(46,214,198,.07);
-    font-weight:700;font-size:13px;padding:7px 13px;border-radius:10px;display:inline-flex;align-items:center;gap:6px}
+  .chip{border:1px solid var(--glass-bd);color:var(--glass-tx);background:var(--glass);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);box-shadow:var(--glass-sheen),var(--glass-glow);
+    font-weight:700;font-size:13px;padding:8px 14px;border-radius:12px;display:inline-flex;align-items:center;gap:6px}
   .lede{color:var(--muted);font-size:14.5px;margin:14px 6px 22px;line-height:1.6;max-width:760px}
 
   /* progress */
   .steps{display:flex;gap:8px;margin:0 6px 20px}
-  .steps .s{flex:1;display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:12px;
-    background:var(--panel);border:1px solid var(--border);font-size:13.5px;color:var(--muted);font-weight:600}
-  .steps .s .n{width:22px;height:22px;border-radius:7px;background:var(--border2);color:var(--text);
+  .steps .s{flex:1;display:flex;align-items:center;gap:9px;padding:12px 15px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-bd);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    box-shadow:var(--glass-sheen);font-size:13.5px;color:var(--muted);font-weight:600;transition:.15s}
+  .steps .s .n{width:22px;height:22px;border-radius:8px;background:rgba(255,255,255,.14);color:var(--text);
     display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:none}
-  .steps .s.active{border-color:var(--mint);color:var(--text)}
+  .steps .s.active{border-color:var(--glass-bd2);background:var(--glass-2);color:var(--text);box-shadow:var(--glass-sheen),var(--glass-glow)}
   .steps .s.active .n{background:var(--mint);color:var(--ink)}
 
   /* card */
   .card{background:linear-gradient(180deg,#111819,#0e1416);border:1px solid var(--border);
     border-radius:20px;padding:30px 32px;margin-bottom:20px}
   .head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .tab{padding:5px 12px;border-radius:8px;background:rgba(46,214,198,.12);color:var(--mint);
+  .tab{padding:6px 13px;border-radius:10px;background:var(--glass-2);color:var(--glass-tx);border:1px solid var(--glass-bd);
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     font-size:12.5px;font-weight:800;letter-spacing:.3px}
   .head h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px}
   .head-desc{color:var(--muted);font-size:14px;margin:2px 0 22px;line-height:1.55}
@@ -87,16 +103,18 @@
 
   .hidden{display:none}
   .titles{display:flex;flex-direction:column;gap:9px}
-  .title-opt{display:flex;gap:12px;align-items:center;background:var(--field-bg);border:1px solid var(--border);
-    border-radius:11px;padding:13px 15px;cursor:pointer;transition:.12s}
-  .title-opt:hover{border-color:var(--mint)}
-  .title-opt.sel{border-color:var(--mint);background:rgba(46,214,198,.07)}
+  .title-opt{display:flex;gap:12px;align-items:center;background:var(--glass);border:1px solid var(--glass-bd);
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    border-radius:13px;padding:14px 16px;cursor:pointer;transition:.12s}
+  .title-opt:hover{border-color:var(--glass-bd2)}
+  .title-opt.sel{border-color:var(--glass-bd2);background:var(--glass-2);box-shadow:var(--glass-sheen),var(--glass-glow)}
   .title-opt .radio{width:17px;height:17px;border-radius:999px;border:2px solid var(--muted);flex:none}
   .title-opt.sel .radio{border-color:var(--mint);background:var(--mint);box-shadow:inset 0 0 0 3px var(--field-bg)}
   .title-opt span{font-weight:700;font-size:15px}
 
   .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
-  .metric{background:var(--field-bg);border:1px solid var(--border);border-radius:13px;padding:15px}
+  .metric{background:var(--glass);border:1px solid var(--glass-bd);box-shadow:var(--glass-sheen);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:15px;padding:16px}
   .metric .k{color:var(--muted);font-size:12px;margin-bottom:6px}
   .metric .v{font-size:22px;font-weight:900;letter-spacing:-.5px}
   .metric .v.good{color:var(--mint)}
@@ -116,9 +134,10 @@
     font-size:12px;text-align:center;padding:10px}
 
   .actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
-  .btn{flex:1;min-width:200px;border-radius:13px;padding:17px;font-size:15.5px;font-weight:800;cursor:pointer;
-    border:1px solid var(--border2);background:var(--panel2);color:var(--text);transition:.12s}
-  .btn:hover{border-color:var(--mint)}
+  .btn{flex:1;min-width:200px;border-radius:14px;padding:17px;font-size:15.5px;font-weight:800;cursor:pointer;
+    border:1px solid var(--glass-bd);background:var(--glass);color:var(--glass-tx);box-shadow:var(--glass-sheen),var(--glass-glow);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);transition:.12s}
+  .btn:hover{border-color:var(--glass-bd2);filter:brightness(1.08)}
   .btn.primary{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border-color:transparent}
   .btn.primary:hover{filter:brightness(1.06)}
   .note{color:var(--muted);font-size:12.5px;margin-top:13px;line-height:1.6}
@@ -128,7 +147,68 @@
   .spin{width:17px;height:17px;border:2.5px solid rgba(4,33,30,.35);border-top-color:var(--ink);border-radius:999px;
     display:inline-block;vertical-align:-3px;margin-right:8px;animation:sp .7s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
-  @media(max-width:720px){.row2,.metrics,.gallery{grid-template-columns:1fr 1fr}.steps{flex-direction:column}}
+  /* ===== 모바일 반응형 (이탈률↓) ===== */
+  @media(max-width:820px){
+    .row2,.metrics,.gallery{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:600px){
+    html{-webkit-text-size-adjust:100%}
+    body{padding:16px 12px 72px}
+    /* 상단바: 로고+브랜드+언어는 1줄, 로그인/버튼들은 아래 줄 full-width */
+    .top{flex-wrap:wrap;gap:10px;padding:0 2px}
+    .logo{width:40px;height:40px;font-size:21px;border-radius:12px}
+    .brand{font-size:18px}
+    .brand-sub{font-size:11.5px;margin-top:2px}
+    .lang-sel{font-size:12.5px;padding:8px 30px 8px 12px}
+    .auth-wrap{order:3;width:100%;margin-left:0;flex-wrap:wrap;justify-content:flex-start;gap:8px}
+    .user-chip b{max-width:130px}
+    .steps{flex-direction:column}
+    .chips{margin:16px 2px 6px;gap:6px}
+    .chip{font-size:11.5px;padding:6px 10px}
+    .lede{font-size:13.5px;margin:12px 2px 18px;line-height:1.55}
+    .card{padding:20px 16px;border-radius:16px;margin-bottom:16px}
+    .head h2{font-size:17px}
+    .head-desc{font-size:13px;margin-bottom:18px}
+    label.fl{font-size:14px;margin:16px 0 8px}
+    /* iOS 포커스 시 화면 확대(줌) 방지 → 입력 폰트 16px 이상 */
+    textarea,input.txt,select{font-size:16px;padding:13px 14px}
+    textarea{min-height:160px}
+    .drop{padding:26px 14px}
+    .drop .ico{font-size:26px}
+    .thumbs img{width:60px;height:60px}
+    .row2{grid-template-columns:1fr;gap:14px}
+    .metrics{grid-template-columns:repeat(2,1fr);gap:9px}
+    .metric{padding:13px}
+    .metric .v{font-size:19px}
+    .gallery{grid-template-columns:repeat(2,1fr);gap:9px}
+    .preview-body{padding:18px 16px;font-size:14px;max-height:60vh}
+    .cta{padding:16px;font-size:16px;margin-top:22px}
+    .actions{gap:9px}
+    .btn{flex:1 1 100%;min-width:0;padding:15px;font-size:15px}
+    .mini-actions{gap:7px}
+    .mini-btn{font-size:12.5px;padding:9px 12px}
+    .modal-bg{padding:14px}
+    .modal{padding:24px 20px;border-radius:18px}
+    .modal-h{font-size:18px}
+    .ladder{gap:4px}
+    .ladder .lad{padding:8px 2px}
+    .ladder .lad .lt{font-size:10px}
+    .ladder .lad .ld{font-size:12.5px}
+    .ladder .arw{font-size:11px}
+    .plan-card{padding:13px 14px}
+    .plan-card .nm{font-size:14.5px}
+    .plan-card .pr{font-size:18px}
+    .site-foot{font-size:12px}
+    .site-foot .dot{margin:0 5px}
+  }
+  @media(max-width:380px){
+    .brand{font-size:16.5px}
+    .auth-btn,.invite-btn,.up-btn{font-size:11.5px;padding:7px 10px}
+    .usage-chip{font-size:11px;padding:6px 9px}
+    .metrics{grid-template-columns:1fr 1fr}
+    .ladder .lad .lt{font-size:9px}
+    .ladder .lad .ld{font-size:11.5px}
+  }
 
   /* progress bar (생성 중) */
   .prog-wrap{margin-top:18px}
@@ -141,19 +221,22 @@
 
   /* result toolbar */
   .mini-actions{display:flex;gap:9px;margin:-4px 0 22px;flex-wrap:wrap}
-  .mini-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-weight:700;
-    font-size:13.5px;padding:10px 15px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s;
+  .mini-btn{background:var(--glass);border:1px solid var(--glass-bd);color:var(--glass-tx);font-weight:700;
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-size:13.5px;padding:10px 15px;border-radius:12px;cursor:pointer;font-family:inherit;transition:.15s;
     display:inline-flex;align-items:center;gap:7px}
-  .mini-btn:hover{border-color:var(--mint)}
-  .mini-btn.accent{border-color:rgba(46,214,198,.45);color:var(--mint);background:rgba(46,214,198,.07)}
+  .mini-btn:hover{border-color:var(--glass-bd2);filter:brightness(1.08)}
+  .mini-btn.accent{border-color:var(--glass-bd2);color:var(--glass-tx);background:var(--glass-2);box-shadow:var(--glass-sheen),var(--glass-glow)}
 
   /* auth */
-  .auth-wrap{display:flex;align-items:center;gap:10px;margin-left:10px}
-  .usage-chip{font-size:12px;font-weight:700;color:var(--mint);background:rgba(46,214,198,.09);
-    border:1px solid rgba(46,214,198,.3);padding:7px 11px;border-radius:10px;white-space:nowrap}
-  .auth-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-weight:700;
-    font-size:13px;padding:9px 15px;border-radius:11px;cursor:pointer;font-family:inherit;transition:.15s}
-  .auth-btn:hover{border-color:var(--mint)}
+  .auth-wrap{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+  .usage-chip{font-size:12px;font-weight:700;color:var(--glass-tx);background:var(--glass);
+    border:1px solid var(--glass-bd);box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    padding:8px 12px;border-radius:11px;white-space:nowrap}
+  .auth-btn{background:var(--glass);border:1px solid var(--glass-bd);color:var(--glass-tx);font-weight:700;
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-size:13px;padding:9px 15px;border-radius:12px;cursor:pointer;font-family:inherit;transition:.15s}
+  .auth-btn:hover{border-color:var(--glass-bd2);filter:brightness(1.08)}
   .user-chip{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted)}
   .user-chip b{color:var(--text);font-weight:700;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .auth-link{background:none;border:none;color:var(--muted);font-weight:700;font-size:12.5px;cursor:pointer;
@@ -178,6 +261,49 @@
   .gbtn:hover{filter:brightness(.97)}
   .gicon{width:19px;height:19px}
   .modal-note{color:var(--muted2);font-size:11.5px;margin-top:14px;line-height:1.5;text-align:center}
+
+  /* upgrade */
+  .up-btn{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border:none;font-weight:800;
+    font-size:12.5px;padding:8px 13px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .up-btn:hover{filter:brightness(1.06)}
+  .invite-btn{background:linear-gradient(180deg,rgba(255,216,128,.28),rgba(255,207,107,.12));
+    border:1px solid rgba(255,216,140,.5);color:#ffe1a4;font-weight:800;box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    font-size:12.5px;padding:9px 14px;border-radius:12px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .invite-btn:hover{filter:brightness(1.08)}
+  .plans{display:flex;flex-direction:column;gap:11px;margin-top:18px}
+  .plan-card{position:relative;text-align:left;background:var(--glass);border:1px solid var(--glass-bd);border-radius:15px;
+    box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    padding:15px 18px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:space-between;font-family:inherit;color:var(--text);width:100%}
+  .plan-card:hover{border-color:var(--glass-bd2);filter:brightness(1.06)}
+  .plan-card.best{border-color:var(--glass-bd2);background:var(--glass-2);box-shadow:var(--glass-sheen),var(--glass-glow)}
+  .plan-card .nm{font-weight:800;font-size:15.5px}
+  .plan-card .mo{color:var(--muted);font-size:12.5px;margin-top:3px}
+  .plan-card .pr{font-weight:900;font-size:20px;letter-spacing:-.5px;text-align:right}
+  .plan-card .sv{color:var(--mint);font-size:12px;font-weight:800;margin-top:2px;text-align:right}
+  .plan-badge{position:absolute;top:-9px;right:14px;background:var(--mint);color:var(--ink);font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:7px}
+  /* footer */
+  .site-foot{text-align:center;margin:26px 6px 0;color:var(--muted2);font-size:12.5px}
+  .site-foot a{color:var(--muted);text-decoration:none}
+  .site-foot a:hover{color:var(--mint);text-decoration:underline}
+  .site-foot .dot{margin:0 8px;color:var(--muted2)}
+  .site-foot .foot-copy{margin-top:8px;color:var(--muted2);font-size:11.5px}
+  /* 할인 사다리 (무료→1→6→12) */
+  .ladder{display:flex;align-items:stretch;gap:5px;margin-top:16px}
+  .ladder .lad{flex:1;text-align:center;border:1px solid var(--glass-bd);border-radius:12px;padding:10px 3px;
+    background:var(--glass);box-shadow:var(--glass-sheen);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
+  .ladder .lad .lt{font-size:11px;color:var(--muted);font-weight:700}
+  .ladder .lad .ld{font-size:14px;font-weight:900;margin-top:3px;color:var(--muted2)}
+  .ladder .lad.off1{border-color:var(--glass-bd2);background:var(--glass-2)}
+  .ladder .lad.off1 .ld{color:var(--mint2)}
+  .ladder .lad.off2{border-color:var(--glass-bd2);background:var(--glass-2);box-shadow:var(--glass-sheen),var(--glass-glow)}
+  .ladder .lad.off2 .ld{color:var(--mint)}
+  .ladder .arw{align-self:center;color:var(--muted2);font-size:13px;font-weight:900}
+  .plan-card .base{color:var(--muted2);text-decoration:line-through;font-size:12px;margin-right:6px}
+  .sv-chip{display:inline-block;font-weight:800;font-size:12px;border-radius:7px;padding:2px 8px;margin-top:3px}
+  .sv-chip.s1{color:var(--mint2);background:rgba(46,214,198,.10)}
+  .sv-chip.s2{color:var(--ink);background:var(--mint)}
+  .sv-flat{color:var(--muted2);font-size:12px;margin-top:3px}
 </style>
 </head>
 <body>
@@ -199,6 +325,8 @@
       </select>
     </div>
     <div class="auth-wrap" id="authWrap" style="display:none">
+      <button class="invite-btn" id="inviteBtn" data-i18n="inviteBtn"></button>
+      <button class="up-btn" id="upBtn" style="display:none"></button>
       <span class="usage-chip" id="usageChip" style="display:none"></span>
       <button class="auth-btn" id="loginBtn"></button>
       <span class="user-chip" id="userChip" style="display:none">
@@ -263,14 +391,6 @@
     </div>
 
     <button class="cta" id="genBtn"></button>
-
-    <div class="prog-wrap" id="progWrap" style="display:none">
-      <div class="prog-top">
-        <span class="prog-label" id="progLabel"><span class="spin" style="border-top-color:var(--mint)"></span><span id="progLabelText"></span></span>
-        <span class="prog-pct" id="progPct">0%</span>
-      </div>
-      <div class="prog-track"><div class="prog-bar" id="progBar"></div></div>
-    </div>
   </div>
 
   <!-- STEP 2 -->
@@ -279,8 +399,7 @@
     <div class="head-desc" data-i18n="s2desc"></div>
 
     <div class="mini-actions">
-      <button class="mini-btn accent" id="regenBtn">🔄 <span data-i18n="regen"></span></button>
-      <button class="mini-btn" id="newBtn">✏️ <span data-i18n="newPost"></span></button>
+      <button class="mini-btn accent" id="newBtn">✏️ <span data-i18n="newPost"></span></button>
     </div>
 
     <label class="fl" data-i18n="lblPickTitle"></label>
@@ -309,6 +428,23 @@
     <div class="note" data-i18n-html="note3"></div>
   </div>
 
+  <!-- 요금제 (항상 보임) -->
+  <div class="card" id="pricingCard">
+    <div class="head"><span class="tab" data-i18n="pricingTab"></span><h2 data-i18n="pricingTitle"></h2></div>
+    <div class="head-desc" data-i18n="pricingDesc"></div>
+    <div class="ladder" id="pricingLadder"></div>
+    <div class="plans" id="pricingPlans"></div>
+  </div>
+
+  <footer class="site-foot">
+    <a href="/terms" target="_blank" data-i18n="footTerms"></a>
+    <span class="dot">·</span>
+    <a href="/privacy" target="_blank" data-i18n="footPrivacy"></a>
+    <span class="dot">·</span>
+    <a href="/refund" target="_blank" data-i18n="footRefund"></a>
+    <div class="foot-copy" data-i18n="footCopy"></div>
+  </footer>
+
 </div>
 
 <!-- 로그인 모달 -->
@@ -329,6 +465,46 @@
   </div>
 </div>
 
+<!-- 생성 중 진행률 모달 (화면 중앙) -->
+<div class="modal-bg" id="genModal" style="display:none">
+  <div class="modal gen-modal">
+    <div class="modal-logo">✍️</div>
+    <div class="modal-h" id="genTitle"></div>
+    <div class="prog-wrap" style="margin-top:22px">
+      <div class="prog-top">
+        <span class="prog-label"><span class="spin" style="border-top-color:var(--mint)"></span><span id="progLabelText"></span></span>
+        <span class="prog-pct" id="progPct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-bar" id="progBar"></div></div>
+    </div>
+    <div class="modal-note" id="genNote" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- 업그레이드(요금제) 모달 -->
+<div class="modal-bg" id="upgradeModal" style="display:none">
+  <div class="modal">
+    <button class="modal-x" id="upClose">✕</button>
+    <div class="modal-logo" style="background:linear-gradient(135deg,var(--mint),#1f9fd6)">✨</div>
+    <div class="modal-h" id="upTitle"></div>
+    <div class="modal-d" id="upSub"></div>
+    <div class="ladder" id="upLadder"></div>
+    <div class="plans" id="plans"></div>
+    <div class="modal-note" id="upNote"></div>
+  </div>
+</div>
+
+<!-- 무료 한도 초과 모달 (화면 중앙 고정) -->
+<div class="modal-bg" id="limitModal" style="display:none">
+  <div class="modal">
+    <button class="modal-x" id="limitClose">✕</button>
+    <div class="modal-logo" style="background:linear-gradient(135deg,#ffcf6b,#ff9f43)">🔒</div>
+    <div class="modal-h" id="limitTitle"></div>
+    <div class="modal-d" id="limitDesc"></div>
+    <button class="cta" id="limitOkBtn" style="margin-top:8px;background:linear-gradient(135deg,#ffcf6b,#ff9f43)"></button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -336,10 +512,10 @@
 /* ============================ i18n ============================ */
 const I18N = {
   en:{
-    brand:"Leave the trace of every <b>runner's breath</b>",
-    brandSub:"And a polished blog post is written for you, automatically",
+    brand:"Every run you log <b>becomes value</b>",
+    brandSub:"Where your social records turn into value",
     chip1:"Draft generation", chip2:"Auto image attach", chip3:"Search-volume data", chip4:"Auto SEO placement",
-    lede:"Just drop in your daily running story and a few photos. Out comes a solid, well-structured blog post.",
+    lede:"'A society where records become value, and value becomes freedom.' Drop in your running feed from social media and turn it into records that matter.",
     step1:"Add material", step2:"Refine result", step3:"Export",
     s1desc:"Paste the running feed you posted on Instagram, Threads, or X. If you have photos from your run, add them too :)",
     lblStory:"Your running story", lblStoryDim:"— Instagram · Threads · notes (leave empty if uploading photos only)",
@@ -365,21 +541,31 @@ const I18N = {
     tNoImg:"No images to download (demo mode or server not connected).", tZip:"⬇ Got the image zip!",
     tZipServer:"Image download works when the server is connected.",
     tNetErr:"Couldn't reach the server. Please wait a moment and try again.", tServer:"Server error",
-    login:"Log in", logout:"Log out", thisMonth:"This month",
+    login:"Log in", logout:"Log out", thisMonth:"This month", remain:"left",
     loginTitle:"Log in to start", loginDesc:"We'll email you a login link — no password. Free posts every month.",
     emailPh:"you@email.com", sendMagic:"Email me a login link", orDivider:"or", googleBtn:"Continue with Google",
     loginNote:"Click the link in the email and you'll come right back here.",
     magicSent:"Check your inbox — we sent a login link.", loginNeeded:"Please log in first.",
     emailInvalid:"Please enter your email address.", authErr:"Login had a problem. Please try again.",
     limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.",
+    limitTitle:"Free limit reached", limitOk:"See plans",
+    upgradeBtn:"✨ Upgrade", upTitle:"Upgrade to Pro", upSub:"Free: short posts · 2 images · 3/month. Pro: full-length · 6 images · 35/month.",
+    up1:"1 month", up6:"6 months", up12:"12 months", upBest:"Best value", perMo:"/mo",
+    planFree:"Free", offWord:"off", baseWord:"base",
+    pricingTab:"PLANS", pricingTitle:"Start free, go Pro when ready", pricingDesc:"Free is 3 posts/month. Pro is 35/month — the longer you commit, the cheaper per month.",
+    plansBtn:"🏷 Plans", plansTitle:"Plans", proNote:"You're on Pro. You can change anytime.",
+    footTerms:"Terms", footPrivacy:"Privacy", footRefund:"Refunds", footCopy:"© Every run you log becomes value",
+    inviteBtn:"🎁 Invite · 20%",
+    upNote:"Payments are handled securely by Lemon Squeezy. Cancel anytime.",
     regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
-    stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing"
+    stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing",
+    genTitle:"Creating your blog post", genNote:"Please keep this open — usually 20–40 seconds."
   },
   ko:{
-    brand:"러너들의 <b>공기의 흔적</b>을 남깁니다",
-    brandSub:"그러면 근사한 블로그 글이 자동으로 완성됩니다",
+    brand:"달린 기록은 반드시 <b>가치</b>가 된다",
+    brandSub:"SNS 기록이 가치가 되는 곳",
     chip1:"초안 생성", chip2:"이미지 자동 첨부", chip3:"검색량 데이터", chip4:"SEO 자동 배치",
-    lede:"당신의 데일리 러닝 이야기와 사진을 간단하게 넣어주세요. 아주 탄탄한 스토리의 블로그로 나옵니다.",
+    lede:"'기록이 가치가 되고, 가치가 자유가 되는 소사이어티.' 당신의 SNS 러닝 피드를 넣고 가치 있는 기록을 만드세요.",
     step1:"소재 넣기", step2:"결과 다듬기", step3:"내보내기",
     s1desc:"당신이 인스타, 스레드, X에 올린 러닝 피드 이야기를 여기 넣으면 됩니다. 당신의 러닝 순간의 사진이 있다면 그 사진도 넣어주세요 :)",
     lblStory:"러닝 이야기", lblStoryDim:"— 인스타·스레드·메모 (사진만 올릴 거면 비워도 됨)",
@@ -405,21 +591,31 @@ const I18N = {
     tNoImg:"내려받을 이미지가 없어요 (데모 상태거나 서버 미연결).", tZip:"⬇ 이미지 zip을 받았어요!",
     tZipServer:"이미지 다운로드는 서버 연결 시 작동해요.",
     tNetErr:"서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.", tServer:"서버 오류",
-    login:"로그인", logout:"로그아웃", thisMonth:"이번 달",
+    login:"로그인", logout:"로그아웃", thisMonth:"이번 달", remain:"남음",
     loginTitle:"로그인하고 시작하기", loginDesc:"비밀번호 없이 이메일로 로그인 링크를 보내드려요. 매달 무료로 몇 편씩 만들 수 있어요.",
     emailPh:"you@email.com", sendMagic:"이메일로 로그인 링크 받기", orDivider:"또는", googleBtn:"Google로 계속하기",
     loginNote:"메일의 링크를 누르면 이 화면으로 바로 돌아와요.",
     magicSent:"메일함을 확인하세요 — 로그인 링크를 보냈어요.", loginNeeded:"먼저 로그인해 주세요.",
     emailInvalid:"이메일 주소를 입력해 주세요.", authErr:"로그인 중 문제가 생겼어요. 다시 시도해 주세요.",
     limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.",
+    limitTitle:"무료 사용 한도에 도달했어요", limitOk:"요금제 보기",
+    upgradeBtn:"✨ 업그레이드", upTitle:"Pro로 업그레이드", upSub:"무료: 짧은 글·이미지 2장·월 3편 → Pro: 긴 글·이미지 6장·월 35편!",
+    up1:"1개월", up6:"6개월", up12:"12개월", upBest:"최대 할인", perMo:"/월",
+    planFree:"무료", offWord:"할인", baseWord:"기준가",
+    pricingTab:"요금제", pricingTitle:"무료로 시작, 필요하면 Pro", pricingDesc:"무료는 월 3편, Pro는 월 35편이에요. 길게 약정할수록 월 단가가 더 저렴해져요.",
+    plansBtn:"🏷 요금제", plansTitle:"요금제", proNote:"현재 Pro 이용 중이에요. 언제든 변경할 수 있어요.",
+    footTerms:"이용약관", footPrivacy:"개인정보처리방침", footRefund:"환불정책", footCopy:"© 달린 기록은 반드시 가치가 된다",
+    inviteBtn:"🎁 친구초대 20%",
+    upNote:"결제는 Lemon Squeezy에서 안전하게 처리돼요. 언제든 취소 가능.",
     regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
-    stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리"
+    stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리",
+    genTitle:"블로그를 만들고 있어요", genNote:"창을 닫지 말고 잠시만 기다려 주세요 (보통 20~40초)."
   },
   ja:{
-    brand:"ランナーの<b>息づかい</b>を記録に残す",
-    brandSub:"すると、素敵なブログ記事が自動で仕上がります",
+    brand:"走った記録は必ず<b>価値</b>になる",
+    brandSub:"SNSの記録が価値になる場所",
     chip1:"下書き生成", chip2:"画像を自動添付", chip3:"検索ボリューム", chip4:"SEO自動配置",
-    lede:"あなたの毎日のランニングの話と写真を入れるだけ。しっかりしたストーリーのブログになります。",
+    lede:"「記録が価値になり、価値が自由になるソサエティ。」あなたのSNSランニングフィードを入れて、価値ある記録を作りましょう。",
     step1:"素材を入れる", step2:"結果を整える", step3:"書き出す",
     s1desc:"インスタ・スレッズ・Xに投稿したランニングの話をここに入れてください。ランニング中の写真があれば、それも一緒にどうぞ :)",
     lblStory:"ランニングの話", lblStoryDim:"— インスタ・スレッズ・メモ（写真だけなら空欄でOK）",
@@ -445,21 +641,31 @@ const I18N = {
     tNoImg:"ダウンロードする画像がありません（デモ状態またはサーバー未接続）。", tZip:"⬇ 画像zipを取得しました！",
     tZipServer:"画像ダウンロードはサーバー接続時に動作します。",
     tNetErr:"サーバーに接続できませんでした。少し待ってからもう一度お試しください。", tServer:"サーバーエラー",
-    login:"ログイン", logout:"ログアウト", thisMonth:"今月",
+    login:"ログイン", logout:"ログアウト", thisMonth:"今月", remain:"残り",
     loginTitle:"ログインして始める", loginDesc:"パスワード不要。メールでログインリンクを送ります。毎月無料で作れます。",
     emailPh:"you@email.com", sendMagic:"ログインリンクを送る", orDivider:"または", googleBtn:"Googleで続ける",
     loginNote:"メールのリンクを押すと、この画面に戻ってきます。",
     magicSent:"メールを確認してください — ログインリンクを送りました。", loginNeeded:"先にログインしてください。",
     emailInvalid:"メールアドレスを入力してください。", authErr:"ログインで問題が発生しました。もう一度お試しください。",
     limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。",
+    limitTitle:"無料利用の上限に達しました", limitOk:"プランを見る",
+    upgradeBtn:"✨ アップグレード", upTitle:"Proにアップグレード", upSub:"無料：短い記事・画像2枚・月3本 → Pro：長文・画像6枚・月35本！",
+    up1:"1ヶ月", up6:"6ヶ月", up12:"12ヶ月", upBest:"最もお得", perMo:"/月",
+    planFree:"無料", offWord:"割引", baseWord:"基準",
+    pricingTab:"料金プラン", pricingTitle:"無料で開始、必要ならPro", pricingDesc:"無料は月3本、Proは月35本。長く契約するほど月あたりが安くなります。",
+    plansBtn:"🏷 料金プラン", plansTitle:"料金プラン", proNote:"現在Proをご利用中です。いつでも変更できます。",
+    footTerms:"利用規約", footPrivacy:"プライバシー", footRefund:"返金ポリシー", footCopy:"© 走った記録は必ず価値になる",
+    inviteBtn:"🎁 友達招待 20%",
+    upNote:"決済はLemon Squeezyが安全に処理します。いつでも解約可能。",
     regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
-    stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中"
+    stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中",
+    genTitle:"ブログを作成中です", genNote:"この画面を閉じずにお待ちください（通常20〜40秒）。"
   },
   zh:{
-    brand:"留下每一次<b>奔跑的呼吸</b>印记",
-    brandSub:"然后一篇精彩的博客文章会自动生成",
+    brand:"跑过的记录终将<b>成为价值</b>",
+    brandSub:"让社交记录成为价值的地方",
     chip1:"生成草稿", chip2:"自动配图", chip3:"搜索量数据", chip4:"SEO自动布局",
-    lede:"只需放入你每天的跑步故事和照片，就能生成结构扎实的博客文章。",
+    lede:"'记录成为价值，价值成为自由的社群。'放入你的社交跑步动态，创造有价值的记录。",
     step1:"添加素材", step2:"优化结果", step3:"导出",
     s1desc:"把你发在 Instagram、Threads、X 上的跑步动态贴进来。如果有跑步时的照片，也一起放进来吧 :)",
     lblStory:"你的跑步故事", lblStoryDim:"— Instagram · Threads · 笔记（只上传照片可留空）",
@@ -485,21 +691,31 @@ const I18N = {
     tNoImg:"没有可下载的图片（演示模式或服务器未连接）。", tZip:"⬇ 已获取图片 zip！",
     tZipServer:"图片下载在连接服务器后可用。",
     tNetErr:"无法连接到服务器。请稍后再试。", tServer:"服务器错误",
-    login:"登录", logout:"退出", thisMonth:"本月",
+    login:"登录", logout:"退出", thisMonth:"本月", remain:"剩",
     loginTitle:"登录后开始", loginDesc:"无需密码，我们会把登录链接发到你的邮箱。每月可免费生成若干篇。",
     emailPh:"you@email.com", sendMagic:"把登录链接发到邮箱", orDivider:"或", googleBtn:"使用 Google 继续",
     loginNote:"点击邮件中的链接，就会回到此页面。",
     magicSent:"请查收邮箱 — 我们已发送登录链接。", loginNeeded:"请先登录。",
     emailInvalid:"请输入你的邮箱地址。", authErr:"登录出现问题，请重试。",
     limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。",
+    limitTitle:"已达免费使用上限", limitOk:"查看方案",
+    upgradeBtn:"✨ 升级", upTitle:"升级到 Pro", upSub:"免费版：短文·2张图·每月3篇 → Pro：长文·6张图·每月35篇！",
+    up1:"1个月", up6:"6个月", up12:"12个月", upBest:"最划算", perMo:"/月",
+    planFree:"免费", offWord:"优惠", baseWord:"基准",
+    pricingTab:"价格方案", pricingTitle:"免费开始，需要时升级 Pro", pricingDesc:"免费每月3篇，Pro每月35篇。承诺越久，每月越便宜。",
+    plansBtn:"🏷 价格方案", plansTitle:"价格方案", proNote:"你正在使用 Pro，可随时更改。",
+    footTerms:"服务条款", footPrivacy:"隐私政策", footRefund:"退款政策", footCopy:"© 跑过的记录终将成为价值",
+    inviteBtn:"🎁 邀请好友 20%",
+    upNote:"付款由 Lemon Squeezy 安全处理，可随时取消。",
     regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
-    stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾"
+    stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾",
+    genTitle:"正在生成你的博客", genNote:"请不要关闭本窗口，通常需要20~40秒。"
   },
   es:{
-    brand:"Deja la huella del <b>aliento de cada corredor</b>",
-    brandSub:"Y una entrada de blog pulida se escribe automáticamente",
+    brand:"Cada carrera registrada <b>se vuelve valor</b>",
+    brandSub:"Donde tus registros en redes se convierten en valor",
     chip1:"Generar borrador", chip2:"Imágenes automáticas", chip3:"Datos de búsqueda", chip4:"SEO automático",
-    lede:"Solo pon tu historia diaria de running y algunas fotos. Obtendrás una entrada de blog sólida y bien estructurada.",
+    lede:"'Una comunidad donde los registros se vuelven valor, y el valor se vuelve libertad.' Añade tu feed de running de redes sociales y crea registros que valen.",
     step1:"Añadir material", step2:"Refinar resultado", step3:"Exportar",
     s1desc:"Pega el feed de running que publicaste en Instagram, Threads o X. Si tienes fotos de tu carrera, añádelas también :)",
     lblStory:"Tu historia de running", lblStoryDim:"— Instagram · Threads · notas (déjalo vacío si solo subes fotos)",
@@ -525,15 +741,25 @@ const I18N = {
     tNoImg:"No hay imágenes para descargar (modo demo o servidor no conectado).", tZip:"⬇ ¡Zip de imágenes listo!",
     tZipServer:"La descarga de imágenes funciona con el servidor conectado.",
     tNetErr:"No se pudo conectar con el servidor. Espera un momento e inténtalo de nuevo.", tServer:"Error del servidor",
-    login:"Iniciar sesión", logout:"Cerrar sesión", thisMonth:"Este mes",
+    login:"Iniciar sesión", logout:"Cerrar sesión", thisMonth:"Este mes", remain:"restan",
     loginTitle:"Inicia sesión para empezar", loginDesc:"Te enviamos un enlace de acceso por email, sin contraseña. Posts gratis cada mes.",
     emailPh:"you@email.com", sendMagic:"Enviarme un enlace de acceso", orDivider:"o", googleBtn:"Continuar con Google",
     loginNote:"Haz clic en el enlace del email y volverás aquí.",
     magicSent:"Revisa tu correo — te enviamos un enlace de acceso.", loginNeeded:"Primero inicia sesión.",
     emailInvalid:"Escribe tu dirección de email.", authErr:"Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
     limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.",
+    limitTitle:"Límite gratuito alcanzado", limitOk:"Ver planes",
+    upgradeBtn:"✨ Mejorar", upTitle:"Mejora a Pro", upSub:"Gratis: textos cortos · 2 imágenes · 3/mes → Pro: textos completos · 6 imágenes · 35/mes.",
+    up1:"1 mes", up6:"6 meses", up12:"12 meses", upBest:"Mejor precio", perMo:"/mes",
+    planFree:"Gratis", offWord:"dto.", baseWord:"base",
+    pricingTab:"PLANES", pricingTitle:"Empieza gratis, pasa a Pro cuando quieras", pricingDesc:"Gratis son 3 posts/mes, Pro 35/mes. Cuanto más largo el plan, más barato por mes.",
+    plansBtn:"🏷 Planes", plansTitle:"Planes", proNote:"Tienes Pro. Puedes cambiar cuando quieras.",
+    footTerms:"Términos", footPrivacy:"Privacidad", footRefund:"Reembolsos", footCopy:"© Cada carrera registrada se vuelve valor",
+    inviteBtn:"🎁 Invitar · 20%",
+    upNote:"Los pagos los gestiona Lemon Squeezy de forma segura. Cancela cuando quieras.",
     regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
-    stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando"
+    stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando",
+    genTitle:"Creando tu entrada de blog", genNote:"No cierres esto — suele tardar 20–40 s."
   }
 };
 
@@ -563,6 +789,7 @@ function applyI18n(){
   const btn=document.getElementById("genBtn");
   if(btn && !btn.disabled) btn.textContent = T("genBtn");
   if(typeof updateAuthUI==="function") updateAuthUI();
+  if(typeof renderPricing==="function") renderPricing();   // 메인 요금제 섹션 갱신
   if(current) render(current); // re-render dynamic content in new language
 }
 
@@ -640,7 +867,9 @@ function setProg(pct){
   $('#progLabelText').textContent=T(stg);
 }
 function progStart_(){
-  $('#progWrap').style.display='block';
+  $('#genTitle').textContent=T('genTitle');
+  $('#genNote').textContent=T('genNote');
+  $('#genModal').style.display='flex';                    // 화면 중앙 오버레이
   progStart=performance.now(); setProg(0);
   if(progTimer) clearInterval(progTimer);
   progTimer=setInterval(()=>{
@@ -651,9 +880,21 @@ function progStart_(){
 }
 function progStop(done){
   if(progTimer){ clearInterval(progTimer); progTimer=null; }
-  if(done){ setProg(100); setTimeout(()=>{ $('#progWrap').style.display='none'; }, 400); }
-  else { $('#progWrap').style.display='none'; }
+  if(done){ setProg(100); setTimeout(()=>{ $('#genModal').style.display='none'; }, 450); }
+  else { $('#genModal').style.display='none'; }
 }
+
+// 무료 한도 초과 — 화면 중앙 고정 팝업
+function showLimit(n){
+  $('#limitTitle').textContent=T('limitTitle');
+  $('#limitDesc').textContent=T('limitMsg').replace('{n}', n);
+  $('#limitOkBtn').textContent=T('limitOk');
+  $('#limitModal').style.display='flex';
+}
+function closeLimit(){ $('#limitModal').style.display='none'; }
+$('#limitClose').onclick=closeLimit;
+$('#limitOkBtn').onclick=()=>{ closeLimit(); openUpgrade(); };   // 한도 → 요금제 보기
+$('#limitModal').addEventListener('click',e=>{ if(e.target===$('#limitModal')) closeLimit(); });
 
 $('#langSel').onchange=e=>{
   LANG=e.target.value;
@@ -680,7 +921,7 @@ $('#genBtn').onclick=async()=>{
     const res=await fetch('/api/generate',{method:'POST',body:fd,headers});
     try{ data=await res.json(); }catch(_){ data=null; }
     if(res.status===401){ AUTH.session=null; updateAuthUI(); openLogin(); toast(T('loginNeeded')); reset(); return; }
-    if(res.status===402){ const n=(data&&data.limit)||AUTH.freeLimit; toast('⚠ '+T('limitMsg').replace('{n}',n)); updateUsage(data); reset(); return; }
+    if(res.status===402){ const n=(data&&data.limit)||AUTH.freeLimit; progStop(false); updateUsage(data); showLimit(n); btn.disabled=false; btn.textContent=T('genBtn'); return; }
     if(!res.ok){
       const msg=(data&&data.error)?data.error:(T('tServer')+' ('+res.status+')');
       toast('⚠ '+msg); reset(); return;   // 실패 시 가짜 글로 바꿔치기 금지 — 진짜 에러를 보여줌
@@ -731,8 +972,7 @@ function render(d){
     g.appendChild(cell);});
 }
 
-// ===== 결과 화면 툴바: 다시 생성 / 새로 쓰기 =====
-$('#regenBtn').onclick=()=>{ $('#genBtn').click(); };   // 같은 소재로 다른 버전 (사용량 1편 차감)
+// ===== 결과 화면 툴바: 새로 쓰기 =====
 function resetAll(){
   $('#srcText').value=''; $('#keywords').value='';
   files.length=0; $('#thumbs').innerHTML=''; $('#fileInput').value='';
@@ -810,10 +1050,11 @@ async function initAuth(){
   if(AUTH.enabled && AUTH.url && AUTH.anon && window.supabase){
     SB=window.supabase.createClient(AUTH.url, AUTH.anon);
     try{ const {data}=await SB.auth.getSession(); AUTH.session=data.session||null; }catch(_){}
-    SB.auth.onAuthStateChange((_e,s)=>{ AUTH.session=s||null; updateAuthUI(); });
+    SB.auth.onAuthStateChange((_e,s)=>{ AUTH.session=s||null; updateAuthUI(); if(s) fetchUsage(); });
   }
   $('#authWrap').style.display = AUTH.enabled ? 'flex' : 'none';
   updateAuthUI();
+  if(AUTH.session) fetchUsage();   // 이미 로그인 상태면 새로고침 직후 바로 표시
 }
 function openLogin(){ if(AUTH.enabled) $('#loginModal').style.display='flex'; }
 function closeLogin(){ $('#loginModal').style.display='none'; }
@@ -831,14 +1072,119 @@ function updateAuthUI(){
     if(lb) lb.style.display='';
     if(uc) uc.style.display='none';
     if($('#usageChip')) $('#usageChip').style.display='none';
+    PLAN='free';
   }
+  if(typeof refreshUpBtn==='function') refreshUpBtn();
 }
+let PLAN='free';
 function updateUsage(u){
-  if(!u || u.used==null || u.limit==null) return;
+  if(!u) return;
+  if(u.plan){ PLAN=u.plan; refreshUpBtn(); }
+  if(u.used==null || u.limit==null) return;
   const chip=$('#usageChip');
   chip.style.display='inline-block';
-  chip.textContent=`${T('thisMonth')} ${u.used}/${u.limit}`;
+  const remain = (u.remaining!=null) ? u.remaining : Math.max(0, u.limit-u.used);
+  const tag = (PLAN==='pro') ? 'Pro · ' : '';
+  chip.textContent=`${tag}${T('thisMonth')} ${u.used}/${u.limit} · ${T('remain')} ${remain}`;
 }
+function refreshUpBtn(){
+  const b=$('#upBtn'); if(!b) return;
+  if(!(AUTH.enabled && AUTH.session)){ b.style.display='none'; return; }
+  // 결제 후에도 요금제를 볼 수 있게 버튼 유지 (Pro면 "요금제", 무료면 "✨ 업그레이드")
+  b.style.display='inline-block';
+  b.textContent = (PLAN==='pro') ? T('plansBtn') : T('upgradeBtn');
+}
+
+// ===== 업그레이드(요금제) 팝업 =====
+const CHECKOUT = {
+  '1m':  'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/e22ebe6b-d374-4e67-923b-68594b1a29b7',
+  '6m':  'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/42e8fbea-4b03-41a1-b864-9afebd4fbbc2',
+  '12m': 'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/8c63135d-38f5-4c92-81e8-a0609ac3f81c',
+};
+const PLAN_DATA = [
+  {k:'1m',  nameKey:'up1',  total:'$12', permo:'$12'},
+  {k:'6m',  nameKey:'up6',  total:'$60', permo:'$10', save:'17%'},
+  {k:'12m', nameKey:'up12', total:'$96', permo:'$8',  save:'33%', best:true},
+];
+function buildCheckout(k){
+  let u=CHECKOUT[k]; if(!u) return '#';
+  const p=[];
+  if(AUTH.session && AUTH.session.user){
+    const usr=AUTH.session.user;
+    if(usr.email) p.push('checkout[email]='+encodeURIComponent(usr.email));
+    if(usr.id)    p.push('checkout[custom][user_id]='+encodeURIComponent(usr.id));
+  }
+  return u + (p.length ? ('?'+p.join('&')) : '');
+}
+function planClick(k){
+  if(AUTH.enabled && !AUTH.session){ openLogin(); return; }   // 로그인부터
+  window.open(buildCheckout(k), '_blank');
+}
+// 할인 사다리: 무료 → 1개월 → 6개월 → 12개월 (오른쪽으로 갈수록 할인↑)
+function buildLadder(lw){
+  if(!lw) return;
+  const LAD=[
+    {t:T('planFree'), d:T('baseWord'), cls:''},
+    {t:T('up1'),      d:T('baseWord'), cls:''},
+    {t:T('up6'),      d:'17%↓',        cls:'off1'},
+    {t:T('up12'),     d:'33%↓',        cls:'off2'},
+  ];
+  lw.innerHTML='';
+  LAD.forEach((x,i)=>{
+    if(i>0){ const a=document.createElement('div'); a.className='arw'; a.textContent='›'; lw.appendChild(a); }
+    const el=document.createElement('div'); el.className=('lad '+x.cls).trim();
+    el.innerHTML=`<div class="lt"></div><div class="ld"></div>`;
+    el.querySelector('.lt').textContent=x.t; el.querySelector('.ld').textContent=x.d;
+    lw.appendChild(el);
+  });
+}
+function buildPlanCards(wrap){
+  if(!wrap) return;
+  const pm=T('perMo');
+  wrap.innerHTML='';
+  PLAN_DATA.forEach(p=>{
+    const card=document.createElement('button');
+    card.className='plan-card'+(p.best?' best':'');
+    const badge=p.best?`<div class="plan-badge">${T('upBest')}</div>`:'';
+    const base=p.save?`<span class="base">$12${pm}</span>`:'';
+    const right = p.save
+      ? `<div class="pr">${p.permo}${pm}</div><div style="margin-top:3px">${base}<span class="sv-chip ${p.best?'s2':'s1'}">${p.save} ${T('offWord')}</span></div>`
+      : `<div class="pr">${p.permo}${pm}</div><div class="sv-flat">${T('baseWord')}</div>`;
+    card.innerHTML=`${badge}
+      <div><div class="nm">${T(p.nameKey)}</div><div class="mo">${p.total}</div></div>
+      <div style="text-align:right">${right}</div>`;
+    card.onclick=()=>planClick(p.k);
+    wrap.appendChild(card);
+  });
+}
+function renderPricing(){   // 메인 화면 요금제 섹션(항상 보임)
+  buildLadder($('#pricingLadder'));
+  buildPlanCards($('#pricingPlans'));
+}
+function openUpgrade(){
+  if(!AUTH.enabled){ return; }
+  const isPro = (PLAN==='pro');
+  $('#upTitle').textContent = isPro ? T('plansTitle') : T('upTitle');
+  $('#upSub').textContent   = isPro ? T('proNote')    : T('upSub');
+  $('#upNote').textContent=T('upNote');
+  buildLadder($('#upLadder'));
+  buildPlanCards($('#plans'));
+  $('#upgradeModal').style.display='flex';
+}
+function closeUpgrade(){ $('#upgradeModal').style.display='none'; }
+$('#upBtn').onclick=openUpgrade;
+$('#upClose').onclick=closeUpgrade;
+$('#upgradeModal').addEventListener('click',e=>{ if(e.target===$('#upgradeModal')) closeUpgrade(); });
+async function fetchUsage(){   // 로그인 직후/새로고침 시 남은 횟수 즉시 표시
+  if(!AUTH.enabled || !AUTH.session || !AUTH.session.access_token) return;
+  try{
+    const r=await fetch('/api/usage',{headers:{'Authorization':'Bearer '+AUTH.session.access_token}});
+    if(r.ok){ const u=await r.json(); if(u && u.limit!=null) updateUsage(u); }
+  }catch(_){}
+}
+// 친구 초대(제휴 20%) — LS 제휴 가입 페이지로
+const AFFILIATE_URL='https://runner-blog-auto.lemonsqueezy.com/affiliates';
+$('#inviteBtn').onclick=()=>window.open(AFFILIATE_URL,'_blank');
 $('#loginBtn').onclick=openLogin;
 $('#modalClose').onclick=closeLogin;
 $('#loginModal').addEventListener('click',e=>{ if(e.target===$('#loginModal')) closeLogin(); });
