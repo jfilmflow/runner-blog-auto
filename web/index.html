@@ -263,6 +263,22 @@
   .gicon{width:19px;height:19px}
   .modal-note{color:var(--muted2);font-size:11.5px;margin-top:14px;line-height:1.5;text-align:center}
 
+  /* 스마트 후속질문 모달 */
+  .q-modal{max-width:460px;text-align:left}
+  .q-modal .modal-h,.q-modal .modal-d{text-align:left}
+  .q-list{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+  .q-item .q-q{display:block;font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:7px;line-height:1.45}
+  .q-item .q-q .q-opt{font-weight:600;color:var(--muted2);font-size:11px;margin-left:6px}
+  .q-item input.q-a{width:100%;background:var(--field-bg);border:1px solid var(--border);border-radius:11px;
+    padding:11px 13px;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .15s,box-shadow .15s}
+  .q-item input.q-a::placeholder{color:var(--muted2)}
+  .q-item input.q-a:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(46,214,198,.14);outline:none}
+  .q-skip{width:100%;margin-top:10px;background:transparent;border:none;color:var(--muted);font-size:12.5px;
+    font-family:inherit;cursor:pointer;padding:6px;text-decoration:underline;text-underline-offset:3px}
+  .q-skip:hover{color:var(--text)}
+  .q-loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;padding:14px 2px}
+  @media (max-width:600px){ .q-modal{max-width:none} .q-item input.q-a{font-size:16px} }
+
   /* upgrade */
   .up-btn{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border:none;font-weight:800;
     font-size:12.5px;padding:8px 13px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap}
@@ -474,6 +490,19 @@
   </div>
 </div>
 
+<!-- 스마트 후속질문 모달 (재료 늘리기) -->
+<div class="modal-bg" id="qModal" style="display:none">
+  <div class="modal q-modal">
+    <button class="modal-x" id="qClose">✕</button>
+    <div class="modal-logo" style="background:linear-gradient(135deg,var(--mint),#1f9fd6)">💬</div>
+    <div class="modal-h" id="qTitle"></div>
+    <div class="modal-d" id="qDesc"></div>
+    <div class="q-list" id="qList"></div>
+    <button class="cta" id="qGenBtn" style="margin-top:14px"></button>
+    <button class="q-skip" id="qSkipBtn"></button>
+  </div>
+</div>
+
 <!-- 생성 중 진행률 모달 (화면 중앙) -->
 <div class="modal-bg" id="genModal" style="display:none">
   <div class="modal gen-modal">
@@ -568,7 +597,9 @@ const I18N = {
     upNote:"Payments are handled securely by Lemon Squeezy. Cancel anytime.",
     regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
     stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing",
-    genTitle:"Creating your blog post", genNote:"Please keep this open — usually 20–40 seconds."
+    genTitle:"Creating your blog post", genNote:"Please keep this open — usually 20–40 seconds.",
+    qTitle:"A couple of quick questions", qDesc:"Answer any you like — even one adds real, personal detail. Nothing here is required.",
+    qLoading:"Reading your story…", qGen:"⚡ Generate with these", qSkip:"Skip & generate anyway", qOptional:"optional"
   },
   ko:{
     brand:"달린 기록은 반드시 <b>가치</b>가 된다",
@@ -618,7 +649,9 @@ const I18N = {
     upNote:"결제는 Lemon Squeezy에서 안전하게 처리돼요. 언제든 취소 가능.",
     regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
     stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리",
-    genTitle:"블로그를 만들고 있어요", genNote:"창을 닫지 말고 잠시만 기다려 주세요 (보통 20~40초)."
+    genTitle:"블로그를 만들고 있어요", genNote:"창을 닫지 말고 잠시만 기다려 주세요 (보통 20~40초).",
+    qTitle:"잠깐, 몇 가지만 더", qDesc:"편한 것만 답해도 돼요 — 한 줄이라도 답하면 훨씬 생생하고 나다운 글이 나와요. 전부 선택 사항이에요.",
+    qLoading:"이야기를 읽는 중…", qGen:"⚡ 이 답변으로 생성", qSkip:"건너뛰고 바로 생성", qOptional:"선택"
   },
   ja:{
     brand:"走った記録は必ず<b>価値</b>になる",
@@ -668,7 +701,9 @@ const I18N = {
     upNote:"決済はLemon Squeezyが安全に処理します。いつでも解約可能。",
     regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
     stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中",
-    genTitle:"ブログを作成中です", genNote:"この画面を閉じずにお待ちください（通常20〜40秒）。"
+    genTitle:"ブログを作成中です", genNote:"この画面を閉じずにお待ちください（通常20〜40秒）。",
+    qTitle:"あと少しだけ質問です", qDesc:"答えられるものだけでOK — 一つ答えるだけでも、ぐっと生き生きした自分らしい記事になります。すべて任意です。",
+    qLoading:"ストーリーを読んでいます…", qGen:"⚡ この回答で生成", qSkip:"スキップして生成", qOptional:"任意"
   },
   zh:{
     brand:"跑过的记录终将<b>成为价值</b>",
@@ -718,7 +753,9 @@ const I18N = {
     upNote:"付款由 Lemon Squeezy 安全处理，可随时取消。",
     regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
     stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾",
-    genTitle:"正在生成你的博客", genNote:"请不要关闭本窗口，通常需要20~40秒。"
+    genTitle:"正在生成你的博客", genNote:"请不要关闭本窗口，通常需要20~40秒。",
+    qTitle:"再问你几个小问题", qDesc:"答你愿意答的就行——哪怕只答一个，也能让文章更真实、更有你的味道。全部都是选填。",
+    qLoading:"正在读取你的故事…", qGen:"⚡ 用这些回答生成", qSkip:"跳过并直接生成", qOptional:"选填"
   },
   es:{
     brand:"Cada carrera registrada <b>se vuelve valor</b>",
@@ -768,7 +805,9 @@ const I18N = {
     upNote:"Los pagos los gestiona Lemon Squeezy de forma segura. Cancela cuando quieras.",
     regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
     stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando",
-    genTitle:"Creando tu entrada de blog", genNote:"No cierres esto — suele tardar 20–40 s."
+    genTitle:"Creando tu entrada de blog", genNote:"No cierres esto — suele tardar 20–40 s.",
+    qTitle:"Un par de preguntas rápidas", qDesc:"Responde las que quieras — incluso una añade detalle real y personal. Nada es obligatorio.",
+    qLoading:"Leyendo tu historia…", qGen:"⚡ Generar con esto", qSkip:"Omitir y generar", qOptional:"opcional"
   }
 };
 
@@ -911,10 +950,66 @@ $('#langSel').onchange=e=>{
   applyI18n();
 };
 
+// ===== 스마트 후속질문: 재료를 늘리는 장치 =====
+let Q_ITEMS=[];   // 현재 표시 중인 질문들 [{q,hint}]
+function closeQ(){ $('#qModal').style.display='none'; }
+$('#qClose').onclick=closeQ;
+$('#qModal').addEventListener('click',e=>{ if(e.target===$('#qModal')) closeQ(); });
+
+// STEP1의 "생성" → 먼저 스마트 질문을 물어보고, 답변(또는 건너뛰기)으로 생성
 $('#genBtn').onclick=async()=>{
   const text=$('#srcText').value.trim();
   if(!text && files.length===0){toast(T('tNeed'));return;}
   if(AUTH.enabled && !AUTH.session){ openLogin(); return; }   // 로그인 필요
+  const btn=$('#genBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>'+T('qLoading');
+  try{
+    const fd=new FormData();
+    fd.append('text',text); fd.append('lang',LANG); fd.append('n_photos',files.length);
+    const headers={};
+    if(AUTH.session && AUTH.session.access_token) headers['Authorization']='Bearer '+AUTH.session.access_token;
+    const res=await fetch('/api/questions',{method:'POST',body:fd,headers});
+    if(res.status===401){ AUTH.session=null; updateAuthUI(); openLogin(); toast(T('loginNeeded')); btn.disabled=false; btn.textContent=T('genBtn'); return; }
+    let qd=null; try{ qd=await res.json(); }catch(_){ qd=null; }
+    Q_ITEMS=(qd&&qd.questions&&qd.questions.length)?qd.questions:[];
+  }catch(e){ Q_ITEMS=[]; }   // 질문 실패해도 생성은 진행 (건너뛴 것과 동일)
+  btn.disabled=false; btn.textContent=T('genBtn');
+  if(Q_ITEMS.length){ openQuestions(); }
+  else { doGenerate(''); }   // 질문을 못 만들었으면 바로 생성
+};
+
+function openQuestions(){
+  $('#qTitle').textContent=T('qTitle');
+  $('#qDesc').textContent=T('qDesc');
+  $('#qGenBtn').textContent=T('qGen');
+  $('#qSkipBtn').textContent=T('qSkip');
+  const list=$('#qList'); list.innerHTML='';
+  Q_ITEMS.forEach((it,i)=>{
+    const row=document.createElement('div'); row.className='q-item';
+    row.innerHTML=`<label class="q-q"></label><input class="q-a" type="text" data-qi="${i}">`;
+    row.querySelector('.q-q').innerHTML=esc(it.q)+` <span class="q-opt">(${esc(T('qOptional'))})</span>`;
+    const inp=row.querySelector('.q-a'); if(it.hint) inp.placeholder=it.hint;
+    list.appendChild(row);
+  });
+  $('#qModal').style.display='flex';
+  setTimeout(()=>{ const f=$('#qList').querySelector('input'); if(f) f.focus(); },80);
+}
+
+// 질문 답변을 "질문: 답변" 재료 텍스트로 조립
+function collectAnswers(){
+  const lines=[];
+  $('#qList').querySelectorAll('input.q-a').forEach(inp=>{
+    const v=inp.value.trim(); if(!v) return;
+    const i=+inp.getAttribute('data-qi'); const q=(Q_ITEMS[i]&&Q_ITEMS[i].q)||'';
+    lines.push(q?`- ${q} → ${v}`:`- ${v}`);
+  });
+  return lines.join('\n');
+}
+$('#qGenBtn').onclick=()=>{ const a=collectAnswers(); closeQ(); doGenerate(a); };
+$('#qSkipBtn').onclick=()=>{ closeQ(); doGenerate(''); };
+
+// ===== 실제 생성 =====
+async function doGenerate(answersText){
+  const text=$('#srcText').value.trim();
   const btn=$('#genBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>'+T('genLoading');
   const reset=()=>{progStop(false);btn.disabled=false;btn.textContent=T('genBtn');};
   progStart_();
@@ -924,6 +1019,7 @@ $('#genBtn').onclick=async()=>{
     fd.append('text',text);fd.append('keywords',$('#keywords').value);
     fd.append('length',$('#length').value);fd.append('proof',$('#proof').value);
     fd.append('lang',LANG);
+    if(answersText) fd.append('answers',answersText);   // 스마트 답변을 재료로 전달
     files.forEach(f=>fd.append('shots',f));
     const headers={};
     if(AUTH.session && AUTH.session.access_token) headers['Authorization']='Bearer '+AUTH.session.access_token;
@@ -946,7 +1042,7 @@ $('#genBtn').onclick=async()=>{
   $('#step2').classList.remove('hidden');$('#step3').classList.remove('hidden');
   setStep(2);$('#step2').scrollIntoView({behavior:'smooth'});
   btn.disabled=false; btn.textContent=T('genBtn');
-};
+}
 
 function render(d){
   const tw=$('#titles');tw.innerHTML='';
@@ -1137,14 +1233,25 @@ const CRYPTO_LABEL={ko:'또는 USDT(크립토)로 결제',en:'Or pay with USDT (
 function cryptoLabel(){return CRYPTO_LABEL[LANG]||CRYPTO_LABEL.en;}
 async function cryptoClick(k){
   if(AUTH.enabled && !AUTH.session){ openLogin(); return; }
+  // 팝업 차단 방지: 클릭 즉시(사용자 제스처 안에서) 새 탭을 먼저 연다
+  const win = window.open('about:blank','_blank');
   const headers={'Content-Type':'application/json'};
   if(AUTH.session && AUTH.session.access_token) headers['Authorization']='Bearer '+AUTH.session.access_token;
   try{
     const r=await fetch('/api/crypto/create',{method:'POST',headers,body:JSON.stringify({plan:k})});
     const d=await r.json().catch(()=>({}));
-    if(d.invoice_url){ window.open(d.invoice_url,'_blank'); }
-    else{ toast('⚠ '+(d.error||'crypto error')); }
-  }catch(e){ toast('⚠ '+T('tNetErr')); }
+    if(d.invoice_url){
+      if(win){ win.location.href=d.invoice_url; } else { window.location.href=d.invoice_url; }
+    }else{
+      if(win){ win.close(); }
+      toast('⚠ '+(d.error||('결제 생성 실패 ('+r.status+')')));
+      console.error('crypto/create 실패:', r.status, d);
+    }
+  }catch(e){
+    if(win){ win.close(); }
+    toast('⚠ '+T('tNetErr'));
+    console.error('crypto/create 오류:', e);
+  }
 }
 // 할인 사다리: 무료 → 1개월 → 6개월 → 12개월 (오른쪽으로 갈수록 할인↑)
 function buildLadder(lw){
