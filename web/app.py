@@ -318,7 +318,7 @@ def crypto_create():
     req = urllib.request.Request(
         "https://api.nowpayments.io/v1/invoice",
         data=_json.dumps(payload).encode("utf-8"), method="POST",
-        "x-api-key": key, "Content-Type": "application/json", "Accept": "application/json", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"})
+        headers={"x-api-key": key, "Content-Type": "application/json", "Accept": "application/json", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"})
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
             inv = _json.loads(r.read().decode("utf-8"))
