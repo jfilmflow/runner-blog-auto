@@ -309,7 +309,7 @@ def crypto_create():
     payload = {
         "price_amount": price, "price_currency": "usd",
         "order_id": f"{uid}|{months}",
-        "order_description": f"Runner Blog Pro · {months} month(s)",
+        "order_description": "Runner Blog Pro · " + str(months) + "mo · " + ((user or {}).get("email") or "no-email"),
         "ipn_callback_url": base + "/api/nowpayments-webhook",
         "success_url": base + "/?paid=1", "cancel_url": base + "/?canceled=1",
         "is_fixed_rate": True,
