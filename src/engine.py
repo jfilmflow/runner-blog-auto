@@ -117,6 +117,130 @@ def _build_user_text(article_text, extra_context, n, facts):
     return "".join(parts)
 
 
+# ── 스마트 후속질문: 재료를 늘리는 장치 ──────────────────────────
+_Q_LANG = {
+    "en": "English", "ko": "Korean (한국어)", "ja": "Japanese (日本語)",
+    "zh": "Simplified Chinese (简体中文)", "es": "Spanish (Español)",
+}
+
+_Q_SYS = (
+    "You are a warm running-blog interviewer. Given a runner's short note (and/or the number of photos "
+    "they attached), you ask a FEW short follow-up questions whose answers will make their blog richer, "
+    "more personal, and more credible — the kind of concrete, sensory, emotional detail a reader connects with. "
+    "You return ONLY a JSON object, no prose, no code fences."
+)
+
+# 재료 상황별 질문 지침 (적응형): 사진(기록)이 있으면 숫자는 자동 → 부드러운 질문만/적게,
+# 이미지도 글도 얇으면 → 사실 질문까지 촘촘하게.
+_Q_MODE_RULE = {
+    "soft": (
+        "The runner ALSO attached a running photo/screenshot, so the hard numbers "
+        "(distance, time, pace, heart rate, splits, elevation, date, map) are ALREADY captured from the image. "
+        "Therefore you MUST NOT ask about any number or stat. Ask ONLY about the human layer that a screenshot "
+        "can never hold: how their body/mind felt, the scene or weather mood, a turning point, why they ran today, "
+        "who they were with, or the moment right after finishing."
+    ),
+    "mixed": (
+        "Vary the angles — one sensory/scene, one emotional/motivation, one concrete fact or comparison. "
+        "Do NOT ask for numbers already stated in the note."
+    ),
+    "dense": (
+        "There is little material AND no record photo, so build the story fairly densely. "
+        "Include exactly ONE short factual question about whatever concrete detail is missing "
+        "(distance, or the weather, or pace — pick the most useful one), and make the REST about the human layer "
+        "(feeling, scene, turning point, why, after-run). Keep every question short and easy."
+    ),
+}
+
+
+def _q_task(want, mode, name):
+    return (
+        f"Read the runner's note below. Produce EXACTLY {want} follow-up question(s).\n"
+        "Rules:\n"
+        "1. Each question must be SHORT (answerable in a few words) and SPECIFIC to THIS runner's note — "
+        "not generic boilerplate. Fill the real gaps in their story.\n"
+        f"2. {_Q_MODE_RULE.get(mode, _Q_MODE_RULE['mixed'])}\n"
+        "3. Warm, casual tone — like a friend curious about their run.\n"
+        "4. Also give a tiny 'hint' for each: a 2-4 word example answer to lower the friction.\n"
+        f"5. Write the questions AND hints in {name}.\n"
+        "Return JSON exactly like: {\"questions\":[{\"q\":\"...\",\"hint\":\"...\"}, ...]}"
+    )
+
+
+def plan_questions(text_len, n_photos):
+    """재료 양에 따라 (질문 개수, 모드)를 정한다 — 이탈률↓, 품질↑의 핵심 로직.
+       사진 있음 → 숫자 자동, 질문 적고 부드럽게 / 이미지·글 둘 다 얇음 → 촘촘하게."""
+    if n_photos and n_photos > 0:
+        # 기록 이미지에서 숫자를 읽으므로 감정·이야기만. 글이 거의 없으면 스토리 더 끌어내려 3개.
+        return (3 if text_len < 40 else 2), "soft"
+    if text_len >= 120:
+        return 3, "mixed"
+    return 4, "dense"    # 이미지도 없고 글도 얇음 → Plan B: 사실 질문 포함 촘촘히
+
+
+def smart_questions(article_text, lang="ko", n_photos=0, provider="claude", model=None):
+    """러너의 메모(+사진 유무·글 길이)를 읽고, 재료 상황에 맞춰 후속질문을 적응형으로 생성.
+       실패하면 언어별 기본 질문으로 폴백 (개수·종류도 상황에 맞게)."""
+    name = _Q_LANG.get((lang or "ko").lower(), "the same language as the note")
+    note = (article_text or "").strip()
+    want, mode = plan_questions(len(note), n_photos)
+    ctx = ""
+    if n_photos and len(note) < 40:
+        ctx = (f"\n\n(The runner attached {n_photos} photo(s) but wrote little text — "
+               "draw out the story and feeling behind those moments.)")
+    user = ("[Runner's note]\n" + (note or "(almost no text — only photos)") + ctx +
+            "\n\n" + _q_task(want, mode, name))
+    if provider == "claude":
+        try:
+            import anthropic
+            client = anthropic.Anthropic()
+            model = model or os.getenv("ANTHROPIC_MODEL") or "claude-sonnet-4-5"
+            msg = client.messages.create(
+                model=model, max_tokens=800, system=_Q_SYS,
+                messages=[{"role": "user", "content": user}],
+            )
+            raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+            data = _extract_json(raw)
+            qs = [q for q in (data.get("questions") or []) if q.get("q")][:want]
+            if qs:
+                return qs
+        except Exception as e:
+            print(f"  [스마트질문] 실패(기본질문으로 폴백): {e}")
+    return _fallback_questions(lang, want, mode)
+
+
+# 폴백 질문 풀 — 순서 [느낌, 풍경/날씨, 끝나고/왜, 비교(사실성)]. 마지막(비교)만 숫자성 → soft에선 제외.
+_FALLBACK_Q = {
+    "ko": [{"q": "오늘 달리면서 몸이나 마음이 어땠어요?", "hint": "예) 다리가 무거웠다"},
+           {"q": "달린 곳 풍경이나 날씨는 어땠나요?", "hint": "예) 노을 진 한강"},
+           {"q": "다 뛰고 난 뒤엔 기분이 어땠어요?", "hint": "예) 뿌듯하고 개운"},
+           {"q": "지난번과 비교해 달라진 점이 있나요?", "hint": "예) 3km 더 뛰었다"}],
+    "en": [{"q": "How did your body or mind feel during the run?", "hint": "e.g. legs felt heavy"},
+           {"q": "What was the scenery or weather like?", "hint": "e.g. river at sunset"},
+           {"q": "How did you feel right after finishing?", "hint": "e.g. proud, refreshed"},
+           {"q": "Anything different from last time?", "hint": "e.g. ran 3km more"}],
+    "ja": [{"q": "走っている間、体や心はどんな感じでしたか？", "hint": "例）脚が重かった"},
+           {"q": "走った場所の景色や天気は？", "hint": "例）夕焼けの河川敷"},
+           {"q": "走り終えた後の気分は？", "hint": "例）達成感でスッキリ"},
+           {"q": "前回と比べて変わった点は？", "hint": "例）3km多く走れた"}],
+    "zh": [{"q": "跑步时你的身体或心情如何？", "hint": "例）腿很沉"},
+           {"q": "跑步的地方风景或天气怎么样？", "hint": "例）夕阳下的河边"},
+           {"q": "跑完之后的感觉如何？", "hint": "例）成就感满满"},
+           {"q": "和上次相比有什么变化？", "hint": "例）多跑了3公里"}],
+    "es": [{"q": "¿Cómo se sintió tu cuerpo o tu mente al correr?", "hint": "ej.) piernas pesadas"},
+           {"q": "¿Cómo era el paisaje o el clima?", "hint": "ej.) el río al atardecer"},
+           {"q": "¿Cómo te sentiste justo al terminar?", "hint": "ej.) orgulloso, ligero"},
+           {"q": "¿Algo distinto respecto a la última vez?", "hint": "ej.) 3 km más"}],
+}
+
+
+def _fallback_questions(lang, want=3, mode="mixed"):
+    pool = _FALLBACK_Q.get((lang or "ko").lower(), _FALLBACK_Q["en"])
+    if mode == "soft":
+        pool = pool[:3]        # 숫자성 비교 질문 제외 (사진에서 이미 읽음)
+    return pool[:max(1, want)]
+
+
 def generate(article_text, provider="claude", model=None, photo_paths=None, lang="ko", extra_context=None):
     system = _load_prompt(lang)
     photo_paths = (photo_paths or [])[:MAX_VISION_PHOTOS]
