@@ -263,11 +263,25 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
                 media, b64 = _encode_image(p)
                 content.append({"type": "image", "source": {"type": "base64", "media_type": media, "data": b64}})
 
-        msg = client.messages.create(
-            model=model, max_tokens=8000, system=system,
-            messages=[{"role": "user", "content": content}],
-        )
-        raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+        # JSON이 깨져 파싱 실패하면 1회 더 재시도(두 번째엔 '{' 프리필로 JSON을 강제).
+        # 드물게 모델이 서두 문장을 붙이거나 JSON을 미완성하는 경우가 있어 사용자에게 실패가 안 보이게 함.
+        last_err = None
+        for attempt in range(2):
+            msgs = [{"role": "user", "content": content}]
+            if attempt > 0:
+                msgs.append({"role": "assistant", "content": "{"})   # 응답이 '{' 부터 시작하도록 강제
+            try:
+                msg = client.messages.create(
+                    model=model, max_tokens=8000, system=system, messages=msgs,
+                )
+                raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+                if attempt > 0:
+                    raw = "{" + raw     # 프리필한 여는 중괄호를 앞에 다시 붙여 완성
+                return _extract_json(raw)
+            except Exception as e:
+                last_err = e
+                print(f"  [생성] JSON 파싱/생성 실패 (attempt {attempt + 1}/2): {e}")
+        raise last_err
 
     elif provider == "openai":
         from openai import OpenAI
