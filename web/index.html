@@ -948,6 +948,7 @@ $('#langSel').onchange=e=>{
   LANG=e.target.value;
   try{ localStorage.setItem("rb_lang",LANG); }catch(_){}
   applyI18n();
+  if(LAST_USAGE) updateUsage(LAST_USAGE);   // 사용량 칩도 새 언어로 다시 그림
 };
 
 // ===== 스마트 후속질문: 재료를 늘리는 장치 =====
@@ -1185,8 +1186,10 @@ function updateAuthUI(){
   if(typeof refreshUpBtn==='function') refreshUpBtn();
 }
 let PLAN='free';
+let LAST_USAGE=null;   // 언어 전환 시 사용량 칩을 다시 그리기 위해 마지막 값 보관
 function updateUsage(u){
   if(!u) return;
+  LAST_USAGE=u;
   if(u.plan){ PLAN=u.plan; refreshUpBtn(); }
   if(u.used==null || u.limit==null) return;
   const chip=$('#usageChip');
