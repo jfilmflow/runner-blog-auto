@@ -134,6 +134,31 @@ def images(fname):
     return send_from_directory(IMG_DIR, fname)
 
 
+@app.route("/api/questions", methods=["POST"])
+def api_questions():
+    """러너 메모(+사진 개수)를 읽고 재료를 늘릴 스마트 후속질문 3개를 선택 언어로 반환.
+       로그인 기능이 켜져 있으면 로그인 필요(생성과 동일 게이트). 실패해도 기본질문 폴백."""
+    text = (request.form.get("text") or "").strip()
+    lang = (request.form.get("lang") or "ko").strip()
+    try:
+        n_photos = int(request.form.get("n_photos") or 0)
+    except Exception:
+        n_photos = 0
+    provider = os.getenv("ENGINE_PROVIDER", "claude")
+
+    if authz.enabled():
+        user = authz.verify_token(_bearer())
+        if not user:
+            return jsonify({"error": "로그인이 필요해요.", "auth_required": True}), 401
+
+    try:
+        qs = engine_mod.smart_questions(text, lang=lang, n_photos=n_photos, provider=provider)
+    except Exception:
+        import traceback; traceback.print_exc()
+        qs = engine_mod._fallback_questions(lang)
+    return jsonify({"questions": qs})
+
+
 @app.route("/api/generate", methods=["POST"])
 def api_generate():
     text = (request.form.get("text") or "").strip()
@@ -305,11 +330,13 @@ def crypto_create():
         return jsonify({"error": "요금제를 확인해주세요."}), 400
     price, months = CRYPTO_PLANS[plan_key]
     uid = (user or {}).get("id", "anon")
+    email = (user or {}).get("email", "") or "no-email"
     base = _app_base()
     payload = {
         "price_amount": price, "price_currency": "usd",
         "order_id": f"{uid}|{months}",
-        "order_description": "Runner Blog Pro · " + str(months) + "mo · " + ((user or {}).get("email") or "no-email"),
+        # 주문 설명에 이메일을 넣어 NOWPayments 대시보드에서도 누가 냈는지 보이게 함
+        "order_description": f"Runner Blog Pro · {months}mo · {email}",
         "ipn_callback_url": base + "/api/nowpayments-webhook",
         "success_url": base + "/?paid=1", "cancel_url": base + "/?canceled=1",
         "is_fixed_rate": True,
@@ -318,7 +345,14 @@ def crypto_create():
     req = urllib.request.Request(
         "https://api.nowpayments.io/v1/invoice",
         data=_json.dumps(payload).encode("utf-8"), method="POST",
-        headers={"x-api-key": key, "Content-Type": "application/json", "Accept": "application/json", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"})
+        headers={
+            "x-api-key": key,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            # Cloudflare(에러 1010) 회피용 — 정상 브라우저 User-Agent
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                          "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        })
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
             inv = _json.loads(r.read().decode("utf-8"))
