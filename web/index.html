@@ -351,9 +351,21 @@
   .pcar.dragging{cursor:grabbing;scroll-behavior:auto}
   .pcar.dragging .pcube{pointer-events:none}
   .pcar::-webkit-scrollbar{display:none}
-  .pcube{scroll-snap-align:center;flex:1 0 200px;min-height:300px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 18px;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s,opacity .2s,border-color .2s,background .2s,box-shadow .2s;opacity:.66;text-align:left}
-  .pcube:hover{opacity:.92;border-color:var(--border2)}
-  .pcube.sel{opacity:1;background:var(--accent-tint);border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line),0 16px 44px rgba(46,214,198,.16);transform:translateY(-2px)}
+  .pcube{scroll-snap-align:center;flex:1 0 200px;min-height:300px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 18px;display:flex;flex-direction:column;cursor:pointer;transition:background .3s ease,border-color .3s ease,box-shadow .3s ease,opacity .3s ease,transform .16s ease;opacity:.6;text-align:left}
+  .pcube:hover{opacity:.9;border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.28)}
+  .pcube:active{transform:scale(.985)}
+  .pcube.sel{opacity:1;background:var(--accent-tint);border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line),0 16px 44px rgba(46,214,198,.18);transform:translateY(-3px)}
+  .pcube.sel:hover{transform:translateY(-4px)}
+  .pcube.pop{animation:cubePop .4s cubic-bezier(.34,1.45,.5,1)}
+  @keyframes cubePop{0%{transform:translateY(-3px) scale(1)}45%{transform:translateY(-3px) scale(1.04)}100%{transform:translateY(-3px) scale(1)}}
+  .pc-price{transition:color .3s ease}
+  .pc-cta{transition:background .2s ease,color .2s ease,opacity .2s ease,transform .13s ease,filter .18s ease}
+  .pcube.sel .pc-cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .pc-cta:active{transform:scale(.97)}
+  .crypto-btn{transition:transform .15s ease,border-color .15s ease,filter .18s ease}
+  .crypto-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+  .pcar-nav{transition:transform .15s ease,border-color .15s ease,color .15s ease}
+  .pcar-nav:active{transform:scale(.92)}
   .pc-badge{align-self:flex-start;font-size:10.5px;font-weight:800;color:var(--ink);background:var(--mint);padding:3px 10px;border-radius:8px;margin-bottom:12px;line-height:1.4}
   .pc-badge.ghost{visibility:hidden}
   .pc-name{font-size:16px;font-weight:800;color:var(--text)}
@@ -1341,14 +1353,20 @@ function buildPlanCards(wrap){
     const badge=c.badge?`<div class="pc-badge">${c.badge}</div>`:`<div class="pc-badge ghost">·</div>`;
     const priceHtml=c.permo?`${c.price}<span>${pm}</span>`:c.price;
     el.innerHTML=`${badge}<div class="pc-name">${c.name}</div><div class="pc-price">${priceHtml}</div><div class="pc-per">${c.per}</div><ul class="pc-feats">${c.feats.map(f=>`<li>${f}</li>`).join('')}</ul><button class="pc-cta" type="button">${T('pcCta')}</button>`;
+    const selectThis=()=>{
+      car.querySelectorAll('.pcube').forEach(x=>x.classList.remove('sel'));
+      el.classList.add('sel');SELP=c.k;
+      el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+      setTimeout(()=>el.classList.remove('pop'),420);
+      if(car.scrollWidth-car.clientWidth>4) centerCube(car,el,true);
+    };
     el.addEventListener('click',e=>{
       if(e.target.closest('.pc-cta')) return;
-      car.querySelectorAll('.pcube').forEach(x=>x.classList.remove('sel'));
-      el.classList.add('sel');SELP=c.k;centerCube(car,el,true);
+      if(!el.classList.contains('sel')) selectThis();
     });
     el.querySelector('.pc-cta').addEventListener('click',ev=>{
       ev.stopPropagation();
-      if(!el.classList.contains('sel')){car.querySelectorAll('.pcube').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');SELP=c.k;centerCube(car,el,true);return;}
+      if(!el.classList.contains('sel')){ selectThis(); return; }
       if(c.free){ startFree(); } else { planClick(c.k); }
     });
     car.appendChild(el);
