@@ -83,6 +83,13 @@ def index():
     return send_from_directory(HERE, "index.html")
 
 
+@app.route("/og.png")
+def og_image():
+    resp = send_from_directory(HERE, "og.png")
+    resp.headers["Cache-Control"] = "public, max-age=86400"
+    return resp
+
+
 @app.route("/terms")
 def terms():
     return send_from_directory(HERE, "terms.html")

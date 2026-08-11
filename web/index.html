@@ -11,13 +11,13 @@
 <meta property="og:title" content="AIRNOTE — 러닝 기록이 그대로 블로그가 됩니다">
 <meta property="og:description" content="SNS에 남긴 러닝 한 줄이 2,800자 SEO 블로그 + 카드뉴스 이미지로. 5개 언어 지원 · 친구 초대 20% 페이백.">
 <meta property="og:url" content="https://app.airnote.club">
-<meta property="og:image" content="https://airnote.club/og.png">
+<meta property="og:image" content="https://app.airnote.club/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AIRNOTE — 러닝 기록이 그대로 블로그가 됩니다">
 <meta name="twitter:description" content="SNS에 남긴 러닝 한 줄이 2,800자 SEO 블로그 + 카드뉴스 이미지로. 5개 언어 지원 · 친구 초대 20% 페이백.">
-<meta name="twitter:image" content="https://airnote.club/og.png">
+<meta name="twitter:image" content="https://app.airnote.club/og.png">
 
 <!-- Lemon Squeezy 제휴(affiliate) 추적 -->
 <script>window.lemonSqueezyAffiliateConfig = { store: "runner-blog-auto" };</script>
@@ -347,9 +347,11 @@
   /* rolling cube pricing (landing과 통일) */
   #pricingLadder:empty,#upLadder:empty{display:none}
   .pcar-wrap{margin-top:16px;position:relative;display:flex;align-items:center;gap:6px}
-  .pcar{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 4px 14px;scrollbar-width:none;-ms-overflow-style:none;flex:1}
+  .pcar{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:8px 4px 14px;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0;cursor:grab;scroll-behavior:smooth;overscroll-behavior-x:contain}
+  .pcar.dragging{cursor:grabbing;scroll-behavior:auto}
+  .pcar.dragging .pcube{pointer-events:none}
   .pcar::-webkit-scrollbar{display:none}
-  .pcube{scroll-snap-align:center;flex:0 0 210px;min-height:300px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 18px;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s,opacity .2s,border-color .2s,background .2s,box-shadow .2s;opacity:.66;text-align:left}
+  .pcube{scroll-snap-align:center;flex:1 0 200px;min-height:300px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 18px;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s,opacity .2s,border-color .2s,background .2s,box-shadow .2s;opacity:.66;text-align:left}
   .pcube:hover{opacity:.92;border-color:var(--border2)}
   .pcube.sel{opacity:1;background:var(--accent-tint);border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line),0 16px 44px rgba(46,214,198,.16);transform:translateY(-2px)}
   .pc-badge{align-self:flex-start;font-size:10.5px;font-weight:800;color:var(--ink);background:var(--mint);padding:3px 10px;border-radius:8px;margin-bottom:12px;line-height:1.4}
@@ -367,7 +369,7 @@
   .pcube.sel .pc-cta{pointer-events:auto;opacity:1;background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border-color:transparent}
   .pcar-nav{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--border2);background:var(--panel);color:var(--text);font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
   .pcar-nav:hover{border-color:var(--mint);color:var(--mint)}
-  @media(max-width:560px){.pcar-nav{display:none}.pcube{flex-basis:190px;min-height:280px}}
+  @media(max-width:560px){.pcar-nav{display:none}.pcube{flex-basis:215px;min-height:280px}}
 </style>
 </head>
 <body>
@@ -1353,10 +1355,17 @@ function buildPlanCards(wrap){
   });
   wrapEl.appendChild(prev);wrapEl.appendChild(car);wrapEl.appendChild(next);
   wrap.appendChild(wrapEl);
-  const step=222;
-  prev.onclick=()=>car.scrollBy({left:-step,behavior:'smooth'});
-  next.onclick=()=>car.scrollBy({left:step,behavior:'smooth'});
-  const selEl=car.querySelector('.pcube.sel');if(selEl) setTimeout(()=>centerCube(car,selEl,false),60);
+  const cardStep=()=>{const c=car.querySelector('.pcube');return c?c.getBoundingClientRect().width+12:240;};
+  prev.onclick=()=>car.scrollBy({left:-cardStep(),behavior:'smooth'});
+  next.onclick=()=>car.scrollBy({left:cardStep(),behavior:'smooth'});
+  car.addEventListener('wheel',e=>{ if(car.scrollWidth-car.clientWidth>4 && Math.abs(e.deltaY)>Math.abs(e.deltaX)){ car.scrollLeft+=e.deltaY; e.preventDefault(); } },{passive:false});
+  let down=false,sx=0,sl=0,rubber=false;
+  car.addEventListener('pointerdown',e=>{ if(e.pointerType!=='mouse')return; down=true;sx=e.clientX;sl=car.scrollLeft;rubber=(car.scrollWidth-car.clientWidth<=4);car.classList.add('dragging');car.style.transition='';try{car.setPointerCapture(e.pointerId);}catch(_){}});
+  car.addEventListener('pointermove',e=>{ if(!down)return; const dx=e.clientX-sx; if(rubber){car.style.transform='translateX('+Math.max(-56,Math.min(56,dx*0.28))+'px)';}else{car.scrollLeft=sl-dx;} });
+  const endDrag=()=>{ if(!down)return; down=false; car.classList.remove('dragging'); if(rubber){car.style.transition='transform .42s cubic-bezier(.22,1,.36,1)';car.style.transform='translateX(0)';} };
+  car.addEventListener('pointerup',endDrag); car.addEventListener('pointercancel',endDrag);
+  const syncNav=()=>{const sc=car.scrollWidth-car.clientWidth>4;prev.style.display=sc?'':'none';next.style.display=sc?'':'none';};
+  car.scrollLeft=0; setTimeout(syncNav,30); window.addEventListener('resize',syncNav);
   // USDT(크립토) 결제 옵션 행 (유지)
   const cr=document.createElement('div');cr.className='crypto-row';
   cr.innerHTML=`<div class="crypto-label">💠 ${cryptoLabel()}</div>`;
