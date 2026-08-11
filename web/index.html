@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Runner's Blog Studio</title>
+<title>AIRNOTE — 러닝 기록을 블로그로</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%230f1416%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2260%22%20height%3D%2260%22%20rx%3D%2213%22%20fill%3D%22none%22%20stroke%3D%22%232c3d40%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%2232%22%20y%3D%2245%22%20font-family%3D%22Arial%2Csystem-ui%2Csans-serif%22%20font-size%3D%2240%22%20font-weight%3D%22800%22%20fill%3D%22%232ed6c6%22%20text-anchor%3D%22middle%22%3EA%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#070a0b">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AIRNOTE">
+<meta property="og:title" content="AIRNOTE — 러닝 기록이 그대로 블로그가 됩니다">
+<meta property="og:description" content="SNS에 남긴 러닝 한 줄이 2,800자 SEO 블로그 + 카드뉴스 이미지로. 5개 언어 지원 · 친구 초대 20% 페이백.">
+<meta property="og:url" content="https://app.airnote.club">
+<meta property="og:image" content="https://airnote.club/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AIRNOTE — 러닝 기록이 그대로 블로그가 됩니다">
+<meta name="twitter:description" content="SNS에 남긴 러닝 한 줄이 2,800자 SEO 블로그 + 카드뉴스 이미지로. 5개 언어 지원 · 친구 초대 20% 페이백.">
+<meta name="twitter:image" content="https://airnote.club/og.png">
+
 <!-- Lemon Squeezy 제휴(affiliate) 추적 -->
 <script>window.lemonSqueezyAffiliateConfig = { store: "runner-blog-auto" };</script>
 <script src="https://lmsqueezy.com/affiliate.js" defer></script>
@@ -855,11 +870,11 @@ function T(key){ return (I18N[LANG] && I18N[LANG][key]) || I18N.en[key] || key; 
 
 function applyI18n(){
   document.documentElement.lang = LANG;
-  document.title = LANG==="ko" ? "러너 블로그 스튜디오"
-                 : LANG==="ja" ? "ランナー ブログ スタジオ"
-                 : LANG==="zh" ? "跑者博客工作室"
-                 : LANG==="es" ? "Estudio de Blog para Corredores"
-                 : "Runner's Blog Studio";
+  document.title = LANG==="ko" ? "AIRNOTE — 러닝 기록을 블로그로"
+                 : LANG==="ja" ? "AIRNOTE — ランの記録をブログに"
+                 : LANG==="zh" ? "AIRNOTE — 把跑步记录变成博客"
+                 : LANG==="es" ? "AIRNOTE — Tus carreras, hechas blog"
+                 : "AIRNOTE — Turn your runs into blogs";
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = T(el.getAttribute("data-i18n")); });
   document.querySelectorAll("[data-i18n-html]").forEach(el=>{ el.innerHTML = T(el.getAttribute("data-i18n-html")); });
   document.querySelectorAll("[data-i18n-ph]").forEach(el=>{ el.setAttribute("placeholder", T(el.getAttribute("data-i18n-ph"))); });
