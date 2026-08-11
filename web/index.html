@@ -329,6 +329,30 @@
   .sv-chip.s1{color:var(--mint2);background:rgba(46,214,198,.10)}
   .sv-chip.s2{color:var(--ink);background:var(--mint)}
   .sv-flat{color:var(--muted2);font-size:12px;margin-top:3px}
+  /* rolling cube pricing (landing과 통일) */
+  #pricingLadder:empty,#upLadder:empty{display:none}
+  .pcar-wrap{margin-top:16px;position:relative;display:flex;align-items:center;gap:6px}
+  .pcar{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 4px 14px;scrollbar-width:none;-ms-overflow-style:none;flex:1}
+  .pcar::-webkit-scrollbar{display:none}
+  .pcube{scroll-snap-align:center;flex:0 0 210px;min-height:300px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 18px;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s,opacity .2s,border-color .2s,background .2s,box-shadow .2s;opacity:.66;text-align:left}
+  .pcube:hover{opacity:.92;border-color:var(--border2)}
+  .pcube.sel{opacity:1;background:var(--accent-tint);border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line),0 16px 44px rgba(46,214,198,.16);transform:translateY(-2px)}
+  .pc-badge{align-self:flex-start;font-size:10.5px;font-weight:800;color:var(--ink);background:var(--mint);padding:3px 10px;border-radius:8px;margin-bottom:12px;line-height:1.4}
+  .pc-badge.ghost{visibility:hidden}
+  .pc-name{font-size:16px;font-weight:800;color:var(--text)}
+  .pc-price{font-size:30px;font-weight:900;letter-spacing:-.02em;margin-top:5px;color:var(--text);line-height:1}
+  .pcube.sel .pc-price{color:var(--mint2)}
+  .pc-price span{font-size:14px;font-weight:600;color:var(--muted)}
+  .pc-per{font-size:12.5px;color:var(--muted2);margin-top:6px;margin-bottom:15px}
+  .pc-feats{list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .pc-feats li{position:relative;padding-left:20px;font-size:12.5px;color:var(--muted);line-height:1.45}
+  .pc-feats li::before{content:"✓";position:absolute;left:0;color:var(--mint);font-weight:900}
+  .pc-feats li b{color:var(--text);font-weight:800}
+  .pc-cta{width:100%;border:1px solid var(--border2);background:var(--panel2);color:var(--muted);border-radius:11px;padding:11px 0;font-size:13.5px;font-weight:700;cursor:pointer;pointer-events:none;opacity:.5;transition:.2s;font-family:inherit}
+  .pcube.sel .pc-cta{pointer-events:auto;opacity:1;background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border-color:transparent}
+  .pcar-nav{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--border2);background:var(--panel);color:var(--text);font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+  .pcar-nav:hover{border-color:var(--mint);color:var(--mint)}
+  @media(max-width:560px){.pcar-nav{display:none}.pcube{flex-basis:190px;min-height:280px}}
 </style>
 </head>
 <body>
@@ -590,6 +614,7 @@ const I18N = {
     upgradeBtn:"✨ Upgrade", upTitle:"Upgrade to Pro", upSub:"Free: short posts · 2 images · 3/month. Pro: full-length · 6 images · 35/month.",
     up1:"1 month", up6:"6 months", up12:"12 months", upBest:"Best value", perMo:"/mo",
     planFree:"Free", offWord:"off", baseWord:"base",
+    pcCta:"Start with this plan", pcPop:"Popular", pcFreePer:"Try it out", pcFree1:"3 posts / month", pcFree2:"Short posts · 2 images", pcFree3:"5 languages · export anywhere", pcPro1:"<b>35 posts</b> / month", pcPro2:"Long posts (2,800+ chars) · 6 images", pcPro3:"All features · priority",
     pricingTab:"PLANS", pricingTitle:"Start free, go Pro when ready", pricingDesc:"Free is 3 posts/month. Pro is 35/month — the longer you commit, the cheaper per month.",
     plansBtn:"🏷 Plans", plansTitle:"Plans", proNote:"You're on Pro. You can change anytime.",
     footTerms:"Terms", footPrivacy:"Privacy", footRefund:"Refunds", footCopy:"© Every run you log becomes value",
@@ -642,6 +667,7 @@ const I18N = {
     upgradeBtn:"✨ 업그레이드", upTitle:"Pro로 업그레이드", upSub:"무료: 짧은 글·이미지 2장·월 3편 → Pro: 긴 글·이미지 6장·월 35편!",
     up1:"1개월", up6:"6개월", up12:"12개월", upBest:"최대 할인", perMo:"/월",
     planFree:"무료", offWord:"할인", baseWord:"기준가",
+    pcCta:"이 플랜으로 시작하기", pcPop:"인기", pcFreePer:"가볍게 체험", pcFree1:"매월 3편 생성", pcFree2:"짧은 글 · 이미지 2장", pcFree3:"5개 언어 · 어디든 내보내기", pcPro1:"매월 <b>35편</b> 생성", pcPro2:"장문(2,800자+) · 이미지 6장", pcPro3:"모든 기능 · 우선 처리",
     pricingTab:"요금제", pricingTitle:"무료로 시작, 필요하면 Pro", pricingDesc:"무료는 월 3편, Pro는 월 35편이에요. 길게 약정할수록 월 단가가 더 저렴해져요.",
     plansBtn:"🏷 요금제", plansTitle:"요금제", proNote:"현재 Pro 이용 중이에요. 언제든 변경할 수 있어요.",
     footTerms:"이용약관", footPrivacy:"개인정보처리방침", footRefund:"환불정책", footCopy:"© 달린 기록은 반드시 가치가 된다",
@@ -694,6 +720,7 @@ const I18N = {
     upgradeBtn:"✨ アップグレード", upTitle:"Proにアップグレード", upSub:"無料：短い記事・画像2枚・月3本 → Pro：長文・画像6枚・月35本！",
     up1:"1ヶ月", up6:"6ヶ月", up12:"12ヶ月", upBest:"最もお得", perMo:"/月",
     planFree:"無料", offWord:"割引", baseWord:"基準",
+    pcCta:"このプランではじめる", pcPop:"人気", pcFreePer:"気軽に体験", pcFree1:"毎月3本 生成", pcFree2:"短い記事 · 画像2枚", pcFree3:"5言語 · どこへでも書き出し", pcPro1:"毎月 <b>35本</b> 生成", pcPro2:"長文(2,800字+) · 画像6枚", pcPro3:"全機能 · 優先処理",
     pricingTab:"料金プラン", pricingTitle:"無料で開始、必要ならPro", pricingDesc:"無料は月3本、Proは月35本。長く契約するほど月あたりが安くなります。",
     plansBtn:"🏷 料金プラン", plansTitle:"料金プラン", proNote:"現在Proをご利用中です。いつでも変更できます。",
     footTerms:"利用規約", footPrivacy:"プライバシー", footRefund:"返金ポリシー", footCopy:"© 走った記録は必ず価値になる",
@@ -746,6 +773,7 @@ const I18N = {
     upgradeBtn:"✨ 升级", upTitle:"升级到 Pro", upSub:"免费版：短文·2张图·每月3篇 → Pro：长文·6张图·每月35篇！",
     up1:"1个月", up6:"6个月", up12:"12个月", upBest:"最划算", perMo:"/月",
     planFree:"免费", offWord:"优惠", baseWord:"基准",
+    pcCta:"选择该套餐", pcPop:"热门", pcFreePer:"轻松体验", pcFree1:"每月生成3篇", pcFree2:"短文 · 2张图片", pcFree3:"5种语言 · 随处导出", pcPro1:"每月生成 <b>35篇</b>", pcPro2:"长文(2,800字+) · 6张图片", pcPro3:"全部功能 · 优先处理",
     pricingTab:"价格方案", pricingTitle:"免费开始，需要时升级 Pro", pricingDesc:"免费每月3篇，Pro每月35篇。承诺越久，每月越便宜。",
     plansBtn:"🏷 价格方案", plansTitle:"价格方案", proNote:"你正在使用 Pro，可随时更改。",
     footTerms:"服务条款", footPrivacy:"隐私政策", footRefund:"退款政策", footCopy:"© 跑过的记录终将成为价值",
@@ -798,6 +826,7 @@ const I18N = {
     upgradeBtn:"✨ Mejorar", upTitle:"Mejora a Pro", upSub:"Gratis: textos cortos · 2 imágenes · 3/mes → Pro: textos completos · 6 imágenes · 35/mes.",
     up1:"1 mes", up6:"6 meses", up12:"12 meses", upBest:"Mejor precio", perMo:"/mes",
     planFree:"Gratis", offWord:"dto.", baseWord:"base",
+    pcCta:"Empezar con este plan", pcPop:"Popular", pcFreePer:"Pruébalo", pcFree1:"3 posts / mes", pcFree2:"Posts cortos · 2 imágenes", pcFree3:"5 idiomas · exporta donde sea", pcPro1:"<b>35 posts</b> / mes", pcPro2:"Posts largos (2.800+ car.) · 6 imágenes", pcPro3:"Todas las funciones · prioridad",
     pricingTab:"PLANES", pricingTitle:"Empieza gratis, pasa a Pro cuando quieras", pricingDesc:"Gratis son 3 posts/mes, Pro 35/mes. Cuanto más largo el plan, más barato por mes.",
     plansBtn:"🏷 Planes", plansTitle:"Planes", proNote:"Tienes Pro. Puedes cambiar cuando quieras.",
     footTerms:"Términos", footPrivacy:"Privacidad", footRefund:"Reembolsos", footCopy:"© Cada carrera registrada se vuelve valor",
@@ -1274,34 +1303,55 @@ function buildLadder(lw){
     lw.appendChild(el);
   });
 }
+let SELP='6m';
+function centerCube(car,el,smooth){ if(!car||!el) return; car.scrollTo({left: el.offsetLeft-(car.clientWidth-el.clientWidth)/2, behavior: smooth?'smooth':'auto'}); }
 function buildPlanCards(wrap){
   if(!wrap) return;
   const pm=T('perMo');
   wrap.innerHTML='';
+  const cubes=[{k:'free',name:T('planFree'),price:'$0',permo:false,per:T('pcFreePer'),feats:[T('pcFree1'),T('pcFree2'),T('pcFree3')],badge:'',free:true}];
   PLAN_DATA.forEach(p=>{
-    const card=document.createElement('button');
-    card.className='plan-card'+(p.best?' best':'');
-    const badge=p.best?`<div class="plan-badge">${T('upBest')}</div>`:'';
-    const base=p.save?`<span class="base">$12${pm}</span>`:'';
-    const right = p.save
-      ? `<div class="pr">${p.permo}${pm}</div><div style="margin-top:3px">${base}<span class="sv-chip ${p.best?'s2':'s1'}">${p.save} ${T('offWord')}</span></div>`
-      : `<div class="pr">${p.permo}${pm}</div><div class="sv-flat">${T('baseWord')}</div>`;
-    card.innerHTML=`${badge}
-      <div><div class="nm">${T(p.nameKey)}</div><div class="mo">${p.total}</div></div>
-      <div style="text-align:right">${right}</div>`;
-    card.onclick=()=>planClick(p.k);
-    wrap.appendChild(card);
+    const per=p.save?(p.total+' · '+p.save+' '+T('offWord')):T('baseWord');
+    const badge=p.best?T('upBest'):(p.k==='6m'?T('pcPop'):'');
+    cubes.push({k:p.k,name:T(p.nameKey),price:p.permo,permo:true,per:per,feats:[T('pcPro1'),T('pcPro2'),T('pcPro3')],badge:badge});
   });
-  // USDT(크립토) 결제 옵션 행
+  const wrapEl=document.createElement('div');wrapEl.className='pcar-wrap';
+  const prev=document.createElement('button');prev.className='pcar-nav';prev.type='button';prev.textContent='‹';
+  const car=document.createElement('div');car.className='pcar';
+  const next=document.createElement('button');next.className='pcar-nav';next.type='button';next.textContent='›';
+  cubes.forEach(c=>{
+    const el=document.createElement('div');el.className='pcube'+(c.k===SELP?' sel':'');
+    const badge=c.badge?`<div class="pc-badge">${c.badge}</div>`:`<div class="pc-badge ghost">·</div>`;
+    const priceHtml=c.permo?`${c.price}<span>${pm}</span>`:c.price;
+    el.innerHTML=`${badge}<div class="pc-name">${c.name}</div><div class="pc-price">${priceHtml}</div><div class="pc-per">${c.per}</div><ul class="pc-feats">${c.feats.map(f=>`<li>${f}</li>`).join('')}</ul><button class="pc-cta" type="button">${T('pcCta')}</button>`;
+    el.addEventListener('click',e=>{
+      if(e.target.closest('.pc-cta')) return;
+      car.querySelectorAll('.pcube').forEach(x=>x.classList.remove('sel'));
+      el.classList.add('sel');SELP=c.k;centerCube(car,el,true);
+    });
+    el.querySelector('.pc-cta').addEventListener('click',ev=>{
+      ev.stopPropagation();
+      if(!el.classList.contains('sel')){car.querySelectorAll('.pcube').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');SELP=c.k;centerCube(car,el,true);return;}
+      if(c.free){ startFree(); } else { planClick(c.k); }
+    });
+    car.appendChild(el);
+  });
+  wrapEl.appendChild(prev);wrapEl.appendChild(car);wrapEl.appendChild(next);
+  wrap.appendChild(wrapEl);
+  const step=222;
+  prev.onclick=()=>car.scrollBy({left:-step,behavior:'smooth'});
+  next.onclick=()=>car.scrollBy({left:step,behavior:'smooth'});
+  const selEl=car.querySelector('.pcube.sel');if(selEl) setTimeout(()=>centerCube(car,selEl,false),60);
+  // USDT(크립토) 결제 옵션 행 (유지)
   const cr=document.createElement('div');cr.className='crypto-row';
   cr.innerHTML=`<div class="crypto-label">💠 ${cryptoLabel()}</div>`;
   const cb=document.createElement('div');cb.className='crypto-btns';
-  PLAN_DATA.forEach(p=>{const b=document.createElement('button');b.className='crypto-btn';
+  PLAN_DATA.forEach(p=>{const b=document.createElement('button');b.className='crypto-btn';b.type='button';
     b.textContent=`${T(p.nameKey)} ${p.total}`;b.onclick=()=>cryptoClick(p.k);cb.appendChild(b);});
   cr.appendChild(cb);wrap.appendChild(cr);
 }
+function startFree(){ try{ closeUpgrade(); }catch(_){}; window.scrollTo({top:0,behavior:'smooth'}); }
 function renderPricing(){   // 메인 화면 요금제 섹션(항상 보임)
-  buildLadder($('#pricingLadder'));
   buildPlanCards($('#pricingPlans'));
 }
 function openUpgrade(){
@@ -1310,7 +1360,6 @@ function openUpgrade(){
   $('#upTitle').textContent = isPro ? T('plansTitle') : T('upTitle');
   $('#upSub').textContent   = isPro ? T('proNote')    : T('upSub');
   $('#upNote').textContent=T('upNote');
-  buildLadder($('#upLadder'));
   buildPlanCards($('#plans'));
   $('#upgradeModal').style.display='flex';
 }
