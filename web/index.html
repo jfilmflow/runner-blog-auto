@@ -53,6 +53,13 @@
   .logo{width:40px;height:40px;border-radius:11px;background:var(--panel2);border:1px solid var(--border2);
     display:flex;align-items:center;justify-content:center;flex:none}
   .logo span{font-weight:800;font-size:20px;color:var(--mint);letter-spacing:-.02em;line-height:1}
+  .home-link{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;transition:transform .16s ease,filter .18s ease;border-radius:12px}
+  .home-link:hover{transform:translateY(-1px);filter:brightness(1.12)}
+  .home-link:hover .logo{border-color:var(--accent-line)}
+  .home-hint{font-size:11.5px;font-weight:700;color:var(--muted2);border:1px solid var(--border2);border-radius:999px;padding:3px 10px;display:inline-flex;align-items:center;gap:4px;transition:border-color .15s ease,color .15s ease}
+  .home-hint::before{content:"←";font-weight:800}
+  .home-link:hover .home-hint{border-color:var(--accent-line);color:var(--mint2)}
+  @media(max-width:560px){.home-hint{display:none}}
   .brandbox{display:flex;flex-direction:column;line-height:1.15}
   .brand{font-size:19px;font-weight:750;letter-spacing:.02em}
   .brand .wm-a{color:var(--mint)}
@@ -352,10 +359,11 @@
   .pcar.dragging .pcube{pointer-events:none}
   .pcar::-webkit-scrollbar{display:none}
   .pcube{scroll-snap-align:center;flex:1 0 200px;min-height:300px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 18px;display:flex;flex-direction:column;cursor:pointer;transition:background .3s ease,border-color .3s ease,box-shadow .3s ease,opacity .3s ease,transform .16s ease;opacity:.6;text-align:left}
-  .pcube:hover{opacity:.9;border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.28)}
+  .pcube:hover{opacity:1;border-color:var(--accent-line);background:rgba(46,214,198,.05);transform:translateY(-5px);box-shadow:0 16px 40px rgba(46,214,198,.16)}
+  .pcube:hover .pc-price{color:var(--mint2)}
   .pcube:active{transform:scale(.985)}
   .pcube.sel{opacity:1;background:var(--accent-tint);border-color:var(--accent-line);box-shadow:0 0 0 1px var(--accent-line),0 16px 44px rgba(46,214,198,.18);transform:translateY(-3px)}
-  .pcube.sel:hover{transform:translateY(-4px)}
+  .pcube.sel:hover{transform:translateY(-6px);box-shadow:0 0 0 1px var(--accent-line),0 22px 56px rgba(46,214,198,.24)}
   .pcube.pop{animation:cubePop .4s cubic-bezier(.34,1.45,.5,1)}
   @keyframes cubePop{0%{transform:translateY(-3px) scale(1)}45%{transform:translateY(-3px) scale(1.04)}100%{transform:translateY(-3px) scale(1)}}
   .pc-price{transition:color .3s ease}
@@ -388,11 +396,14 @@
 <div class="wrap">
 
   <div class="top">
-    <div class="logo"><span>A</span></div>
-    <div class="brandbox">
-      <div class="brand"><span class="wm-a">AIR</span>NOTE</div>
-      <div class="brand-sub" data-i18n="brandSub"></div>
-    </div>
+    <a class="home-link" href="https://airnote.club" title="홈 (랜딩페이지)">
+      <div class="logo"><span>A</span></div>
+      <div class="brandbox">
+        <div class="brand"><span class="wm-a">AIR</span>NOTE</div>
+        <div class="brand-sub" data-i18n="brandSub"></div>
+      </div>
+      <span class="home-hint" data-i18n="homeHint">홈</span>
+    </a>
     <div class="auth-wrap" id="authWrap" style="display:none">
       <button class="invite-btn" id="inviteBtn" data-i18n="inviteBtn"></button>
       <button class="up-btn" id="upBtn" style="display:none"></button>
@@ -604,7 +615,7 @@
 const I18N = {
   en:{
     brand:"Every run you log <b>becomes value</b>",
-    brandSub:"Where your social records turn into value",
+    brandSub:"Where your social records turn into value", homeHint:"Home",
     chip1:"Draft generation", chip2:"Auto image attach", chip3:"Search-volume data", chip4:"Auto SEO placement",
     lede:"'A society where records become value, and value becomes freedom.' Drop in your running feed from social media and turn it into records that matter.",
     step1:"Add material", step2:"Refine result", step3:"Export",
@@ -657,7 +668,7 @@ const I18N = {
   },
   ko:{
     brand:"달린 기록은 반드시 <b>가치</b>가 된다",
-    brandSub:"SNS 기록이 가치가 되는 곳",
+    brandSub:"SNS 기록이 가치가 되는 곳", homeHint:"홈",
     chip1:"초안 생성", chip2:"이미지 자동 첨부", chip3:"검색량 데이터", chip4:"SEO 자동 배치",
     lede:"'기록이 가치가 되고, 가치가 자유가 되는 소사이어티.' 당신의 SNS 러닝 피드를 넣고 가치 있는 기록을 만드세요.",
     step1:"소재 넣기", step2:"결과 다듬기", step3:"내보내기",
@@ -710,7 +721,7 @@ const I18N = {
   },
   ja:{
     brand:"走った記録は必ず<b>価値</b>になる",
-    brandSub:"SNSの記録が価値になる場所",
+    brandSub:"SNSの記録が価値になる場所", homeHint:"ホーム",
     chip1:"下書き生成", chip2:"画像を自動添付", chip3:"検索ボリューム", chip4:"SEO自動配置",
     lede:"「記録が価値になり、価値が自由になるソサエティ。」あなたのSNSランニングフィードを入れて、価値ある記録を作りましょう。",
     step1:"素材を入れる", step2:"結果を整える", step3:"書き出す",
@@ -763,7 +774,7 @@ const I18N = {
   },
   zh:{
     brand:"跑过的记录终将<b>成为价值</b>",
-    brandSub:"让社交记录成为价值的地方",
+    brandSub:"让社交记录成为价值的地方", homeHint:"首页",
     chip1:"生成草稿", chip2:"自动配图", chip3:"搜索量数据", chip4:"SEO自动布局",
     lede:"'记录成为价值，价值成为自由的社群。'放入你的社交跑步动态，创造有价值的记录。",
     step1:"添加素材", step2:"优化结果", step3:"导出",
@@ -816,7 +827,7 @@ const I18N = {
   },
   es:{
     brand:"Cada carrera registrada <b>se vuelve valor</b>",
-    brandSub:"Donde tus registros en redes se convierten en valor",
+    brandSub:"Donde tus registros en redes se convierten en valor", homeHint:"Inicio",
     chip1:"Generar borrador", chip2:"Imágenes automáticas", chip3:"Datos de búsqueda", chip4:"SEO automático",
     lede:"'Una comunidad donde los registros se vuelven valor, y el valor se vuelve libertad.' Añade tu feed de running de redes sociales y crea registros que valen.",
     step1:"Añadir material", step2:"Refinar resultado", step3:"Exportar",
