@@ -130,6 +130,18 @@ def set_plan(uid, plan, status=None, renews_at=None):
     return st in (200, 201, 204)
 
 
+def get_user_email(uid):
+    """user_id로 이메일 조회 (service_role Admin API). 크립토 결제 확인메일용.
+       service 키가 없으면 '' 반환."""
+    if not (SUPABASE_URL and SERVICE and uid):
+        return ""
+    st, data = _req(f"{SUPABASE_URL}/auth/v1/admin/users/{uid}",
+                    headers={"apikey": SERVICE, "Authorization": f"Bearer {SERVICE}"})
+    if st == 200 and isinstance(data, dict):
+        return data.get("email", "") or ""
+    return ""
+
+
 def save_style_sample(token, lang, text, kind="input"):
     """유저가 직접 쓴 글(스토리+답변 또는 편집본)을 style_samples에 저장.
        RPC save_style_sample(security definer)로 auth.uid() 기준 저장 → 남의 것 못 건드림.

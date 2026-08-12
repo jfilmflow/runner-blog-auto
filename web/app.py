@@ -25,6 +25,7 @@ import keyword_seo as keyword_mod
 import main as pipeline           # prepare_images 재사용
 import images as images_mod       # 카드 하단 브랜드 문구 언어 전환용
 import authz                      # 로그인·사용량(P3)
+import mailer                     # 결제 확인 이메일(#58)
 import threading                  # 문체 프로필 백그라운드 재생성(P5)
 from datetime import datetime, timezone
 
@@ -359,6 +360,17 @@ def lemon_webhook():
         if uid:
             ok = authz.set_plan(uid, plan, status=status, renews_at=renews_at)
             print(f"[webhook] {event} status={status} user={uid} -> plan={plan} ok={ok}")
+
+    # #58 결제 확인 이메일 — 최초 결제/구독 생성 시 1회 발송 (중복 방지 위해 created 이벤트만)
+    if event in ("subscription_created", "order_created"):
+        email = attrs.get("user_email") or custom.get("email") or (authz.get_user_email(uid) if uid else "")
+        variant = custom.get("variant_name", "") or attrs.get("variant_name", "") or ""
+        months = 6 if "6" in variant else (12 if "12" in variant else 1)
+        if email:
+            try:
+                mailer.payment_confirmation(email, months, method="card")
+            except Exception as _me:
+                print("[mail] lemon confirm skip:", _me)
     return jsonify({"received": True}), 200
 
 
@@ -450,6 +462,13 @@ def nowpayments_webhook():
         renews = _add_months(datetime.now(timezone.utc), months).isoformat()
         ok = authz.set_plan(uid, "pro", status="crypto", renews_at=renews)
         print(f"[nowpayments] finished user={uid} +{months}mo -> pro ok={ok}")
+        # #58 크립토 결제 확인 이메일
+        try:
+            email = authz.get_user_email(uid)
+            if email:
+                mailer.payment_confirmation(email, months, method="crypto")
+        except Exception as _me:
+            print("[mail] crypto confirm skip:", _me)
     return jsonify({"received": True}), 200
 
 

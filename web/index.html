@@ -732,7 +732,7 @@ const I18N = {
     loginNote:"Click the link in the email and you'll come right back here.",
     magicSent:"Check your inbox — we sent a login link.", loginNeeded:"Please log in first.",
     emailInvalid:"Please enter your email address.", authErr:"Login had a problem. Please try again.",
-    limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.",
+    limitMsg:"You've used your {n} free posts this month. Subscriptions are coming soon.", logoutDone:"Logged out.", paidThanks:"Payment complete! Pro is now active 🎉", payCanceled:"Payment was canceled.",
     limitTitle:"Free limit reached", limitOk:"See plans",
     upgradeBtn:"✨ Upgrade", upTitle:"Upgrade to Pro", upSub:"Free: short posts · 2 images · 3/month. Pro: full-length · 6 images · 35/month.",
     up1:"1 month", up6:"6 months", up12:"12 months", upBest:"Best value", perMo:"/mo",
@@ -785,7 +785,7 @@ const I18N = {
     loginNote:"메일의 링크를 누르면 이 화면으로 바로 돌아와요.",
     magicSent:"메일함을 확인하세요 — 로그인 링크를 보냈어요.", loginNeeded:"먼저 로그인해 주세요.",
     emailInvalid:"이메일 주소를 입력해 주세요.", authErr:"로그인 중 문제가 생겼어요. 다시 시도해 주세요.",
-    limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.",
+    limitMsg:"이번 달 무료 {n}편을 다 썼어요. 구독 결제는 곧 열려요.", logoutDone:"로그아웃했어요.", paidThanks:"결제 완료! Pro가 활성화됐어요 🎉", payCanceled:"결제가 취소됐어요.",
     limitTitle:"무료 사용 한도에 도달했어요", limitOk:"요금제 보기",
     upgradeBtn:"✨ 업그레이드", upTitle:"Pro로 업그레이드", upSub:"무료: 짧은 글·이미지 2장·월 3편 → Pro: 긴 글·이미지 6장·월 35편!",
     up1:"1개월", up6:"6개월", up12:"12개월", upBest:"최대 할인", perMo:"/월",
@@ -838,7 +838,7 @@ const I18N = {
     loginNote:"メールのリンクを押すと、この画面に戻ってきます。",
     magicSent:"メールを確認してください — ログインリンクを送りました。", loginNeeded:"先にログインしてください。",
     emailInvalid:"メールアドレスを入力してください。", authErr:"ログインで問題が発生しました。もう一度お試しください。",
-    limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。",
+    limitMsg:"今月の無料{n}本を使い切りました。サブスクは近日公開です。", logoutDone:"ログアウトしました。", paidThanks:"決済完了！Proが有効になりました 🎉", payCanceled:"決済がキャンセルされました。",
     limitTitle:"無料利用の上限に達しました", limitOk:"プランを見る",
     upgradeBtn:"✨ アップグレード", upTitle:"Proにアップグレード", upSub:"無料：短い記事・画像2枚・月3本 → Pro：長文・画像6枚・月35本！",
     up1:"1ヶ月", up6:"6ヶ月", up12:"12ヶ月", upBest:"最もお得", perMo:"/月",
@@ -891,7 +891,7 @@ const I18N = {
     loginNote:"点击邮件中的链接，就会回到此页面。",
     magicSent:"请查收邮箱 — 我们已发送登录链接。", loginNeeded:"请先登录。",
     emailInvalid:"请输入你的邮箱地址。", authErr:"登录出现问题，请重试。",
-    limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。",
+    limitMsg:"本月{n}篇免费额度已用完。订阅功能即将开放。", logoutDone:"已退出。", paidThanks:"支付完成！Pro已激活 🎉", payCanceled:"支付已取消。",
     limitTitle:"已达免费使用上限", limitOk:"查看方案",
     upgradeBtn:"✨ 升级", upTitle:"升级到 Pro", upSub:"免费版：短文·2张图·每月3篇 → Pro：长文·6张图·每月35篇！",
     up1:"1个月", up6:"6个月", up12:"12个月", upBest:"最划算", perMo:"/月",
@@ -944,7 +944,7 @@ const I18N = {
     loginNote:"Haz clic en el enlace del email y volverás aquí.",
     magicSent:"Revisa tu correo — te enviamos un enlace de acceso.", loginNeeded:"Primero inicia sesión.",
     emailInvalid:"Escribe tu dirección de email.", authErr:"Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
-    limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.",
+    limitMsg:"Has usado tus {n} posts gratis de este mes. Las suscripciones llegan pronto.", logoutDone:"Sesión cerrada.", paidThanks:"¡Pago completado! Pro está activo 🎉", payCanceled:"El pago fue cancelado.",
     limitTitle:"Límite gratuito alcanzado", limitOk:"Ver planes",
     upgradeBtn:"✨ Mejorar", upTitle:"Mejora a Pro", upSub:"Gratis: textos cortos · 2 imágenes · 3/mes → Pro: textos completos · 6 imágenes · 35/mes.",
     up1:"1 mes", up6:"6 meses", up12:"12 meses", upBest:"Mejor precio", perMo:"/mes",
@@ -1510,6 +1510,20 @@ async function fetchUsage(){   // 로그인 직후/새로고침 시 남은 횟�
     if(r.ok){ const u=await r.json(); if(u && u.limit!=null) updateUsage(u); }
   }catch(_){}
 }
+// #57 결제 후 리다이렉트 처리: ?paid=1 이면 성공 안내 + 플랜 갱신(웹훅 반영에 몇 초 걸릴 수 있어 여러 번 재조회)
+function handlePaymentReturn(){
+  try{
+    const q=new URLSearchParams(location.search);
+    if(q.get('paid')==='1'){
+      toast(T('paidThanks'));
+      let n=0; const iv=setInterval(()=>{ fetchUsage(); if(++n>=6) clearInterval(iv); }, 2500);
+      q.delete('paid'); history.replaceState(null,'', location.pathname+(q.toString()?('?'+q):''));
+    } else if(q.get('canceled')==='1'){
+      toast(T('payCanceled'));
+      q.delete('canceled'); history.replaceState(null,'', location.pathname+(q.toString()?('?'+q):''));
+    }
+  }catch(_){}
+}
 // 친구 초대(제휴 20%) — LS 제휴 가입 페이지로
 const AFFILIATE_URL='https://runner-blog-auto.lemonsqueezy.com/affiliates';
 $('#inviteBtn').onclick=()=>window.open(AFFILIATE_URL,'_blank');
@@ -1571,7 +1585,7 @@ $('#googleBtn').onclick=async()=>{
 LANG=pickLang();
 $('#langSel').value=LANG;
 applyI18n();
-initAuth();
+initAuth().then(()=>handlePaymentReturn()).catch(()=>handlePaymentReturn());
 </script>
 </body>
 </html>
