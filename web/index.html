@@ -315,9 +315,10 @@
   .chip{transition:transform .16s ease,border-color .18s ease,color .18s ease,background .18s ease}
   .chip:hover{transform:translateY(-2px);border-color:var(--accent-line);color:var(--text);background:var(--accent-tint)}
   .chip:hover svg{color:var(--mint2)}
-  .steps .s{transition:transform .16s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease}
-  .steps .s:not(.active):hover{transform:translateY(-1px);border-color:var(--border2);background:var(--panel2)}
-  .steps .s.active:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(46,214,198,.16)}
+  .steps .s{transition:transform .16s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,color .18s ease}
+  .steps .s:not(.active):hover{transform:translateY(-3px);border-color:var(--accent-line);background:var(--accent-tint);color:var(--text);box-shadow:0 10px 26px rgba(46,214,198,.15)}
+  .steps .s:not(.active):hover .n{border-color:var(--accent-line);color:var(--mint2)}
+  .steps .s.active:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(46,214,198,.22)}
   .invite-btn,.up-btn{transition:transform .15s ease,filter .18s ease,box-shadow .18s ease}
   .invite-btn:hover,.up-btn:hover{transform:translateY(-2px)}
   .up-btn:hover{box-shadow:0 8px 22px rgba(46,214,198,.28)}
