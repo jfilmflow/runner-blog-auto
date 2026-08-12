@@ -88,7 +88,11 @@ def og_image():
     resp = send_from_directory(HERE, "og.png")
     resp.headers["Cache-Control"] = "public, max-age=86400"
     return resp
-
+@app.route("/banner/<path:fname>")
+def banner_image(fname):
+    resp = send_from_directory(os.path.join(HERE, "banner"), fname)
+    resp.headers["Cache-Control"] = "public, max-age=604800"
+    return resp
 
 @app.route("/terms")
 def terms():
