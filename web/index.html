@@ -344,6 +344,21 @@
   .refer-cta:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 10px 26px rgba(46,214,198,.28)}
   .refer-cta:active{transform:translateY(0) scale(.97)}
   .refer-note{color:var(--muted2);font-size:12px;margin:14px 0 0}
+  /* 레퍼럴 공유 */
+  .refer-share{margin-top:20px;padding-top:18px;border-top:1px solid var(--border)}
+  .rs-label{font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:10px}
+  .rs-copybox{display:flex;gap:10px;align-items:stretch;margin-bottom:14px;flex-wrap:wrap}
+  #rMsg{flex:1;min-width:220px;resize:none;height:78px;background:var(--field-bg);border:1px solid var(--border2);border-radius:12px;color:var(--muted);font-size:13px;line-height:1.55;padding:11px 13px;font-family:inherit;outline:none}
+  .rs-copy{flex:none;align-self:stretch;padding:0 20px;font-size:13.5px}
+  .rs-share{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .rs-share-l{font-size:12.5px;color:var(--muted2);font-weight:700;margin-right:2px}
+  .vs-btn2{width:40px;height:40px;border-radius:11px;border:1px solid var(--border2);background:var(--panel2);color:var(--text);font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s ease,border-color .15s ease,color .15s ease,background .15s ease}
+  .vs-btn2:hover{border-color:var(--mint);color:var(--mint);transform:translateY(-2px)}
+  .vs-btn2:active{transform:translateY(0) scale(.95)}
+  .vs-btn2.rs-linkbtn{width:auto;padding:0 15px;font-size:13px;font-weight:700}
+  .rs-ig svg{width:18px;height:18px}
+  .rs-hint{font-size:12.5px;color:var(--mint2);font-weight:600;margin-top:10px;min-height:16px;opacity:0;transform:translateY(-2px);transition:opacity .2s ease,transform .2s ease}
+  .rs-hint.on{opacity:1;transform:translateY(0)}
   @media(max-width:560px){.refer-steps{gap:6px}.rf-arrow{display:none}.rf-step{width:100%}}
   .plans{display:flex;flex-direction:column;gap:11px;margin-top:18px}
   .plan-card{position:relative;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:12px;
@@ -571,6 +586,25 @@
       <div class="rf-step"><span class="rf-n">3</span><span data-i18n="refS3">친구 결제 시 20% 적립</span></div>
     </div>
     <button class="refer-cta" id="referCta" data-i18n="refCta">내 레퍼럴 링크 받기 →</button>
+    <div class="refer-share">
+      <div class="rs-label" data-i18n="rsLabel">또는 홍보 문구로 바로 공유</div>
+      <div class="rs-copybox">
+        <textarea id="rMsg" data-i18n="rMsg" readonly>러닝 기록이 자동으로 블로그가 되는 AIRNOTE 써봤는데 진짜 물건임 🏃 SNS 한 줄 넣으면 2,800자 블로그 + 카드뉴스까지 뚝딱, 5개 언어 지원. 지금 무료로 시작 👉 https://airnote.club</textarea>
+        <button class="refer-cta rs-copy" id="rCopy" data-i18n="rCopyBtn">문구 복사</button>
+      </div>
+      <div class="rs-share">
+        <span class="rs-share-l" data-i18n="rShareL">바로 공유</span>
+        <button class="vs-btn2" data-rshare="x" aria-label="X">𝕏</button>
+        <button class="vs-btn2" data-rshare="threads" aria-label="Threads">@</button>
+        <button class="vs-btn2 rs-ig" data-rshare="instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></button>
+        <button class="vs-btn2" data-rshare="facebook" aria-label="Facebook">f</button>
+        <button class="vs-btn2" data-rshare="telegram" aria-label="Telegram">✈</button>
+        <button class="vs-btn2 rs-linkbtn" data-rshare="link" data-i18n="rLinkBtn">링크 복사</button>
+      </div>
+      <div class="rs-hint" id="rShareHint" aria-live="polite"></div>
+      <span id="rIgHint" data-i18n="rIgHint" style="display:none">문구가 복사됐어요 — 인스타그램에 붙여넣으세요 📋</span>
+      <span id="rCopied" data-i18n="rCopied" style="display:none">복사됨 ✓</span>
+    </div>
     <p class="refer-note" data-i18n="refNote">정산은 Lemon Squeezy 제휴를 통해 안전하게 처리돼요 · 최소 정산액 $10.</p>
   </div>
 
@@ -707,7 +741,7 @@ const I18N = {
     pricingTab:"PLANS", pricingTitle:"Start free, go Pro when ready", pricingDesc:"Free is 3 posts/month. Pro is 35/month — the longer you commit, the cheaper per month.",
     plansBtn:"🏷 Plans", plansTitle:"Plans", proNote:"You're on Pro. You can change anytime.",
     footTerms:"Terms", footPrivacy:"Privacy", footRefund:"Refunds", footCopy:"© Every run you log becomes value",
-    inviteBtn:"Referral · 20% back", refBadge:"Referral · 20% cashback", refH:"Invite a friend, get 20% of their payment", refP:"When a friend pays through your link, 20% of the amount is credited to you in cash. The longer they stay, the more you earn.", refS1:"Get your referral link", refS2:"Share with friends · social", refS3:"20% credited on their payment", refCta:"Get my referral link →", refNote:"Payouts are handled securely via Lemon Squeezy affiliates · $10 minimum.",
+    inviteBtn:"Referral · 20% back", refBadge:"Referral · 20% cashback", refH:"Invite a friend, get 20% of their payment", refP:"When a friend pays through your link, 20% of the amount is credited to you in cash. The longer they stay, the more you earn.", refS1:"Get your referral link", refS2:"Share with friends · social", refS3:"20% credited on their payment", refCta:"Get my referral link →", refNote:"Payouts are handled securely via Lemon Squeezy affiliates · $10 minimum.", rsLabel:"Or share a ready-made promo", rMsg:"Been using AIRNOTE — it turns your runs into full blog posts automatically 🏃 Drop one line from social, get a 2,800-word post + a card image, in 5 languages. Start free 👉 https://airnote.club", rCopyBtn:"Copy text", rLinkBtn:"Copy link", rShareL:"Share now", rCopied:"Copied ✓", rIgHint:"Caption copied — paste it into Instagram 📋",
     upNote:"Payments are handled securely by Lemon Squeezy. Cancel anytime.",
     regen:"Regenerate", newPost:"New post", resetDone:"Cleared — ready for a new post.",
     stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing",
@@ -760,7 +794,7 @@ const I18N = {
     pricingTab:"요금제", pricingTitle:"무료로 시작, 필요하면 Pro", pricingDesc:"무료는 월 3편, Pro는 월 35편이에요. 길게 약정할수록 월 단가가 더 저렴해져요.",
     plansBtn:"🏷 요금제", plansTitle:"요금제", proNote:"현재 Pro 이용 중이에요. 언제든 변경할 수 있어요.",
     footTerms:"이용약관", footPrivacy:"개인정보처리방침", footRefund:"환불정책", footCopy:"© 달린 기록은 반드시 가치가 된다",
-    inviteBtn:"레퍼럴 · 20% 페이백", refBadge:"레퍼럴 · 20% 페이백", refH:"친구를 초대하고, 결제액의 20%를 받으세요", refP:"내 초대 링크로 친구가 결제하면, 결제 금액의 20%가 현금으로 적립돼요. 친구가 오래 쓸수록 더 많이 쌓입니다.", refS1:"내 레퍼럴 링크 받기", refS2:"친구·SNS에 공유", refS3:"친구 결제 시 20% 적립", refCta:"내 레퍼럴 링크 받기 →", refNote:"정산은 Lemon Squeezy 제휴를 통해 안전하게 처리돼요 · 최소 정산액 $10.",
+    inviteBtn:"레퍼럴 · 20% 페이백", refBadge:"레퍼럴 · 20% 페이백", refH:"친구를 초대하고, 결제액의 20%를 받으세요", refP:"내 초대 링크로 친구가 결제하면, 결제 금액의 20%가 현금으로 적립돼요. 친구가 오래 쓸수록 더 많이 쌓입니다.", refS1:"내 레퍼럴 링크 받기", refS2:"친구·SNS에 공유", refS3:"친구 결제 시 20% 적립", refCta:"내 레퍼럴 링크 받기 →", refNote:"정산은 Lemon Squeezy 제휴를 통해 안전하게 처리돼요 · 최소 정산액 $10.", rsLabel:"또는 홍보 문구로 바로 공유", rMsg:"러닝 기록이 자동으로 블로그가 되는 AIRNOTE 써봤는데 진짜 물건임 🏃 SNS 한 줄 넣으면 2,800자 블로그 + 카드뉴스까지 뚝딱, 5개 언어 지원. 지금 무료로 시작 👉 https://airnote.club", rCopyBtn:"문구 복사", rLinkBtn:"링크 복사", rShareL:"바로 공유", rCopied:"복사됨 ✓", rIgHint:"문구가 복사됐어요 — 인스타그램에 붙여넣으세요 📋",
     upNote:"결제는 Lemon Squeezy에서 안전하게 처리돼요. 언제든 취소 가능.",
     regen:"다시 생성", newPost:"새로 쓰기", resetDone:"싹 비웠어요 — 새 글 쓸 준비 완료.",
     stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리",
@@ -813,7 +847,7 @@ const I18N = {
     pricingTab:"料金プラン", pricingTitle:"無料で開始、必要ならPro", pricingDesc:"無料は月3本、Proは月35本。長く契約するほど月あたりが安くなります。",
     plansBtn:"🏷 料金プラン", plansTitle:"料金プラン", proNote:"現在Proをご利用中です。いつでも変更できます。",
     footTerms:"利用規約", footPrivacy:"プライバシー", footRefund:"返金ポリシー", footCopy:"© 走った記録は必ず価値になる",
-    inviteBtn:"リファラル · 20%還元", refBadge:"リファラル · 20%還元", refH:"友達を招待して、決済額の20%を受け取ろう", refP:"あなたのリンクから友達が決済すると、決済額の20%が現金で貯まります。長く使うほど、より多く貯まります。", refS1:"リファラルリンクを取得", refS2:"友達・SNSでシェア", refS3:"友達の決済で20%還元", refCta:"リファラルリンクを取得 →", refNote:"精算はLemon Squeezyの提携で安全に処理されます · 最低精算額$10。",
+    inviteBtn:"リファラル · 20%還元", refBadge:"リファラル · 20%還元", refH:"友達を招待して、決済額の20%を受け取ろう", refP:"あなたのリンクから友達が決済すると、決済額の20%が現金で貯まります。長く使うほど、より多く貯まります。", refS1:"リファラルリンクを取得", refS2:"友達・SNSでシェア", refS3:"友達の決済で20%還元", refCta:"リファラルリンクを取得 →", refNote:"精算はLemon Squeezyの提携で安全に処理されます · 最低精算額$10。", rsLabel:"または宣伝文でそのまま共有", rMsg:"ランの記録がそのままブログ記事になるAIRNOTE、マジでいい🏃 SNSの一言を入れるだけで2,800字のブログ＋カード画像まで、5言語対応。無料でスタート👉 https://airnote.club", rCopyBtn:"文章をコピー", rLinkBtn:"リンクをコピー", rShareL:"すぐ共有", rCopied:"コピー完了 ✓", rIgHint:"文章をコピーしました — インスタに貼り付けてください 📋",
     upNote:"決済はLemon Squeezyが安全に処理します。いつでも解約可能。",
     regen:"再生成", newPost:"新規作成", resetDone:"クリアしました — 新しい記事の準備OK。",
     stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中",
@@ -866,7 +900,7 @@ const I18N = {
     pricingTab:"价格方案", pricingTitle:"免费开始，需要时升级 Pro", pricingDesc:"免费每月3篇，Pro每月35篇。承诺越久，每月越便宜。",
     plansBtn:"🏷 价格方案", plansTitle:"价格方案", proNote:"你正在使用 Pro，可随时更改。",
     footTerms:"服务条款", footPrivacy:"隐私政策", footRefund:"退款政策", footCopy:"© 跑过的记录终将成为价值",
-    inviteBtn:"推荐返现 · 20%", refBadge:"推荐返现 · 20%", refH:"邀请好友，获得其付款额的20%", refP:"好友通过你的链接付费后，付款额的20%将以现金形式返给你。好友用得越久，你赚得越多。", refS1:"获取我的推荐链接", refS2:"分享给好友·社交", refS3:"好友付费返20%", refCta:"获取我的推荐链接 →", refNote:"结算通过Lemon Squeezy联盟安全处理 · 最低结算$10。",
+    inviteBtn:"推荐返现 · 20%", refBadge:"推荐返现 · 20%", refH:"邀请好友，获得其付款额的20%", refP:"好友通过你的链接付费后，付款额的20%将以现金形式返给你。好友用得越久，你赚得越多。", refS1:"获取我的推荐链接", refS2:"分享给好友·社交", refS3:"好友付费返20%", refCta:"获取我的推荐链接 →", refNote:"结算通过Lemon Squeezy联盟安全处理 · 最低结算$10。", rsLabel:"或用宣传文案直接分享", rMsg:"一直在用AIRNOTE，能把跑步记录自动写成博客文章🏃 发一句社交动态就生成2,800字长文＋卡片图，支持5种语言。免费开始👉 https://airnote.club", rCopyBtn:"复制文案", rLinkBtn:"复制链接", rShareL:"立即分享", rCopied:"已复制 ✓", rIgHint:"文案已复制 — 粘贴到 Instagram 即可 📋",
     upNote:"付款由 Lemon Squeezy 安全处理，可随时取消。",
     regen:"重新生成", newPost:"写新的", resetDone:"已清空 — 可以写新文章了。",
     stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾",
@@ -919,7 +953,7 @@ const I18N = {
     pricingTab:"PLANES", pricingTitle:"Empieza gratis, pasa a Pro cuando quieras", pricingDesc:"Gratis son 3 posts/mes, Pro 35/mes. Cuanto más largo el plan, más barato por mes.",
     plansBtn:"🏷 Planes", plansTitle:"Planes", proNote:"Tienes Pro. Puedes cambiar cuando quieras.",
     footTerms:"Términos", footPrivacy:"Privacidad", footRefund:"Reembolsos", footCopy:"© Cada carrera registrada se vuelve valor",
-    inviteBtn:"Referido · 20% cashback", refBadge:"Referido · 20% cashback", refH:"Invita a un amigo y gana el 20% de su pago", refP:"Cuando un amigo paga con tu enlace, el 20% del importe se te acredita en efectivo. Cuanto más tiempo siga, más ganas.", refS1:"Obtén tu enlace de referido", refS2:"Comparte con amigos · redes", refS3:"20% acreditado en su pago", refCta:"Obtener mi enlace de referido →", refNote:"Los pagos se gestionan de forma segura vía afiliados de Lemon Squeezy · mínimo $10.",
+    inviteBtn:"Referido · 20% cashback", refBadge:"Referido · 20% cashback", refH:"Invita a un amigo y gana el 20% de su pago", refP:"Cuando un amigo paga con tu enlace, el 20% del importe se te acredita en efectivo. Cuanto más tiempo siga, más ganas.", refS1:"Obtén tu enlace de referido", refS2:"Comparte con amigos · redes", refS3:"20% acreditado en su pago", refCta:"Obtener mi enlace de referido →", refNote:"Los pagos se gestionan de forma segura vía afiliados de Lemon Squeezy · mínimo $10.", rsLabel:"O comparte con un texto listo", rMsg:"Estoy usando AIRNOTE: convierte tus carreras en posts de blog automáticamente 🏃 Una línea de redes → un post de 2.800 palabras + imagen, en 5 idiomas. Empieza gratis 👉 https://airnote.club", rCopyBtn:"Copiar texto", rLinkBtn:"Copiar enlace", rShareL:"Compartir ya", rCopied:"Copiado ✓", rIgHint:"Texto copiado — pégalo en Instagram 📋",
     upNote:"Los pagos los gestiona Lemon Squeezy de forma segura. Cancela cuando quieras.",
     regen:"Regenerar", newPost:"Nuevo post", resetDone:"Limpiado — listo para un nuevo post.",
     stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando",
@@ -1480,6 +1514,35 @@ async function fetchUsage(){   // 로그인 직후/새로고침 시 남은 횟�
 const AFFILIATE_URL='https://runner-blog-auto.lemonsqueezy.com/affiliates';
 $('#inviteBtn').onclick=()=>window.open(AFFILIATE_URL,'_blank');
 { const _rc=$('#referCta'); if(_rc) _rc.onclick=()=>window.open(AFFILIATE_URL,'_blank'); }
+/* 레퍼럴 카드 SNS 공유 */
+(function(){
+  const LINK="https://airnote.club";
+  const msgEl=document.getElementById("rMsg");
+  const getMsg=()=> (msgEl? msgEl.value : LINK);
+  const copiedTxt=()=>{const e=document.getElementById("rCopied");return e?e.textContent:"✓";};
+  function toast(btn,label){const o=btn.innerHTML;btn.innerHTML=label;btn.disabled=true;setTimeout(()=>{btn.innerHTML=o;btn.disabled=false;},1400);}
+  function shareHint(){const src=document.getElementById("rIgHint");const h=document.getElementById("rShareHint");if(!h)return;h.textContent=src?src.textContent:"Copied — paste into Instagram";h.classList.add("on");clearTimeout(h._t);h._t=setTimeout(()=>h.classList.remove("on"),2800);}
+  const copyBtn=document.getElementById("rCopy");
+  if(copyBtn) copyBtn.addEventListener("click",()=>{navigator.clipboard.writeText(getMsg()).then(()=>toast(copyBtn,copiedTxt()));});
+  document.querySelectorAll(".vs-btn2").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const kind=b.getAttribute("data-rshare");
+      const msg=getMsg();
+      let url="";
+      if(kind==="x") url="https://twitter.com/intent/tweet?text="+encodeURIComponent(msg);
+      else if(kind==="threads") url="https://www.threads.net/intent/post?text="+encodeURIComponent(msg);
+      else if(kind==="instagram"){
+        if(navigator.share){ navigator.share({text:msg}).catch(()=>{}); return; }
+        navigator.clipboard.writeText(msg).then(()=>{ shareHint(); window.open("https://www.instagram.com/","_blank","noopener"); });
+        return;
+      }
+      else if(kind==="facebook") url="https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(LINK)+"&quote="+encodeURIComponent(msg);
+      else if(kind==="telegram") url="https://t.me/share/url?url="+encodeURIComponent(LINK)+"&text="+encodeURIComponent(msg);
+      else if(kind==="link"){navigator.clipboard.writeText(msg).then(()=>toast(b,copiedTxt()));return;}
+      if(url) window.open(url,"_blank","noopener,width=620,height=640");
+    });
+  });
+})();
 $('#loginBtn').onclick=openLogin;
 $('#modalClose').onclick=closeLogin;
 $('#loginModal').addEventListener('click',e=>{ if(e.target===$('#loginModal')) closeLogin(); });
