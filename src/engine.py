@@ -107,8 +107,16 @@ def _photo_note(n, facts=None):
     return note
 
 
-def _build_user_text(article_text, extra_context, n, facts):
+def _build_user_text(article_text, extra_context, n, facts, style_profile=None):
     parts = []
+    if style_profile and style_profile.strip():
+        parts.append(
+            "[This runner's personal writing voice — MATCH IT CLOSELY]\n"
+            "Write the blog so it reads like THIS person wrote it. Mirror the tone, sentence rhythm, "
+            "vocabulary, signature phrases, and emoji/punctuation habits described below. "
+            "Make it feel natural and authentically theirs — never exaggerated or a caricature.\n"
+            + style_profile.strip() + "\n\n"
+        )
     parts.append("[Runner's running story]\n" + (article_text or "(no text — build the running story from the attached photos)"))
     if extra_context:
         parts.append("\n[Runner's quick answers — use these as REAL material, weave them in naturally]\n" + extra_context.strip())
@@ -241,7 +249,38 @@ def _fallback_questions(lang, want=3, mode="mixed"):
     return pool[:max(1, want)]
 
 
-def generate(article_text, provider="claude", model=None, photo_paths=None, lang="ko", extra_context=None):
+def build_style_profile(samples, lang="ko", provider="claude", model=None):
+    """유저가 직접 쓴 글 샘플들(스토리·답변·편집본)에서 '이 사람 문체 가이드'를 뽑아냄.
+       다음 생성 때 프롬프트에 넣어 그 사람처럼 쓰게 하는 재료. 짧고 처방적인 가이드 문자열 반환."""
+    texts = [s.strip() for s in (samples or []) if s and s.strip()]
+    if not texts:
+        return ""
+    joined = "\n\n---\n\n".join(texts)[:6000]
+    lang_name = _Q_LANG.get(lang, "the runner's language")
+    sys = (
+        "You analyze a single person's OWN writing (short running notes / answers they typed) and produce a compact "
+        "STYLE GUIDE another writer can follow to imitate this person's voice. Capture: tone & formality, sentence "
+        "length and rhythm, favorite words / signature phrases, emoji & punctuation habits, how they show emotion, "
+        "and any quirks. Be concrete and prescriptive (do this / avoid that). 5-8 short lines, no preamble. "
+        f"Write the guide in {lang_name}. Output ONLY the guide."
+    )
+    if provider != "claude":
+        return ""
+    try:
+        import anthropic
+        client = anthropic.Anthropic()
+        model = model or os.getenv("ANTHROPIC_MODEL") or "claude-sonnet-4-5"
+        msg = client.messages.create(
+            model=model, max_tokens=500, system=sys,
+            messages=[{"role": "user", "content": "This person's own writing samples:\n\n" + joined}],
+        )
+        return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
+    except Exception as e:
+        print(f"  [문체] 프로필 추출 실패: {e}")
+        return ""
+
+
+def generate(article_text, provider="claude", model=None, photo_paths=None, lang="ko", extra_context=None, style_profile=None):
     system = _load_prompt(lang)
     photo_paths = (photo_paths or [])[:MAX_VISION_PHOTOS]
     n = len(photo_paths)
@@ -255,7 +294,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
         if n and TWO_PASS:
             facts = _extract_photo_facts(client, model, photo_paths)
 
-        user_text = _build_user_text(article_text, extra_context, n, facts)
+        user_text = _build_user_text(article_text, extra_context, n, facts, style_profile)
         content = [{"type": "text", "text": user_text}]
         # 팩트 추출을 못했으면(폴백) 원본 사진을 그대로 붙여 글쓰기 단계가 직접 보게 함
         if n and not facts:
@@ -287,7 +326,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
         from openai import OpenAI
         client = OpenAI()
         model = model or "gpt-4o"
-        user_text = _build_user_text(article_text, extra_context, n, None)
+        user_text = _build_user_text(article_text, extra_context, n, None, style_profile)
         content = [{"type": "text", "text": user_text}]
         for p in photo_paths:
             media, b64 = _encode_image(p)

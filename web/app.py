@@ -25,6 +25,7 @@ import keyword_seo as keyword_mod
 import main as pipeline           # prepare_images 재사용
 import images as images_mod       # 카드 하단 브랜드 문구 언어 전환용
 import authz                      # 로그인·사용량(P3)
+import threading                  # 문체 프로필 백그라운드 재생성(P5)
 from datetime import datetime, timezone
 
 OUT = os.path.join(ROOT, "output")
@@ -88,11 +89,14 @@ def og_image():
     resp = send_from_directory(HERE, "og.png")
     resp.headers["Cache-Control"] = "public, max-age=86400"
     return resp
+
+
 @app.route("/banner/<path:fname>")
 def banner_image(fname):
     resp = send_from_directory(os.path.join(HERE, "banner"), fname)
     resp.headers["Cache-Control"] = "public, max-age=604800"
     return resp
+
 
 @app.route("/terms")
 def terms():
@@ -170,6 +174,42 @@ def api_questions():
     return jsonify({"questions": qs})
 
 
+def _rebuild_style_async(token, lang, provider):
+    """문체 프로필 재생성을 백그라운드에서 수행 → 생성 응답을 지연시키지 않음."""
+    def _work():
+        try:
+            samples = authz.get_style_samples(token, limit=12)
+            prof = engine_mod.build_style_profile(samples, lang=lang, provider=provider)
+            if prof:
+                authz.set_style_profile(token, prof, len(samples), lang)
+        except Exception as e:
+            print("[문체] 백그라운드 재생성 실패:", e)
+    try:
+        threading.Thread(target=_work, daemon=True).start()
+    except Exception:
+        pass
+
+
+@app.route("/api/style/save", methods=["POST"])
+def api_style_save():
+    """유저가 최종 편집/발행한 글을 문체 샘플로 저장(가장 강한 신호). 프론트에서 복사/발행 시 호출."""
+    if not authz.enabled():
+        return jsonify({"ok": False}), 200
+    token = _bearer()
+    user = authz.verify_token(token)
+    if not user:
+        return jsonify({"error": "로그인이 필요해요.", "auth_required": True}), 401
+    data = request.get_json(silent=True) or {}
+    text = (data.get("text") or "").strip()
+    lang = (data.get("lang") or "").strip()
+    if len(text) < 40:
+        return jsonify({"ok": False}), 200
+    n = authz.save_style_sample(token, lang, text, kind="edited")
+    if n:
+        _rebuild_style_async(token, lang, os.getenv("ENGINE_PROVIDER", "claude"))
+    return jsonify({"ok": True, "samples": n})
+
+
 @app.route("/api/generate", methods=["POST"])
 def api_generate():
     text = (request.form.get("text") or "").strip()
@@ -214,9 +254,12 @@ def api_generate():
         story += _lang_directive(lang)      # 지원 목록 밖 언어일 때만 보조 지시
     if plan != "pro":                       # 무료 플랜: 짧은 글 + 이미지 2장
         story += _free_tier_directive()
+    # 문체 학습(P5): 이 유저의 문체 프로필이 있으면 프롬프트에 주입 → "그 사람처럼" 씀
+    style_profile = authz.get_style_profile(token) if user else ""
     try:
         result = engine_mod.generate(story, provider=provider, photo_paths=photos,
-                                     lang=lang, extra_context=answers or None)
+                                     lang=lang, extra_context=answers or None,
+                                     style_profile=style_profile or None)
     except Exception as e:
         import traceback; traceback.print_exc()
         return jsonify({"error": f"글 생성 실패 [{type(e).__name__}]: {e}"}), 500
@@ -247,6 +290,16 @@ def api_generate():
         cnt = new_count if new_count is not None else authz.get_usage(token, _period())
         usage = {"used": cnt, "limit": lim, "remaining": max(0, lim - cnt),
                  "plan": plan, "email": user.get("email")}
+        # 문체 학습: 이번 원문(스토리+답변)을 샘플로 저장 → 초반엔 매번, 이후 3회마다 프로필 재생성(백그라운드)
+        try:
+            _sample = (text or "")
+            if answers:
+                _sample += "\n" + answers
+            _n = authz.save_style_sample(token, lang, _sample, kind="input")
+            if _n and (_n <= 6 or _n % 3 == 0):
+                _rebuild_style_async(token, lang, provider)
+        except Exception as _se:
+            print("[문체] 샘플 저장 스킵:", _se)
 
     return jsonify({
         "title": result.get("title"),

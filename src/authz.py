@@ -130,6 +130,60 @@ def set_plan(uid, plan, status=None, renews_at=None):
     return st in (200, 201, 204)
 
 
+def save_style_sample(token, lang, text, kind="input"):
+    """유저가 직접 쓴 글(스토리+답변 또는 편집본)을 style_samples에 저장.
+       RPC save_style_sample(security definer)로 auth.uid() 기준 저장 → 남의 것 못 건드림.
+       반환: 저장 후 이 유저의 총 샘플 수(int) 또는 None."""
+    if not enabled() or not token:
+        return None
+    text = (text or "").strip()
+    if len(text) < 20:          # 너무 짧으면 문체 학습에 무의미 → 건너뜀
+        return None
+    st, data = _req(f"{SUPABASE_URL}/rest/v1/rpc/save_style_sample", method="POST",
+                    headers={"apikey": ANON, "Authorization": f"Bearer {token}"},
+                    data={"p_lang": lang or "", "p_text": text[:4000], "p_kind": kind})
+    if st in (200, 201):
+        try:
+            return int(data)
+        except Exception:
+            return None
+    return None
+
+
+def get_style_profile(token):
+    """이 유저의 현재 문체 프로필(가이드 문자열). 없으면 ''."""
+    if not enabled() or not token:
+        return ""
+    st, data = _req(f"{SUPABASE_URL}/rest/v1/rpc/my_style_profile", method="POST",
+                    headers={"apikey": ANON, "Authorization": f"Bearer {token}"},
+                    data={})
+    if st in (200, 201) and isinstance(data, str):
+        return data
+    return ""
+
+
+def get_style_samples(token, limit=12):
+    """이 유저의 최근 글 샘플 텍스트 목록(프로필 재생성용)."""
+    if not enabled() or not token:
+        return []
+    st, data = _req(f"{SUPABASE_URL}/rest/v1/rpc/my_style_samples", method="POST",
+                    headers={"apikey": ANON, "Authorization": f"Bearer {token}"},
+                    data={"p_limit": int(limit)})
+    if st in (200, 201) and isinstance(data, list):
+        return [r.get("text", "") if isinstance(r, dict) else str(r) for r in data]
+    return []
+
+
+def set_style_profile(token, profile, count, lang):
+    """추출한 문체 프로필을 style_profiles에 upsert (auth.uid() 기준)."""
+    if not enabled() or not token:
+        return False
+    st, _ = _req(f"{SUPABASE_URL}/rest/v1/rpc/set_style_profile", method="POST",
+                 headers={"apikey": ANON, "Authorization": f"Bearer {token}"},
+                 data={"p_profile": (profile or "")[:4000], "p_count": int(count or 0), "p_lang": lang or ""})
+    return st in (200, 201, 204)
+
+
 def increment_usage(token, period):
     """생성 성공 시 편수 +1 (원자적, DB 함수 bump_usage). 새 값 반환 or None.
        사용자 토큰으로 호출하지만 함수가 auth.uid() 기준이라 남의 것/자기 것 조작 불가(증가만)."""
