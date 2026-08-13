@@ -156,6 +156,17 @@
   .home-brand:hover{transform:translateY(-1px);filter:brightness(1.12)}
   .home-brand:hover .logo{border-color:var(--line)}
 
+  /* share buttons (referral) */
+  .share-row{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .share-lbl{font-size:11.5px;font-weight:700;color:var(--dim);margin-right:2px}
+  .vs-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border2);background:var(--panel2);color:var(--text);font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s ease,border-color .15s ease,color .15s ease,background .15s ease}
+  .vs-btn:hover{border-color:var(--mint);color:var(--mint);transform:translateY(-2px);background:var(--tint)}
+  .vs-btn:active{transform:translateY(0) scale(.94)}
+  .vs-btn[data-share="link"]{width:auto;padding:0 13px;font-size:12.5px;font-weight:700}
+  .vs-btn svg{width:17px;height:17px}
+  .share-hint{font-size:11.5px;color:var(--mint2);margin-top:9px;min-height:14px;opacity:0;transition:opacity .2s ease}
+  .share-hint.on{opacity:1}
+
   @media(max-width:720px){
     .layout{grid-template-columns:1fr}
     .ben-grid{grid-template-columns:1fr}
@@ -261,9 +272,18 @@
         <div class="bar"><i></i></div>
         <div class="cap" data-i18n-html="cap">다음 마일스톤까지 <b>결제 2건</b> — 달성 시 <b>굿즈 증정</b> 🎁 · Top 10까지 <b>14계단</b></div>
         <div class="cta">
-          <a class="btn primary" data-i18n="btnCopy">내 초대링크 복사</a>
-          <a class="btn ghost" data-i18n="btnShare">공유하기 →</a>
+          <button class="btn primary" id="rCopy" type="button" data-i18n="btnCopy">내 초대링크 복사</button>
         </div>
+        <div class="share-row">
+          <span class="share-lbl" id="rShareLbl">바로 공유</span>
+          <button class="vs-btn" data-share="x" type="button" aria-label="X">𝕏</button>
+          <button class="vs-btn vs-ig" data-share="instagram" type="button" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></button>
+          <button class="vs-btn" data-share="threads" type="button" aria-label="Threads">@</button>
+          <button class="vs-btn" data-share="facebook" type="button" aria-label="Facebook">f</button>
+          <button class="vs-btn" data-share="telegram" type="button" aria-label="Telegram">✈</button>
+          <button class="vs-btn" data-share="link" id="rLinkBtn" type="button">링크 복사</button>
+        </div>
+        <div class="share-hint" id="rHint"></div>
       </div>
     </div>
 
@@ -427,6 +447,52 @@ function initLang(){
   setLang(l);
 }
 initLang();
+</script>
+<script>
+(function(){
+  var LINK="https://airnote.club";
+  var SHARE={
+    ko:{shareLbl:"바로 공유", linkBtn:"링크 복사", copied:"복사됨 ✓",
+        copyHint:"문구가 복사됐어요 — 어디든 붙여넣으세요 📋",
+        igHint:"문구가 복사됐어요 — 인스타그램에 붙여넣으세요 📋",
+        msg:"🏃 러닝 기록이 그대로 블로그가 되는 AIRNOTE\nSNS 한 줄·러닝 앱 기록만 넣으면 → 2,800자 SEO 블로그가 3분 만에. 5개 언어까지.\n지금 무료로 시작하고, 친구 초대하면 결제액 20%가 계속 페이백 💸\n👉 https://airnote.club"},
+    en:{shareLbl:"Share", linkBtn:"Copy link", copied:"Copied ✓",
+        copyHint:"Copied — paste it anywhere 📋",
+        igHint:"Copied — paste it into Instagram 📋",
+        msg:"🏃 AIRNOTE turns your runs into full blog posts.\nDrop one social line or your running-app record → a 2,800-word SEO post in 3 minutes, in 5 languages.\nStart free — and earn 20% back every time a friend you invited pays 💸\n👉 https://airnote.club"},
+    ja:{shareLbl:"すぐシェア", linkBtn:"リンクコピー", copied:"コピー完了 ✓",
+        copyHint:"コピーしました — どこでも貼り付けてください 📋",
+        igHint:"コピーしました — インスタに貼り付けてください 📋",
+        msg:"🏃 ランの記録がそのままブログになる AIRNOTE\nSNSの一言やランアプリの記録を入れるだけ → 2,800字のSEOブログが3分で。5言語対応。\n無料で始めて、招待した友達が決済するたび20%還元 💸\n👉 https://airnote.club"},
+    zh:{shareLbl:"立即分享", linkBtn:"复制链接", copied:"已复制 ✓",
+        copyHint:"已复制 — 粘贴到任意处 📋",
+        igHint:"已复制 — 粘贴到 Instagram 📋",
+        msg:"🏃 让跑步记录直接变成博客的 AIRNOTE\n一句社交动态或跑步App记录 → 3分钟生成2,800字SEO博客，支持5种语言。\n免费开始，邀请好友付费还能持续拿20%返现 💸\n👉 https://airnote.club"},
+    es:{shareLbl:"Compartir", linkBtn:"Copiar enlace", copied:"Copiado ✓",
+        copyHint:"Copiado — pégalo donde quieras 📋",
+        igHint:"Copiado — pégalo en Instagram 📋",
+        msg:"🏃 AIRNOTE convierte tus carreras en artículos de blog.\nUna línea de tus redes o tu registro de running → un post SEO de 2.800 palabras en 3 minutos, en 5 idiomas.\nEmpieza gratis y gana un 20% cada vez que paga un amigo que invitaste 💸\n👉 https://airnote.club"}
+  };
+  function cur(){ var l=document.documentElement.lang||"ko"; return SHARE[l]||SHARE.ko; }
+  function applyShareLang(){ var d=cur();
+    var sl=document.getElementById("rShareLbl"); if(sl) sl.textContent=d.shareLbl;
+    var lb=document.getElementById("rLinkBtn"); if(lb) lb.textContent=d.linkBtn; }
+  function hint(t){ var h=document.getElementById("rHint"); if(!h)return; h.textContent=t; h.classList.add("on"); clearTimeout(h._t); h._t=setTimeout(function(){h.classList.remove("on");},2600); }
+  var copyBtn=document.getElementById("rCopy");
+  if(copyBtn) copyBtn.addEventListener("click",function(){ var d=cur(); var o=copyBtn.textContent;
+    navigator.clipboard.writeText(d.msg).then(function(){ copyBtn.textContent=d.copied; copyBtn.disabled=true; hint(d.copyHint); setTimeout(function(){copyBtn.textContent=o;copyBtn.disabled=false;},1400); }).catch(function(){ hint(d.copyHint); }); });
+  document.querySelectorAll(".vs-btn").forEach(function(b){
+    b.addEventListener("click",function(){ var d=cur(); var m=d.msg; var kind=b.getAttribute("data-share"); var url="";
+      if(kind==="x") url="https://twitter.com/intent/tweet?text="+encodeURIComponent(m);
+      else if(kind==="threads") url="https://www.threads.net/intent/post?text="+encodeURIComponent(m);
+      else if(kind==="facebook") url="https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(LINK)+"&quote="+encodeURIComponent(m);
+      else if(kind==="telegram") url="https://t.me/share/url?url="+encodeURIComponent(LINK)+"&text="+encodeURIComponent(m);
+      else if(kind==="instagram"){ if(navigator.share){navigator.share({text:m}).catch(function(){});return;} navigator.clipboard.writeText(m).then(function(){hint(d.igHint);window.open("https://www.instagram.com/","_blank","noopener");}); return; }
+      else if(kind==="link"){ navigator.clipboard.writeText(m).then(function(){hint(d.copyHint);}).catch(function(){hint(d.copyHint);}); return; }
+      if(url) window.open(url,"_blank","noopener"); }); });
+  var sel=document.getElementById("langSel"); if(sel) sel.addEventListener("change",applyShareLang);
+  applyShareLang();
+})();
 </script>
 </body>
 </html>
