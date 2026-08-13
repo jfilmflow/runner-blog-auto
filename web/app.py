@@ -83,6 +83,9 @@ def _apply_free_limits(result):
 @app.route("/")
 def index():
     return send_from_directory(HERE, "index.html")
+    @app.route("/ranking")
+def ranking_page():
+    return send_from_directory(HERE, "ranking.html")
 
 
 @app.route("/og.png")
