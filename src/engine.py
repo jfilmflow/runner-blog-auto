@@ -107,7 +107,44 @@ def _photo_note(n, facts=None):
     return note
 
 
-def _build_user_text(article_text, extra_context, n, facts, style_profile=None):
+# ── 감정 재해석(희노애락) : 진짜 사람이 쓴 것 같은 감성·문장부호 주입 ──────────
+_EMO_PUNCT = {
+    "ko": ('한국어: 구어체 종결(…요 / …거든요 / …더라고요)로 진심을 담고, 감정이 북받치는 '
+           '딱 한 곳에만 "…"(여운·아쉬움·먹먹함)이나 "!"(벅참·뿌듯함·응원)를 써요. '
+           '"와", "후—", "헐", "아…" 같은 감탄은 자연스러울 때만. 물결(~)·느낌표 남발은 금지.'),
+    "en": ('English: use an em dash (—) for a caught breath, "…" for a trailing or wistful thought, '
+           'and "!" only at a genuine peak of joy/pride/drive. Contractions (I\'m, didn\'t) keep it warm. '
+           'Never stack punctuation.'),
+    "ja": ('日本語: 余韻・切なさは「…」、高揚・応援は「！」で（多用しない）。「〜」でやわらかさを、'
+           '「うわ」「ふぅ」「あぁ…」などの感嘆は自然な瞬間だけ。記号の連打はしない。'),
+    "zh": ('中文: 用省略号"……"表达留白、怅然或不舍，用"！"表达振奋或加油（少用）。'
+           '语气词"啊 / 呢 / 吧"自然融入，切忌堆叠标点。'),
+    "es": ('Español: usa correctamente "¡…!" y "¿…?" con signos de apertura; puntos suspensivos "…" '
+           'para la nostalgia o la duda, y "!" solo en un pico real. Nada de signos repetidos.'),
+}
+
+_EMO_CORE = (
+    "[Emotional re-interpretation — write like a REAL person, not a report]\n"
+    "Read the emotional arc hidden in the runner's own words and answers — the 희노애락 (joy, "
+    "frustration, sadness/letdown, delight) beneath the plain facts — and re-tell the experience so the "
+    "reader FEELS it, not just reads it:\n"
+    "- Show emotion through concrete sensory detail and sentence rhythm, NOT piled-up adjectives.\n"
+    "- Match punctuation to the feeling: a trailing \"…\" for hesitation, letdown or lingering warmth; "
+    "\"!\" for a real spark of joy, pride or fighting spirit; a rhetorical \"?\" for self-questioning "
+    "(\"wait, I actually did it?\"). Use each mark ONLY where the emotion truly lands — one is enough; "
+    "never \"!!!\" or \"………\".\n"
+    "- Vary the beat: short, punchy lines at emotional peaks; longer, flowing lines for scenery and reflection.\n"
+    "- Stay authentic and grounded — a genuine human diary voice, never melodramatic or fake-cheerful.\n"
+    "- If a personal voice guide is given above, THAT takes priority for emoji/punctuation habits.\n"
+)
+
+
+def _emotion_directive(lang):
+    line = _EMO_PUNCT.get((lang or "ko").lower())
+    return _EMO_CORE + ("- " + line + "\n" if line else "") + "\n"
+
+
+def _build_user_text(article_text, extra_context, n, facts, style_profile=None, lang="ko"):
     parts = []
     if style_profile and style_profile.strip():
         parts.append(
@@ -117,6 +154,7 @@ def _build_user_text(article_text, extra_context, n, facts, style_profile=None):
             "Make it feel natural and authentically theirs — never exaggerated or a caricature.\n"
             + style_profile.strip() + "\n\n"
         )
+    parts.append(_emotion_directive(lang))
     parts.append("[Runner's running story]\n" + (article_text or "(no text — build the running story from the attached photos)"))
     if extra_context:
         parts.append("\n[Runner's quick answers — use these as REAL material, weave them in naturally]\n" + extra_context.strip())
@@ -294,7 +332,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
         if n and TWO_PASS:
             facts = _extract_photo_facts(client, model, photo_paths)
 
-        user_text = _build_user_text(article_text, extra_context, n, facts, style_profile)
+        user_text = _build_user_text(article_text, extra_context, n, facts, style_profile, lang)
         content = [{"type": "text", "text": user_text}]
         # 팩트 추출을 못했으면(폴백) 원본 사진을 그대로 붙여 글쓰기 단계가 직접 보게 함
         if n and not facts:
@@ -326,7 +364,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
         from openai import OpenAI
         client = OpenAI()
         model = model or "gpt-4o"
-        user_text = _build_user_text(article_text, extra_context, n, None, style_profile)
+        user_text = _build_user_text(article_text, extra_context, n, None, style_profile, lang)
         content = [{"type": "text", "text": user_text}]
         for p in photo_paths:
             media, b64 = _encode_image(p)
