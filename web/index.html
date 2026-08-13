@@ -1319,7 +1319,8 @@ async function initAuth(){
   if(AUTH.enabled && AUTH.url && AUTH.anon && window.supabase){
     SB=window.supabase.createClient(AUTH.url, AUTH.anon);
     try{ const {data}=await SB.auth.getSession(); AUTH.session=data.session||null; }catch(_){}
-    SB.auth.onAuthStateChange((_e,s)=>{ AUTH.session=s||null; updateAuthUI(); if(s) fetchUsage(); });
+    SB.auth.onAuthStateChange((_e,s)=>{ AUTH.session=s||null; updateAuthUI(); if(s) fetchUsage();
+      if(s && window.__pendingPlan){ const k=window.__pendingPlan; window.__pendingPlan=null; try{$('#loginModal').style.display='none';}catch(_){} window.location.href=buildCheckout(k); } });
   }
   $('#authWrap').style.display = AUTH.enabled ? 'flex' : 'none';
   updateAuthUI();
@@ -1597,7 +1598,21 @@ $('#googleBtn').onclick=async()=>{
 LANG=pickLang();
 $('#langSel').value=LANG;
 applyI18n();
-initAuth().then(()=>handlePaymentReturn()).catch(()=>handlePaymentReturn());
+// 랜딩 요금제에서 ?plan=1m|6m|12m 로 넘어오면 → 해당 상품 결제창으로 바로 (로그인 붙여서)
+function handlePlanParam(){
+  try{
+    const k=new URLSearchParams(location.search).get('plan');
+    if(!k) return;
+    // 새로고침 시 재실행 방지: 파라미터 제거
+    const u=new URL(location.href); u.searchParams.delete('plan');
+    history.replaceState({}, '', u.pathname+u.search+u.hash);
+    if(k==='free'){ try{startFree();}catch(_){}; return; }
+    if(!CHECKOUT[k]) return;
+    if(AUTH.enabled && !AUTH.session){ window.__pendingPlan=k; openLogin(); try{toast(T('loginNeeded'));}catch(_){}; return; }
+    window.location.href = buildCheckout(k);   // 로그인됨(또는 인증 off) → 같은 탭에서 바로 결제
+  }catch(_){}
+}
+initAuth().then(()=>{ handlePaymentReturn(); handlePlanParam(); }).catch(()=>{ handlePaymentReturn(); handlePlanParam(); });
 </script>
 </body>
 </html>
