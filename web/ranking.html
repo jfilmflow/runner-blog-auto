@@ -127,6 +127,35 @@
   .foot{margin-top:26px;font-size:11.5px;color:var(--dim);text-align:center;line-height:1.6}
   .foot b{color:var(--muted)}
 
+  /* hover micro-interactions — 살짝 떠오르기 + 색반응 + 밝아지기 */
+  .pod,.ben,.card{transition:transform .18s ease,border-color .2s ease,box-shadow .22s ease,background .2s ease}
+  .pod:hover{transform:translateY(-5px);border-color:var(--line);box-shadow:0 16px 38px rgba(0,0,0,.34)}
+  .pod.p1:hover{border-color:rgba(245,196,81,.75);box-shadow:0 18px 42px rgba(245,196,81,.14)}
+  .ben.base:hover{transform:translateY(-4px);box-shadow:0 18px 42px rgba(46,214,198,.16)}
+  .ben.bonus:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:0 16px 36px rgba(0,0,0,.32)}
+  .card:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:0 16px 36px rgba(0,0,0,.32)}
+  .list .row{transition:background .16s ease,box-shadow .16s ease}
+  .list .row:not(.you):hover{background:var(--tint)}
+  .row.you{transition:filter .16s ease,transform .16s ease}
+  .row.you:hover{filter:brightness(1.07);transform:translateX(2px)}
+  .rw-row{transition:transform .15s ease}
+  .rw-row:hover{transform:translateX(3px)}
+  .rw-row:hover .t{color:var(--mint2)}
+  .mile{transition:transform .15s ease}
+  .mile:hover{transform:translateX(3px)}
+  .mile:not(.done):hover .lbl{color:var(--text)}
+  .btn{transition:transform .15s ease,filter .18s ease,box-shadow .2s ease}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.09);box-shadow:0 10px 24px rgba(0,0,0,.3)}
+  .btn.primary:hover{box-shadow:0 10px 26px rgba(46,214,198,.35)}
+  .btn:active{transform:translateY(0) scale(.98)}
+  .lang-sel{transition:transform .15s ease,filter .15s ease,border-color .15s ease}
+  .lang-sel:hover{transform:translateY(-1px);filter:brightness(1.12);border-color:var(--line)}
+  .season{transition:filter .18s ease}
+  .season:hover{filter:brightness(1.1)}
+  .home-brand{transition:transform .16s ease,filter .18s ease}
+  .home-brand:hover{transform:translateY(-1px);filter:brightness(1.12)}
+  .home-brand:hover .logo{border-color:var(--line)}
+
   @media(max-width:720px){
     .layout{grid-template-columns:1fr}
     .ben-grid{grid-template-columns:1fr}
