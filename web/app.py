@@ -83,7 +83,8 @@ def _apply_free_limits(result):
 @app.route("/")
 def index():
     return send_from_directory(HERE, "index.html")
-    
+
+
 @app.route("/ranking")
 def ranking_page():
     return send_from_directory(HERE, "ranking.html")
@@ -220,6 +221,8 @@ def api_generate():
     text = (request.form.get("text") or "").strip()
     lang = (request.form.get("lang") or "").strip()
     answers = (request.form.get("answers") or "").strip()   # 스마트 후속답변(프론트에서 조립한 재료)
+    gear = [s.strip() for s in (request.form.get("gear") or "").split("|") if s.strip()]            # 착용·장비 (큐레이션·본문 반영)
+    nutrition = [s.strip() for s in (request.form.get("nutrition") or "").split("|") if s.strip()]  # 젤·간식
     provider = os.getenv("ENGINE_PROVIDER", "claude")
 
     # ── 로그인·사용량(P3) ── 로그인 기능이 켜져 있으면 검증 + 무료 한도 확인
@@ -264,7 +267,8 @@ def api_generate():
     try:
         result = engine_mod.generate(story, provider=provider, photo_paths=photos,
                                      lang=lang, extra_context=answers or None,
-                                     style_profile=style_profile or None)
+                                     style_profile=style_profile or None,
+                                     gear=gear or None, nutrition=nutrition or None)
     except Exception as e:
         import traceback; traceback.print_exc()
         return jsonify({"error": f"글 생성 실패 [{type(e).__name__}]: {e}"}), 500
