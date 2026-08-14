@@ -20,7 +20,7 @@
 <meta name="twitter:image" content="https://app.airnote.club/og.png">
 
 <!-- Lemon Squeezy 제휴(affiliate) 추적 -->
-<script>window.lemonSqueezyAffiliateConfig = { store: "runner-blog-auto" };</script>
+<script>window.lemonSqueezyAffiliateConfig = { store: "airnote" };</script>
 <script src="https://lmsqueezy.com/affiliate.js" defer></script>
 <style>
   :root{
@@ -1369,9 +1369,9 @@ function refreshUpBtn(){
 
 // ===== 업그레이드(요금제) 팝업 =====
 const CHECKOUT = {
-  '1m':  'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/e22ebe6b-d374-4e67-923b-68594b1a29b7',
-  '6m':  'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/42e8fbea-4b03-41a1-b864-9afebd4fbbc2',
-  '12m': 'https://runner-blog-auto.lemonsqueezy.com/checkout/buy/8c63135d-38f5-4c92-81e8-a0609ac3f81c',
+  '1m':  'https://airnote.lemonsqueezy.com/checkout/buy/e22ebe6b-d374-4e67-923b-68594b1a29b7',
+  '6m':  'https://airnote.lemonsqueezy.com/checkout/buy/42e8fbea-4b03-41a1-b864-9afebd4fbbc2',
+  '12m': 'https://airnote.lemonsqueezy.com/checkout/buy/8c63135d-38f5-4c92-81e8-a0609ac3f81c',
 };
 const PLAN_DATA = [
   {k:'1m',  nameKey:'up1',  total:'$12', permo:'$12'},
@@ -1538,7 +1538,7 @@ function handlePaymentReturn(){
   }catch(_){}
 }
 // 친구 초대(제휴 20%) — LS 제휴 가입 페이지로
-const AFFILIATE_URL='https://runner-blog-auto.lemonsqueezy.com/affiliates';
+const AFFILIATE_URL='https://airnote.lemonsqueezy.com/affiliates';
 $('#inviteBtn').onclick=()=>window.open(AFFILIATE_URL,'_blank');
 { const _rc=$('#referCta'); if(_rc) _rc.onclick=()=>window.open(AFFILIATE_URL,'_blank'); }
 /* 레퍼럴 카드 SNS 공유 */
