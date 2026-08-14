@@ -144,7 +144,81 @@ def _emotion_directive(lang):
     return _EMO_CORE + ("- " + line + "\n" if line else "") + "\n"
 
 
-def _build_user_text(article_text, extra_context, n, facts, style_profile=None, lang="ko"):
+# ── 품질 상향: 상위 노출되는 '진짜 사람 블로그' 기준 ──────────────────
+_QUALITY = (
+    "[Quality bar — this must read like a top-ranking HUMAN running blog, not AI filler]\n"
+    "- Open with a specific, grabby hook — a moment, a number, or a feeling. NEVER a generic 'Today I went for a run' intro.\n"
+    "- Give every section a real job: scene-setting → the run itself → the numbers/analysis → a turning point → a concrete takeaway → what's next.\n"
+    "- Use only concrete, sensory, verifiable detail from the story, answers, photos and facts. Cut vague filler, cliché, and repeated phrasing.\n"
+    "- Weave the main keyword naturally into the title, the first paragraph, at least one subhead, and the closing — for SEO, but NEVER keyword-stuff.\n"
+    "- Give the reader something usable: a tip, a comparison, a small lesson — so the post earns its length and deserves to rank (E-E-A-T).\n"
+    "- Vary sentence length; keep paragraphs short and skimmable. Subheads should be specific and searchable, not decorative.\n"
+    "- Close with a warm, human line that invites a comment or the next run.\n"
+)
+
+
+def _quality_directive():
+    return _QUALITY + "\n"
+
+
+# ── 구조: 기승전결 4단 서사 + 6하원칙(언제·어디서·누가·무엇을·어떻게·왜) ──
+_STRUCTURE = (
+    "[Structure — a solid post needs a clear 기승전결 (4-act) narrative arc AND the 6 basics grounded]\n"
+    "Shape the body as a four-act arc. Use natural, specific subheads that fit the story — do NOT literally label them 기/승/전/결:\n"
+    "1) 기 · SETUP: ground the reader — WHEN it was (time of day, season), WHERE they ran (place/route), WHO they ran with, and WHY they went out today.\n"
+    "2) 승 · DEVELOPMENT: the run unfolds — the scene, the effort building, how the body and mind felt, the numbers along the way.\n"
+    "3) 전 · TURN: the crux — the hardest moment, a breakthrough, a surprise, or the point it all shifted. This is the emotional core; give it the most room and the sharpest detail.\n"
+    "4) 결 · RESOLUTION: how it ended and what it meant — one concrete takeaway the reader can use, and what's next.\n"
+    "Across the whole post, make sure the 6 basics are answered so the story is complete and credible: "
+    "WHEN, WHERE, WHO, WHAT (distance/goal/session), HOW (pace, effort, method), WHY (the motivation behind today's run).\n"
+    "Weave all of this in as flowing story — NEVER as a checklist, a Q&A, or labeled sections. "
+    "Use ONLY facts present in the runner's text, answers, or photos; if a basic isn't given, lean on feeling and scene rather than inventing it.\n"
+)
+
+
+def _structure_directive():
+    return _STRUCTURE + "\n"
+
+
+# ── 그라운딩 체크리스트: 글을 '탄탄'하게 만드는 구체 앵커들 (있을 때만) ──
+_GROUNDING = (
+    "[Grounding checklist — a solid post lands these concrete anchors, but ONLY when the material actually provides them]\n"
+    "Work the following into the story where available — as natural narrative, NEVER as a bulleted spec sheet or Q&A:\n"
+    "- WHEN it was, WHERE it happened, WHAT they did, HOW they ran, WHY they went out today.\n"
+    "- HOW FAR and HOW LONG they ran (distance & time) — use the EXACT numbers from the photo facts or the runner's text, never rounded guesses.\n"
+    "- What they WORE (apparel), the SHOES they ran in, and any SIDE ITEMS (headband, vest, cap, bag, watch) — from the gear given above.\n"
+    "- The WEATHER and conditions (from the text, the answers, or a photo's scene).\n"
+    "- What they ATE or drank as FUEL (gels, snacks, drinks) and roughly when.\n"
+    "- CALORIES burned — ONLY if it is visibly shown in a running-app record. If shown, state it and add ONE short, natural line connecting it to a health/diet upside (e.g. 'that's a small win for the diet, too'). If it is NOT shown, skip calories entirely — never estimate, round, or invent a number.\n"
+    "NEVER fabricate any of these. If a detail isn't in the runner's material, leave it out and lean on what IS there. "
+    "The goal is a grounded, complete, believable post — not a form with every blank forced full.\n"
+)
+
+
+def _grounding_directive():
+    return _GROUNDING + "\n"
+
+
+# ── 러닝 장비·간식: 본문에 자연스럽게 녹이기 (광고 아님) ──────────────
+def _gear_directive(gear, nutrition):
+    gear = [g.strip() for g in (gear or []) if g and g.strip()]
+    nutrition = [n.strip() for n in (nutrition or []) if n and n.strip()]
+    if not gear and not nutrition:
+        return ""
+    lines = ["[Runner's REAL gear & fuel today — weave into the story naturally. Do NOT invent items or brands not listed here.]"]
+    if gear:
+        lines.append("Worn / gear: " + ", ".join(gear))
+    if nutrition:
+        lines.append("Fuel / snacks: " + ", ".join(nutrition))
+    lines.append(
+        "Mention each where it naturally belongs — what they wore, how the shoes felt underfoot, when they took the gel and whether it helped. "
+        "Include ONE short, genuine gear-and-fuel touch in the body, like a runner's field note — specific about fit, comfort or timing, "
+        "NEVER an ad and never a bullet list of products. Reference ONLY the items listed above."
+    )
+    return "\n".join(lines) + "\n\n"
+
+
+def _build_user_text(article_text, extra_context, n, facts, style_profile=None, lang="ko", gear=None, nutrition=None):
     parts = []
     if style_profile and style_profile.strip():
         parts.append(
@@ -154,10 +228,16 @@ def _build_user_text(article_text, extra_context, n, facts, style_profile=None, 
             "Make it feel natural and authentically theirs — never exaggerated or a caricature.\n"
             + style_profile.strip() + "\n\n"
         )
+    parts.append(_quality_directive())
+    parts.append(_structure_directive())
+    parts.append(_grounding_directive())
     parts.append(_emotion_directive(lang))
     parts.append("[Runner's running story]\n" + (article_text or "(no text — build the running story from the attached photos)"))
     if extra_context:
         parts.append("\n[Runner's quick answers — use these as REAL material, weave them in naturally]\n" + extra_context.strip())
+    gd = _gear_directive(gear, nutrition)
+    if gd:
+        parts.append("\n" + gd)
     parts.append(_photo_note(n, facts))
     parts.append("\n\nNow produce the running-blog JSON as specified. Output JSON only.")
     return "".join(parts)
@@ -318,7 +398,7 @@ def build_style_profile(samples, lang="ko", provider="claude", model=None):
         return ""
 
 
-def generate(article_text, provider="claude", model=None, photo_paths=None, lang="ko", extra_context=None, style_profile=None):
+def generate(article_text, provider="claude", model=None, photo_paths=None, lang="ko", extra_context=None, style_profile=None, gear=None, nutrition=None):
     system = _load_prompt(lang)
     photo_paths = (photo_paths or [])[:MAX_VISION_PHOTOS]
     n = len(photo_paths)
@@ -332,7 +412,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
         if n and TWO_PASS:
             facts = _extract_photo_facts(client, model, photo_paths)
 
-        user_text = _build_user_text(article_text, extra_context, n, facts, style_profile, lang)
+        user_text = _build_user_text(article_text, extra_context, n, facts, style_profile, lang, gear, nutrition)
         content = [{"type": "text", "text": user_text}]
         # 팩트 추출을 못했으면(폴백) 원본 사진을 그대로 붙여 글쓰기 단계가 직접 보게 함
         if n and not facts:
@@ -364,7 +444,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
         from openai import OpenAI
         client = OpenAI()
         model = model or "gpt-4o"
-        user_text = _build_user_text(article_text, extra_context, n, None, style_profile, lang)
+        user_text = _build_user_text(article_text, extra_context, n, None, style_profile, lang, gear, nutrition)
         content = [{"type": "text", "text": user_text}]
         for p in photo_paths:
             media, b64 = _encode_image(p)
