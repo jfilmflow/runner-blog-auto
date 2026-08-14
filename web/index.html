@@ -347,9 +347,9 @@
   /* 레퍼럴 공유 */
   .refer-share{margin-top:20px;padding-top:18px;border-top:1px solid var(--border)}
   .rs-label{font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:10px}
-  .rs-copybox{display:flex;gap:10px;align-items:stretch;margin-bottom:14px;flex-wrap:wrap}
-  #rMsg{flex:1;min-width:220px;resize:none;height:78px;background:var(--field-bg);border:1px solid var(--border2);border-radius:12px;color:var(--muted);font-size:13px;line-height:1.55;padding:11px 13px;font-family:inherit;outline:none}
-  .rs-copy{flex:none;align-self:stretch;padding:0 20px;font-size:13.5px}
+  .rs-copybox{display:block;margin-bottom:14px}
+  #rMsg{display:block;width:100%;box-sizing:border-box;resize:none;height:92px;background:var(--field-bg);border:1px solid var(--border2);border-radius:12px;color:var(--muted);font-size:13px;line-height:1.55;padding:11px 13px;font-family:inherit;outline:none}
+  .rs-copy{display:block;width:100%;margin-top:11px;padding:13px 0;font-size:14px;text-align:center}
   .rs-share{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
   .rs-share-l{font-size:12.5px;color:var(--muted2);font-weight:700;margin-right:2px}
   .vs-btn2{width:40px;height:40px;border-radius:11px;border:1px solid var(--border2);background:var(--panel2);color:var(--text);font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s ease,border-color .15s ease,color .15s ease,background .15s ease}
@@ -447,6 +447,71 @@
 .sc-logo{overflow:hidden}
 .sc-logo{display:flex;align-items:center;justify-content:center}
 .sc-logo .logo-img{width:82%;height:82%;object-fit:contain;display:block}
+
+/* ===== 고도화: trust strip ===== */
+.trust-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:2px 4px 22px}
+.trust-strip .ts{background:linear-gradient(180deg,rgba(46,214,198,.08),rgba(46,214,198,.02));
+  border:1px solid var(--glass-bd);border-radius:14px;padding:14px 12px;text-align:center;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.trust-strip .ts:hover{transform:translateY(-3px);border-color:var(--mint);box-shadow:0 12px 28px rgba(0,0,0,.35)}
+.trust-strip .ts b{display:block;font-size:19px;font-weight:900;color:var(--mint2);letter-spacing:-.01em}
+.trust-strip .ts span{display:block;margin-top:4px;font-size:12px;color:var(--muted)}
+@media(max-width:560px){.trust-strip{grid-template-columns:repeat(2,1fr);gap:8px}.trust-strip .ts b{font-size:17px}}
+
+/* ===== 고도화: onboarding sample ===== */
+.onb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 16px;
+  background:rgba(46,214,198,.06);border:1px dashed var(--glass-bd2);border-radius:12px;padding:11px 14px}
+.onb-q{font-size:13px;color:var(--muted);font-weight:600}
+.onb-btn{background:linear-gradient(135deg,var(--mint),#22b7d8);color:var(--ink);border:none;
+  font-weight:800;font-size:13px;padding:8px 14px;border-radius:10px;cursor:pointer;font-family:inherit;
+  transition:transform .15s ease,filter .18s ease,box-shadow .2s ease;box-shadow:0 6px 16px rgba(46,214,198,.25)}
+.onb-btn:hover{transform:translateY(-1px);filter:brightness(1.07);box-shadow:0 10px 22px rgba(46,214,198,.34)}
+.onb-btn:active{transform:scale(.97)}
+.onb.filled{border-style:solid;border-color:var(--mint)}
+
+/* ===== 고도화: editable body ===== */
+.edit-area{width:100%;min-height:360px;resize:vertical;background:var(--panel);color:var(--text);
+  border:2px solid var(--mint);border-radius:12px;padding:14px 16px;font-family:inherit;font-size:14.5px;
+  line-height:1.8;box-sizing:border-box;outline:none}
+.edit-hint{font-size:12px;color:var(--mint2);margin:8px 2px 0}
+.mini-btn.editing{border-color:var(--mint)!important;color:var(--mint2)!important;background:rgba(46,214,198,.1)!important}
+
+/* ===== 고도화: micro-interactions ===== */
+.chip{transition:transform .16s ease,border-color .16s ease,color .16s ease}
+.chip:hover{transform:translateY(-2px);border-color:var(--mint);color:var(--mint2)}
+.card{animation:cardIn .5s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#genBtn{position:relative;overflow:hidden}
+#genBtn::after{content:"";position:absolute;top:0;left:-60%;width:38%;height:100%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.20),transparent);transform:skewX(-18deg);
+  animation:ctaShine 4s ease-in-out infinite}
+@keyframes ctaShine{0%,62%{left:-60%}82%,100%{left:130%}}
+@media(prefers-reduced-motion:reduce){.card{animation:none}#genBtn::after{animation:none}}
+
+/* ===== 고도화 2차: page hero ===== */
+.page-title{margin:6px 4px 18px;text-align:left}
+.page-title h1{font-size:27px;line-height:1.22;font-weight:900;letter-spacing:-.02em;margin:0;
+  background:linear-gradient(90deg,var(--text),var(--mint2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.page-title p{margin:9px 0 0;color:var(--muted);font-size:14px;line-height:1.6;max-width:640px}
+@media(max-width:560px){.page-title h1{font-size:21px}.page-title p{font-size:13px}}
+
+/* ===== 고도화 2차: 이미지 업로드 두 유형 ===== */
+.cap-help{color:var(--muted);font-size:13px;line-height:1.55;margin:2px 2px 12px}
+.drops2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.drop2{padding:24px 16px}
+.drop2 .ico{font-size:26px;margin-bottom:8px}
+.drop2 .drop-t{font-weight:800;font-size:14px;color:var(--text)}
+.drop2[data-kind="record"]{border-color:rgba(46,214,198,.4)}
+.drop2[data-kind="record"] .drop-t{color:var(--mint2)}
+.drop2.over{border-color:var(--mint);background:rgba(46,214,198,.07)}
+@media(max-width:560px){.drops2{grid-template-columns:1fr;gap:10px}.drop2{padding:20px 14px}}
+.thumbs .thumb{position:relative;width:70px;height:70px}
+.thumbs .thumb img{width:70px;height:70px;object-fit:cover;border-radius:9px;border:1px solid var(--border)}
+.thumbs .thumb.rec img{border-color:var(--mint)}
+.thumb-tag{position:absolute;left:4px;bottom:4px;font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;
+  background:rgba(7,10,11,.82);color:#cfe;line-height:1}
+.thumbs .thumb.rec .thumb-tag{background:var(--mint);color:var(--ink)}
+@media(max-width:560px){.thumbs .thumb,.thumbs .thumb img{width:60px;height:60px}}
 </style>
 </head>
 <body>
@@ -491,6 +556,18 @@
 
   <div class="lede" data-i18n="lede"></div>
 
+  <div class="trust-strip" id="trustStrip">
+    <div class="ts"><b data-i18n="tsA"></b><span data-i18n="tsAl"></span></div>
+    <div class="ts"><b data-i18n="tsB"></b><span data-i18n="tsBl"></span></div>
+    <div class="ts"><b data-i18n="tsC"></b><span data-i18n="tsCl"></span></div>
+    <div class="ts"><b data-i18n="tsD"></b><span data-i18n="tsDl"></span></div>
+  </div>
+
+  <div class="page-title">
+    <h1 data-i18n="pageH"></h1>
+    <p data-i18n="pageHsub"></p>
+  </div>
+
   <div class="steps">
     <div class="s active" id="ps1"><span class="n">1</span><span data-i18n="step1"></span></div>
     <div class="s" id="ps2"><span class="n">2</span><span data-i18n="step2"></span></div>
@@ -502,15 +579,29 @@
     <div class="head"><span class="tab">STEP 1</span><h2 data-i18n="step1"></h2></div>
     <div class="head-desc" data-i18n="s1desc"></div>
 
+    <div class="onb" id="onb">
+      <span class="onb-q" data-i18n="obQ"></span>
+      <button type="button" class="onb-btn" id="sampleBtn" data-i18n="obTry"></button>
+    </div>
+
     <label class="fl"><span data-i18n="lblStory"></span> <span class="dim" data-i18n="lblStoryDim"></span></label>
     <textarea id="srcText" data-i18n-ph="phStory"></textarea>
 
-    <label class="fl"><span data-i18n="lblCap"></span> <span class="dim" data-i18n="lblCapDim"></span></label>
-    <div class="drop" id="drop">
-      <div class="ico">📎</div>
-      <div data-i18n-html="dropMain"></div>
-      <div class="hint" data-i18n="dropHint"></div>
-      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    <label class="fl"><span data-i18n="lblCap"></span></label>
+    <div class="cap-help" data-i18n="capHelp"></div>
+    <div class="drops2">
+      <div class="drop drop2" data-kind="photo">
+        <div class="ico">📷</div>
+        <div class="drop-t" data-i18n="photoT"></div>
+        <div class="hint" data-i18n="photoH"></div>
+        <input type="file" class="fi" accept="image/*" multiple hidden>
+      </div>
+      <div class="drop drop2" data-kind="record">
+        <div class="ico">⌚</div>
+        <div class="drop-t" data-i18n="recordT"></div>
+        <div class="hint" data-i18n="recordH"></div>
+        <input type="file" class="fi" accept="image/*" multiple hidden>
+      </div>
     </div>
     <div class="thumbs" id="thumbs"></div>
 
@@ -545,7 +636,8 @@
     <div class="head-desc" data-i18n="s2desc"></div>
 
     <div class="mini-actions">
-      <button class="mini-btn accent" id="newBtn">✏️ <span data-i18n="newPost"></span></button>
+      <button class="mini-btn" id="editBtn" data-i18n="edEdit"></button>
+      <button class="mini-btn accent" id="newBtn">📝 <span data-i18n="newPost"></span></button>
     </div>
 
     <label class="fl" data-i18n="lblPickTitle"></label>
@@ -713,14 +805,14 @@ const I18N = {
     s1desc:"Paste the running feed you posted on Instagram, Threads, or X. If you have photos from your run, add them too :)",
     lblStory:"Your running story", lblStoryDim:"— Instagram · Threads · notes (leave empty if uploading photos only)",
     phStory:"e.g. 10 km along the river at dawn. The first 3 km felt heavy, but after the turnaround my legs loosened up and my pace came back. The iced americano afterward never tasted so sweet...",
-    lblCap:"Reference captures", lblCapDim:"— multiple OK · AI reads the text and uses it",
+    lblCap:"Upload images", capHelp:"Add photos from your run, or a screenshot of your running-app record.", photoT:"Running photos", photoH:"selfies · scenery · shoes, etc.", recordT:"Running-app record screen", recordH:"Nike · Garmin · Strava — we auto-read distance, time & calories", tagPhoto:"Photo", tagRec:"Record", pageH:"Make a search-optimized blog", pageHsub:"Drop one line from your running post plus your running-app record — and get a 2,800-char blog built to rank on Google.",
     dropMain:"Drag images here or <b>click to choose</b>",
     dropHint:"PNG · JPG · WEBP · crisp, readable captures work best (multiple OK)",
     lblKw:"Target keywords", lblKwDim:"— up to 3, leave blank and AI picks them",
     phKw:"e.g. river run, 10k pace, beginner running",
-    lblLen:"Post length", len1:"SEO-focused · ~2,800 chars", len2:"In-depth · ~3,200 chars", len3:"Concise · ~2,000 chars",
+    lblLen:"Blog post length", len1:"SEO-focused · ~2,800 chars", len2:"In-depth · ~3,200 chars", len3:"Concise · ~2,000 chars",
     lblProof:"Proofreading", proof1:"Standard · proof while writing", proof2:"Precise · extra polish pass", proof3:"No proofreading",
-    genBtn:"⚡ Generate my blog post", genLoading:"Writing your post, images & metrics...",
+    genBtn:"⚡ SEO-optimize & write my blog", genLoading:"Writing your post, images & metrics...",
     s2desc:"Pick a title and skim the body, images, and search metrics. If it looks good, move on to Step 3 below.",
     lblPickTitle:"Choose a title", lblMetrics:"Keyword search metrics", lblPreview:"Post preview", lblImages:"Generated images",
     metricsEmpty:"Add search API keys to show monthly search volume and opportunity scores.",
@@ -755,7 +847,12 @@ const I18N = {
     stg1:"Reading your story", stg2:"Writing the post", stg3:"Creating images", stg4:"Analyzing & finishing",
     genTitle:"Creating your blog post", genNote:"Please keep this open — usually 20–40 seconds.",
     qTitle:"A couple of quick questions", qDesc:"Answer any you like — even one adds real, personal detail. Nothing here is required.",
-    qLoading:"Reading your story…", qGen:"⚡ Generate with these", qSkip:"Skip & generate anyway", qOptional:"optional"
+    qLoading:"Reading your story…", qGen:"⚡ Generate with these", qSkip:"Skip & generate anyway", qOptional:"optional",
+    tsA:"2,800+ chars", tsAl:"SEO long-form", tsB:"5 languages", tsBl:"Publish anywhere", tsC:"6 images", tsCl:"Auto-made & placed", tsD:"~3 min", tsDl:"Paste → done",
+    obQ:"First time?", obTry:"Fill a sample ✨", obDone:"Sample filled — just hit ⚡ Generate below",
+    obStory:"10 km along the Han River at dawn. My alarm went off at 5:30 and I almost skipped it, but I headed out. The first 3 km felt heavy and I thought 'not again today,' but after the turnaround my legs loosened up and my pace came back. Three weeks ago 5 km wrecked me — today I finished 10 km. The iced americano afterward never tasted so good.",
+    obKw:"river run, 10k pace, beginner running",
+    edEdit:"✏️ Edit body", edDone:"✅ Done editing", edHint:"Edit freely — your changes flow straight into every export.", edSaved:"Edits saved ✓"
   },
   ko:{
     brand:"달린 기록은 반드시 <b>가치</b>가 된다",
@@ -766,14 +863,14 @@ const I18N = {
     s1desc:"당신이 인스타, 스레드, X에 올린 러닝 피드 이야기를 여기 넣으면 됩니다. 당신의 러닝 순간의 사진이 있다면 그 사진도 넣어주세요 :)",
     lblStory:"러닝 이야기", lblStoryDim:"— 인스타·스레드·메모 (사진만 올릴 거면 비워도 됨)",
     phStory:"예) 오늘 새벽 한강 10km. 초반 3km가 유독 무거웠는데, 반환점 돌고 나니 다리가 풀리면서 페이스가 살아났다. 끝나고 마신 아이스 아메리카노 한 잔이 그렇게 달 수가 없었다...",
-    lblCap:"참고 캡처", lblCapDim:"— 여러 장 가능 · AI가 글자를 읽어 반영",
+    lblCap:"이미지 업로드", capHelp:"러닝하면서 찍었던 사진, 또는 러닝 앱의 기록 이미지를 넣어주시면 됩니다.", photoT:"러닝 사진", photoH:"셀카·풍경·러닝화 등", recordT:"러닝 앱 기록 화면", recordH:"나이키·가민·스트라바 · 거리·시간·칼로리를 자동으로 읽어요", tagPhoto:"사진", tagRec:"기록", pageH:"검색에 최적화된 블로그 만들기", pageHsub:"SNS 러닝 글 한 줄과 러닝 앱 기록만 넣으면, 구글·네이버 검색에 잘 걸리는 2,800자 블로그가 완성돼요.",
     dropMain:"이미지를 끌어다 놓거나 <b>여기를 눌러 선택</b>",
     dropHint:"PNG · JPG · WEBP · 글자가 또렷한 캡처가 좋아요 (여러 장 OK)",
     lblKw:"노리는 키워드", lblKwDim:"— 최대 3개, 비워두면 AI가 알아서 고름",
     phKw:"예) 한강 러닝, 10km 페이스, 러닝 초보",
-    lblLen:"원고 분량", len1:"상위노출형 · 약 2,800자", len2:"깊이형 · 약 3,200자", len3:"간결형 · 약 2,000자",
+    lblLen:"블로그 글 분량", len1:"상위노출형 · 약 2,800자", len2:"깊이형 · 약 3,200자", len3:"간결형 · 약 2,000자",
     lblProof:"문장 다듬기", proof1:"표준 · 생성하며 교정", proof2:"정밀 · 한 번 더 손질", proof3:"교정 안 함",
-    genBtn:"⚡ 원고 자동 생성 시작", genLoading:"원고·이미지·지표 만드는 중...",
+    genBtn:"⚡ 블로그 SEO 최적화 작업 및 쓰기", genLoading:"원고·이미지·지표 만드는 중...",
     s2desc:"제목을 하나 고르고, 본문·이미지·검색 지표를 훑어보세요. 괜찮으면 아래 3단계로 넘어갑니다.",
     lblPickTitle:"제목 고르기", lblMetrics:"키워드 검색 지표", lblPreview:"원고 미리보기", lblImages:"함께 만든 이미지",
     metricsEmpty:"검색/검색광고 API 키를 넣으면 월간검색량·기회점수가 표시됩니다.",
@@ -808,7 +905,12 @@ const I18N = {
     stg1:"러닝 이야기 읽는 중", stg2:"원고 쓰는 중", stg3:"이미지 만드는 중", stg4:"검색 지표 분석 · 마무리",
     genTitle:"블로그를 만들고 있어요", genNote:"창을 닫지 말고 잠시만 기다려 주세요 (보통 20~40초).",
     qTitle:"잠깐, 몇 가지만 더", qDesc:"편한 것만 답해도 돼요 — 한 줄이라도 답하면 훨씬 생생하고 나다운 글이 나와요. 전부 선택 사항이에요.",
-    qLoading:"이야기를 읽는 중…", qGen:"⚡ 이 답변으로 생성", qSkip:"건너뛰고 바로 생성", qOptional:"선택"
+    qLoading:"이야기를 읽는 중…", qGen:"⚡ 이 답변으로 생성", qSkip:"건너뛰고 바로 생성", qOptional:"선택",
+    tsA:"2,800자+", tsAl:"SEO 최적화 장문", tsB:"5개 언어", tsBl:"어디든 발행", tsC:"이미지 6장", tsCl:"자동 생성·첨부", tsD:"약 3분", tsDl:"붙여넣기 → 완성",
+    obQ:"처음이세요?", obTry:"샘플로 채워보기 ✨", obDone:"예시를 채웠어요 — 아래 ⚡ 생성을 눌러보세요",
+    obStory:"오늘 새벽 5시 반, 알람 끄고 그냥 잘까 3초 고민하다 결국 한강으로 나갔어요. 목표는 10km. 초반 3km는 다리가 무겁고 '오늘도 실패인가' 싶었는데, 반환점을 돌고 나니 신기하게 몸이 풀렸어요. 3주 전엔 5km도 겨우였는데 오늘 10km 완주. 끝나고 마신 아이스 아메리카노가 진짜 꿀맛이었어요.",
+    obKw:"한강 러닝, 10km 페이스, 러닝 초보",
+    edEdit:"✏️ 본문 편집", edDone:"✅ 편집 완료", edHint:"자유롭게 고쳐도 내보내기에 그대로 반영돼요.", edSaved:"편집 내용을 저장했어요 ✓"
   },
   ja:{
     brand:"走った記録は必ず<b>価値</b>になる",
@@ -819,14 +921,14 @@ const I18N = {
     s1desc:"インスタ・スレッズ・Xに投稿したランニングの話をここに入れてください。ランニング中の写真があれば、それも一緒にどうぞ :)",
     lblStory:"ランニングの話", lblStoryDim:"— インスタ・スレッズ・メモ（写真だけなら空欄でOK）",
     phStory:"例）明け方の河川敷10km。最初の3kmが重かったけど、折り返してから脚がほぐれてペースが戻った。走り終わりのアイスアメリカーノが最高だった…",
-    lblCap:"参考キャプチャ", lblCapDim:"— 複数OK · AIが文字を読み取って反映",
+    lblCap:"画像アップロード", capHelp:"ランニング中に撮った写真、またはランニングアプリの記録画像を入れてください。", photoT:"ランニング写真", photoH:"自撮り・風景・シューズなど", recordT:"ランニングアプリの記録画面", recordH:"Nike・Garmin・Strava — 距離・時間・カロリーを自動で読み取ります", tagPhoto:"写真", tagRec:"記録", pageH:"検索に強いブログを作る", pageHsub:"SNSのランニング投稿の一言と、ランニングアプリの記録を入れるだけ。検索に強い2,800字のブログが完成します。",
     dropMain:"画像をドラッグ、または<b>ここをクリックして選択</b>",
     dropHint:"PNG · JPG · WEBP · 文字がはっきりしたキャプチャがおすすめ（複数OK）",
     lblKw:"狙うキーワード", lblKwDim:"— 最大3つ、空欄ならAIが選びます",
     phKw:"例）河川敷ラン, 10kmペース, ランニング初心者",
-    lblLen:"原稿の分量", len1:"上位表示型・約2,800字", len2:"深掘り型・約3,200字", len3:"簡潔型・約2,000字",
+    lblLen:"ブログ記事の分量", len1:"上位表示型・約2,800字", len2:"深掘り型・約3,200字", len3:"簡潔型・約2,000字",
     lblProof:"文章の調整", proof1:"標準・生成しながら校正", proof2:"精密・もう一度整える", proof3:"校正なし",
-    genBtn:"⚡ 原稿の自動生成を開始", genLoading:"原稿・画像・指標を作成中...",
+    genBtn:"⚡ ブログをSEO最適化して書く", genLoading:"原稿・画像・指標を作成中...",
     s2desc:"タイトルを一つ選び、本文・画像・検索指標を確認してください。よければ下のステップ3へ。",
     lblPickTitle:"タイトルを選ぶ", lblMetrics:"キーワード検索指標", lblPreview:"原稿プレビュー", lblImages:"生成された画像",
     metricsEmpty:"検索APIキーを設定すると、月間検索数とチャンススコアが表示されます。",
@@ -861,7 +963,12 @@ const I18N = {
     stg1:"ストーリーを読み込み中", stg2:"原稿を作成中", stg3:"画像を作成中", stg4:"指標を分析・仕上げ中",
     genTitle:"ブログを作成中です", genNote:"この画面を閉じずにお待ちください（通常20〜40秒）。",
     qTitle:"あと少しだけ質問です", qDesc:"答えられるものだけでOK — 一つ答えるだけでも、ぐっと生き生きした自分らしい記事になります。すべて任意です。",
-    qLoading:"ストーリーを読んでいます…", qGen:"⚡ この回答で生成", qSkip:"スキップして生成", qOptional:"任意"
+    qLoading:"ストーリーを読んでいます…", qGen:"⚡ この回答で生成", qSkip:"スキップして生成", qOptional:"任意",
+    tsA:"2,800字+", tsAl:"SEO最適化の長文", tsB:"5言語", tsBl:"どこでも公開", tsC:"画像6枚", tsCl:"自動生成・配置", tsD:"約3分", tsDl:"貼るだけで完成",
+    obQ:"はじめてですか？", obTry:"サンプルを入れる ✨", obDone:"サンプルを入れました — 下の ⚡ 生成を押してみて",
+    obStory:"今朝5時半、アラームを止めて二度寝しようか3秒迷って、結局漢江へ走りに出ました。目標は10km。最初の3kmは脚が重くて『今日もダメかな』と思ったけど、折り返してから不思議と体がほぐれてペースが戻りました。3週間前は5kmでやっとだったのに、今日は10km完走。走り終わりのアイスアメリカーノが本当に最高でした。",
+    obKw:"漢江 ランニング, 10kmペース, ランニング初心者",
+    edEdit:"✏️ 本文を編集", edDone:"✅ 編集完了", edHint:"自由に直しても、そのまま書き出しに反映されます。", edSaved:"編集を保存しました ✓"
   },
   zh:{
     brand:"跑过的记录终将<b>成为价值</b>",
@@ -872,14 +979,14 @@ const I18N = {
     s1desc:"把你发在 Instagram、Threads、X 上的跑步动态贴进来。如果有跑步时的照片，也一起放进来吧 :)",
     lblStory:"你的跑步故事", lblStoryDim:"— Instagram · Threads · 笔记（只上传照片可留空）",
     phStory:"例）清晨沿河跑了10公里。前3公里格外沉重，过了折返点后腿脚放松，配速回来了。跑完后的那杯冰美式格外香甜……",
-    lblCap:"参考截图", lblCapDim:"— 可多张 · AI 会读取文字并使用",
+    lblCap:"上传图片", capHelp:"放入跑步时拍的照片，或跑步 App 的记录截图即可。", photoT:"跑步照片", photoH:"自拍·风景·跑鞋等", recordT:"跑步 App 记录页面", recordH:"Nike·Garmin·Strava — 自动读取距离·时间·卡路里", tagPhoto:"照片", tagRec:"记录", pageH:"打造搜索优化的博客", pageHsub:"只需放入一句跑步动态和跑步 App 的记录，就能生成利于搜索排名的 2,800 字博客。",
     dropMain:"把图片拖到这里，或<b>点击选择</b>",
     dropHint:"PNG · JPG · WEBP · 文字清晰的截图效果最好（可多张）",
     lblKw:"目标关键词", lblKwDim:"— 最多3个，留空则由 AI 选择",
     phKw:"例）沿河跑, 10公里配速, 跑步新手",
-    lblLen:"文章篇幅", len1:"利于排名 · 约2,800字", len2:"深度型 · 约3,200字", len3:"简洁型 · 约2,000字",
+    lblLen:"博客文章篇幅", len1:"利于排名 · 约2,800字", len2:"深度型 · 约3,200字", len3:"简洁型 · 约2,000字",
     lblProof:"文句润色", proof1:"标准 · 边生成边校对", proof2:"精细 · 再润色一遍", proof3:"不校对",
-    genBtn:"⚡ 开始自动生成文章", genLoading:"正在生成文章·图片·指标...",
+    genBtn:"⚡ SEO优化并撰写博客", genLoading:"正在生成文章·图片·指标...",
     s2desc:"选一个标题，浏览正文、图片和搜索指标。满意的话就进入下面的第3步。",
     lblPickTitle:"选择标题", lblMetrics:"关键词搜索指标", lblPreview:"文章预览", lblImages:"生成的图片",
     metricsEmpty:"配置搜索 API 密钥后，将显示月搜索量和机会评分。",
@@ -914,7 +1021,12 @@ const I18N = {
     stg1:"正在读取你的故事", stg2:"正在撰写文章", stg3:"正在生成图片", stg4:"分析指标 · 收尾",
     genTitle:"正在生成你的博客", genNote:"请不要关闭本窗口，通常需要20~40秒。",
     qTitle:"再问你几个小问题", qDesc:"答你愿意答的就行——哪怕只答一个，也能让文章更真实、更有你的味道。全部都是选填。",
-    qLoading:"正在读取你的故事…", qGen:"⚡ 用这些回答生成", qSkip:"跳过并直接生成", qOptional:"选填"
+    qLoading:"正在读取你的故事…", qGen:"⚡ 用这些回答生成", qSkip:"跳过并直接生成", qOptional:"选填",
+    tsA:"2,800字+", tsAl:"SEO长文", tsB:"5种语言", tsBl:"随处发布", tsC:"6张图片", tsCl:"自动生成·配图", tsD:"约3分钟", tsDl:"粘贴即完成",
+    obQ:"第一次使用？", obTry:"填入示例 ✨", obDone:"已填入示例 — 点击下方 ⚡ 生成试试",
+    obStory:"今天凌晨五点半，关掉闹钟犹豫了三秒要不要再睡，最后还是去了汉江。目标10公里。最初的3公里腿很沉，一度觉得今天又要失败，但折返之后身体奇迹般放松，配速也回来了。三周前跑5公里都很勉强，今天完成了10公里。跑完喝的冰美式，真的太香了。",
+    obKw:"汉江跑步, 10公里配速, 跑步新手",
+    edEdit:"✏️ 编辑正文", edDone:"✅ 完成编辑", edHint:"随意修改，导出时会原样保留。", edSaved:"已保存修改 ✓"
   },
   es:{
     brand:"Cada carrera registrada <b>se vuelve valor</b>",
@@ -925,14 +1037,14 @@ const I18N = {
     s1desc:"Pega el feed de running que publicaste en Instagram, Threads o X. Si tienes fotos de tu carrera, añádelas también :)",
     lblStory:"Tu historia de running", lblStoryDim:"— Instagram · Threads · notas (déjalo vacío si solo subes fotos)",
     phStory:"ej.) 10 km junto al río al amanecer. Los primeros 3 km fueron pesados, pero tras el giro las piernas se soltaron y recuperé el ritmo. El americano helado de después nunca supo tan bien...",
-    lblCap:"Capturas de referencia", lblCapDim:"— varias OK · la IA lee el texto y lo usa",
+    lblCap:"Subir imágenes", capHelp:"Añade fotos de tu carrera o una captura del registro de tu app de running.", photoT:"Fotos de carrera", photoH:"selfies · paisaje · zapatillas, etc.", recordT:"Pantalla de registro de la app", recordH:"Nike · Garmin · Strava — leemos distancia, tiempo y calorías automáticamente", tagPhoto:"Foto", tagRec:"Registro", pageH:"Crea un blog optimizado para búsqueda", pageHsub:"Pon una línea de tu publicación de running y el registro de tu app — y obtén un blog de 2.800 caracteres hecho para posicionar en Google.",
     dropMain:"Arrastra imágenes aquí o <b>haz clic para elegir</b>",
     dropHint:"PNG · JPG · WEBP · las capturas nítidas funcionan mejor (varias OK)",
     lblKw:"Palabras clave", lblKwDim:"— hasta 3, déjalo en blanco y la IA las elige",
     phKw:"ej.) correr junto al río, ritmo 10k, running principiante",
-    lblLen:"Longitud del texto", len1:"Optimizado SEO · ~2.800 car.", len2:"En profundidad · ~3.200 car.", len3:"Conciso · ~2.000 car.",
+    lblLen:"Extensión del post", len1:"Optimizado SEO · ~2.800 car.", len2:"En profundidad · ~3.200 car.", len3:"Conciso · ~2.000 car.",
     lblProof:"Corrección", proof1:"Estándar · corrige al escribir", proof2:"Preciso · pulido extra", proof3:"Sin corrección",
-    genBtn:"⚡ Generar mi entrada de blog", genLoading:"Creando texto, imágenes y métricas...",
+    genBtn:"⚡ Optimizar SEO y escribir el blog", genLoading:"Creando texto, imágenes y métricas...",
     s2desc:"Elige un título y revisa el cuerpo, las imágenes y las métricas de búsqueda. Si te gusta, pasa al Paso 3.",
     lblPickTitle:"Elige un título", lblMetrics:"Métricas de búsqueda", lblPreview:"Vista previa", lblImages:"Imágenes generadas",
     metricsEmpty:"Añade claves de API de búsqueda para ver el volumen mensual y la puntuación de oportunidad.",
@@ -967,7 +1079,12 @@ const I18N = {
     stg1:"Leyendo tu historia", stg2:"Escribiendo el texto", stg3:"Creando imágenes", stg4:"Analizando y finalizando",
     genTitle:"Creando tu entrada de blog", genNote:"No cierres esto — suele tardar 20–40 s.",
     qTitle:"Un par de preguntas rápidas", qDesc:"Responde las que quieras — incluso una añade detalle real y personal. Nada es obligatorio.",
-    qLoading:"Leyendo tu historia…", qGen:"⚡ Generar con esto", qSkip:"Omitir y generar", qOptional:"opcional"
+    qLoading:"Leyendo tu historia…", qGen:"⚡ Generar con esto", qSkip:"Omitir y generar", qOptional:"opcional",
+    tsA:"2.800+ car.", tsAl:"Texto SEO largo", tsB:"5 idiomas", tsBl:"Publica global", tsC:"6 imágenes", tsCl:"Auto-generadas", tsD:"~3 min", tsDl:"Pega y listo",
+    obQ:"¿Primera vez?", obTry:"Rellenar ejemplo ✨", obDone:"Ejemplo cargado — pulsa ⚡ Generar abajo",
+    obStory:"Al amanecer, 10 km por el río Han. Sonó la alarma a las 5:30 y casi me quedo, pero salí. Los primeros 3 km se sintieron pesados y pensé 'hoy tampoco', pero tras el giro las piernas se soltaron y recuperé el ritmo. Hace tres semanas 5 km me destrozaban; hoy terminé 10 km. El americano helado de después nunca supo tan bien.",
+    obKw:"correr río, ritmo 10k, running principiante",
+    edEdit:"✏️ Editar texto", edDone:"✅ Edición lista", edHint:"Edita libremente — los cambios pasan directo a tu exportación.", edSaved:"Cambios guardados ✓"
   }
 };
 
@@ -1059,10 +1176,24 @@ const toast=(m)=>{const t=$('#toast');t.textContent=m;t.style.display='block';cl
 const setStep=(n)=>{[1,2,3].forEach(i=>$('#ps'+i).classList.toggle('active',i<=n));};
 
 const files=[];
-$('#drop').onclick=()=>$('#fileInput').click();
-function addThumb(f){files.push(f);const img=document.createElement('img');img.src=URL.createObjectURL(f);$('#thumbs').appendChild(img);}
-$('#fileInput').onchange=e=>{for(const f of e.target.files)addThumb(f);};
-['dragover','dragleave','drop'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();if(ev==='drop')for(const f of e.dataTransfer.files)addThumb(f);}));
+function addThumb(f,kind){
+  f._kind=kind||'photo'; files.push(f);
+  const wrap=document.createElement('div'); wrap.className='thumb'+(f._kind==='record'?' rec':'');
+  const img=document.createElement('img'); img.src=URL.createObjectURL(f);
+  const tag=document.createElement('span'); tag.className='thumb-tag'; tag.textContent=(f._kind==='record'?T('tagRec'):T('tagPhoto'));
+  wrap.appendChild(img); wrap.appendChild(tag); $('#thumbs').appendChild(wrap);
+}
+document.querySelectorAll('.drop[data-kind]').forEach(z=>{
+  const kind=z.getAttribute('data-kind'); const inp=z.querySelector('input[type=file]');
+  z.onclick=()=>inp.click();
+  inp.onchange=e=>{for(const f of e.target.files)addThumb(f,kind); inp.value='';};
+  ['dragover','dragleave','drop'].forEach(ev=>z.addEventListener(ev,e=>{
+    e.preventDefault();
+    if(ev==='dragover') z.classList.add('over');
+    if(ev==='dragleave'||ev==='drop') z.classList.remove('over');
+    if(ev==='drop') for(const f of e.dataTransfer.files) addThumb(f,kind);
+  }));
+});
 
 let current=null;
 
@@ -1181,7 +1312,7 @@ async function doGenerate(answersText){
     fd.append('length',$('#length').value);fd.append('proof',$('#proof').value);
     fd.append('lang',LANG);
     if(answersText) fd.append('answers',answersText);   // 스마트 답변을 재료로 전달
-    files.forEach(f=>fd.append('shots',f));
+    files.forEach(f=>{fd.append('shots',f);fd.append('shot_kinds',f._kind||'photo');});
     const headers={};
     if(AUTH.session && AUTH.session.access_token) headers['Authorization']='Bearer '+AUTH.session.access_token;
     const res=await fetch('/api/generate',{method:'POST',body:fd,headers});
@@ -1212,7 +1343,12 @@ function render(d){
     const el=document.createElement('div');el.className='title-opt'+(sel?' sel':'');
     el.innerHTML=`<div class="radio"></div><span></span>`;
     el.querySelector('span').textContent=t;
-    el.onclick=()=>{[...tw.children].forEach(c=>c.classList.remove('sel'));el.classList.add('sel');current.title=t;};
+    el.onclick=()=>{[...tw.children].forEach(c=>c.classList.remove('sel'));el.classList.add('sel');current.title=el.querySelector('span').textContent;};
+    el.ondblclick=()=>{[...tw.children].forEach(c=>c.classList.remove('sel'));el.classList.add('sel');
+      const sp=el.querySelector('span');sp.contentEditable='true';sp.focus();
+      const save=()=>{sp.contentEditable='false';const v=sp.textContent.trim();if(v)current.title=v;else sp.textContent=current.title;sp.removeEventListener('blur',save);};
+      sp.addEventListener('blur',save);
+      sp.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();sp.blur();}});};
     tw.appendChild(el);
   });
   const mw=$('#metrics');mw.innerHTML='';
@@ -1242,15 +1378,52 @@ function render(d){
 // ===== 결과 화면 툴바: 새로 쓰기 =====
 function resetAll(){
   $('#srcText').value=''; $('#keywords').value='';
-  files.length=0; $('#thumbs').innerHTML=''; $('#fileInput').value='';
+  files.length=0; $('#thumbs').innerHTML=''; document.querySelectorAll('.drop input[type=file]').forEach(i=>i.value='');
   current=null;
   $('#titles').innerHTML=''; $('#metrics').innerHTML=''; $('#bodyPreview').innerHTML=''; $('#gallery').innerHTML='';
   $('#step2').classList.add('hidden'); $('#step3').classList.add('hidden');
+  const eb=$('#editBtn'); if(eb){ eb.textContent=T('edEdit'); eb.classList.remove('editing'); }
+  const onb=$('#onb'); if(onb){ onb.classList.remove('filled'); const q=onb.querySelector('.onb-q'); if(q) q.textContent=T('obQ'); }
   setStep(1);
   window.scrollTo({top:0, behavior:'smooth'});
   toast(T('resetDone'));
 }
 $('#newBtn').onclick=resetAll;
+
+// ===== 고도화: 샘플로 채워보기 (온보딩) =====
+(function(){
+  const sb=$('#sampleBtn'); if(!sb) return;
+  sb.onclick=()=>{
+    $('#srcText').value=T('obStory');
+    $('#keywords').value=T('obKw');
+    const onb=$('#onb'); if(onb){ onb.classList.add('filled'); const q=onb.querySelector('.onb-q'); if(q) q.textContent=T('obDone'); }
+    try{ $('#srcText').dispatchEvent(new Event('input',{bubbles:true})); }catch(e){}
+    const gb=$('#genBtn'); if(gb) gb.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+})();
+
+// ===== 고도화: 본문 인라인 편집 =====
+(function(){
+  const editBtn=$('#editBtn'); if(!editBtn) return;
+  editBtn.onclick=()=>{
+    if(!current){ toast(T('tNeed')); return; }
+    const bp=$('#bodyPreview');
+    const existing=$('#editArea');
+    if(!existing){
+      const ta=document.createElement('textarea');
+      ta.className='edit-area'; ta.id='editArea'; ta.value=current.body||'';
+      bp.innerHTML=''; bp.appendChild(ta);
+      const hint=document.createElement('div'); hint.className='edit-hint'; hint.textContent=T('edHint');
+      bp.appendChild(hint); ta.focus();
+      editBtn.textContent=T('edDone'); editBtn.classList.add('editing');
+    }else{
+      current.body=existing.value;
+      render(current);
+      editBtn.textContent=T('edEdit'); editBtn.classList.remove('editing');
+      toast(T('edSaved'));
+    }
+  };
+})();
 
 // ===== export (platform-agnostic) =====
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
