@@ -144,6 +144,42 @@ def _emotion_directive(lang):
     return _EMO_CORE + ("- " + line + "\n" if line else "") + "\n"
 
 
+# ── 글 톤 프리셋: 성향별로 '확실히 다른 감성'이 나오도록 강하게 규정 ──────
+_TONE = {
+    "emotive": (
+        "OVERALL VOICE — Emotional essay. Write this like a heartfelt personal essay. "
+        "Foreground feeling and inner reflection; let the scenery become a metaphor for the runner's state of mind. "
+        "Use flowing, longer sentences with a literary rhythm, and lean into a trailing \"…\" for lingering thoughts. "
+        "Introspective, vivid and moving — but grounded in real detail, never melodramatic."
+    ),
+    "factual": (
+        "OVERALL VOICE — Crisp & informative. Write plainly and directly, like a sharp training log or a coach's note. "
+        "Short, declarative sentences. Prioritize facts, pacing strategy, method and usable tips over feeling — keep emotional coloring minimal and understated. "
+        "Almost no exclamation marks; no cutesy interjections. Clear, scannable subheads. Confident and no-nonsense. "
+        "This dry, factual register OVERRIDES the default emotional styling."
+    ),
+    "bright": (
+        "OVERALL VOICE — Bright & energetic. Write upbeat, motivating and full of momentum, like a cheerful friend hyping you up. "
+        "Punchy short lines, forward energy, genuine enthusiasm. Use \"!\" at real peaks (still never stacked). "
+        "Frame even the hard moments positively (\"that hill? crushed it\"). Encouraging and fun — but still grounded in what really happened."
+    ),
+    "soft": (
+        "OVERALL VOICE — Warm & gentle. Write soft-spoken, tender and comforting, like a quiet diary shared with a close friend. "
+        "Gentle pacing, kind and intimate phrasing, cozy sensory warmth. Keep emotion understated — a calm, caring register rather than loud. "
+        "Soothing and personal, never saccharine."
+    ),
+}
+
+
+def _tone_directive(tone):
+    t = _TONE.get((tone or "").strip().lower())
+    if not t:
+        return ""   # auto/기본 → 기본 감정 코어를 그대로 사용
+    return ("[Tone preset — this is the dominant voice of the ENTIRE post. Commit to it fully so the result feels "
+            "unmistakably different from the other tone presets. If a personal writing-voice guide is given above, "
+            "keep that person's vocabulary and quirks, but apply THIS tone's mood.]\n" + t + "\n\n")
+
+
 # ── 품질 상향: 상위 노출되는 '진짜 사람 블로그' 기준 ──────────────────
 _QUALITY = (
     "[Quality bar — this must read like a top-ranking HUMAN running blog, not AI filler]\n"
@@ -218,7 +254,7 @@ def _gear_directive(gear, nutrition):
     return "\n".join(lines) + "\n\n"
 
 
-def _build_user_text(article_text, extra_context, n, facts, style_profile=None, lang="ko", gear=None, nutrition=None):
+def _build_user_text(article_text, extra_context, n, facts, style_profile=None, lang="ko", gear=None, nutrition=None, tone=None):
     parts = []
     if style_profile and style_profile.strip():
         parts.append(
@@ -232,6 +268,7 @@ def _build_user_text(article_text, extra_context, n, facts, style_profile=None, 
     parts.append(_structure_directive())
     parts.append(_grounding_directive())
     parts.append(_emotion_directive(lang))
+    parts.append(_tone_directive(tone))
     parts.append("[Runner's running story]\n" + (article_text or "(no text — build the running story from the attached photos)"))
     if extra_context:
         parts.append("\n[Runner's quick answers — use these as REAL material, weave them in naturally]\n" + extra_context.strip())
@@ -398,7 +435,7 @@ def build_style_profile(samples, lang="ko", provider="claude", model=None):
         return ""
 
 
-def generate(article_text, provider="claude", model=None, photo_paths=None, lang="ko", extra_context=None, style_profile=None, gear=None, nutrition=None):
+def generate(article_text, provider="claude", model=None, photo_paths=None, lang="ko", extra_context=None, style_profile=None, gear=None, nutrition=None, tone=None):
     system = _load_prompt(lang)
     photo_paths = (photo_paths or [])[:MAX_VISION_PHOTOS]
     n = len(photo_paths)
@@ -412,7 +449,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
         if n and TWO_PASS:
             facts = _extract_photo_facts(client, model, photo_paths)
 
-        user_text = _build_user_text(article_text, extra_context, n, facts, style_profile, lang, gear, nutrition)
+        user_text = _build_user_text(article_text, extra_context, n, facts, style_profile, lang, gear, nutrition, tone)
         content = [{"type": "text", "text": user_text}]
         # 팩트 추출을 못했으면(폴백) 원본 사진을 그대로 붙여 글쓰기 단계가 직접 보게 함
         if n and not facts:
@@ -444,7 +481,7 @@ def generate(article_text, provider="claude", model=None, photo_paths=None, lang
         from openai import OpenAI
         client = OpenAI()
         model = model or "gpt-4o"
-        user_text = _build_user_text(article_text, extra_context, n, None, style_profile, lang, gear, nutrition)
+        user_text = _build_user_text(article_text, extra_context, n, None, style_profile, lang, gear, nutrition, tone)
         content = [{"type": "text", "text": user_text}]
         for p in photo_paths:
             media, b64 = _encode_image(p)
