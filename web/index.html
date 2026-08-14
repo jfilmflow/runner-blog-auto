@@ -505,6 +505,9 @@
 .drop2[data-kind="record"] .drop-t{color:var(--mint2)}
 .drop2.over{border-color:var(--mint);background:rgba(46,214,198,.07)}
 @media(max-width:560px){.drops2{grid-template-columns:1fr;gap:10px}.drop2{padding:20px 14px}}
+.drop-all .ico{font-size:28px;margin-bottom:8px}
+.drop-all .drop-t{font-weight:800;font-size:15px;color:var(--text)}
+.drop-all.over{border-color:var(--mint);background:rgba(46,214,198,.07)}
 .thumbs .thumb{position:relative;width:70px;height:70px}
 .thumbs .thumb img{width:70px;height:70px;object-fit:cover;border-radius:9px;border:1px solid var(--border)}
 .thumbs .thumb.rec img{border-color:var(--mint)}
@@ -512,6 +515,30 @@
   background:rgba(7,10,11,.82);color:#cfe;line-height:1}
 .thumbs .thumb.rec .thumb-tag{background:var(--mint);color:var(--ink)}
 @media(max-width:560px){.thumbs .thumb,.thumbs .thumb img{width:60px;height:60px}}
+
+/* ===== 고도화 3차: 장비·간식 입력 + 큐레이션 ===== */
+.gearbox{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
+.gear-cap{font-size:12.5px;font-weight:700;color:var(--muted2);margin-bottom:7px}
+.tagfield{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:46px;padding:8px 10px;
+  background:var(--field-bg);border:1px solid var(--border2);border-radius:12px;cursor:text}
+.tagfield:focus-within{border-color:var(--mint)}
+.tag-input{flex:1;min-width:110px;border:none;background:transparent;color:var(--text);font-size:13px;font-family:inherit;outline:none;padding:4px 2px}
+.tagfield .tag{display:inline-flex;align-items:center;gap:5px;background:rgba(46,214,198,.13);color:var(--mint2);
+  border:1px solid rgba(46,214,198,.3);border-radius:8px;padding:4px 6px 4px 9px;font-size:12.5px;font-weight:700}
+.tagfield .tag button{border:none;background:transparent;color:var(--mint2);cursor:pointer;font-size:15px;line-height:1;padding:0 2px}
+.tagfield .tag button:hover{color:#fff}
+@media(max-width:560px){.gearbox{grid-template-columns:1fr;gap:10px}}
+#curationWrap{margin-top:6px}
+.curation{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px}
+.cur-card{display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,rgba(46,214,198,.06),transparent);
+  border:1px solid var(--glass-bd);border-radius:13px;padding:14px;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.cur-card:hover{transform:translateY(-3px);border-color:var(--mint);box-shadow:0 12px 26px rgba(0,0,0,.34)}
+.cur-ico{font-size:24px}
+.cur-n{font-weight:800;font-size:14px;color:var(--text);flex:1;line-height:1.35;word-break:break-word}
+.cur-btn{display:inline-block;text-align:center;text-decoration:none;background:linear-gradient(135deg,var(--mint),#22b7d8);
+  color:var(--ink);font-weight:800;font-size:13px;padding:9px 0;border-radius:10px;transition:filter .16s ease,transform .14s ease}
+.cur-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.cur-note{font-size:11.5px;color:var(--muted2);margin-top:11px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -589,21 +616,25 @@
 
     <label class="fl"><span data-i18n="lblCap"></span></label>
     <div class="cap-help" data-i18n="capHelp"></div>
-    <div class="drops2">
-      <div class="drop drop2" data-kind="photo">
-        <div class="ico">📷</div>
-        <div class="drop-t" data-i18n="photoT"></div>
-        <div class="hint" data-i18n="photoH"></div>
-        <input type="file" class="fi" accept="image/*" multiple hidden>
-      </div>
-      <div class="drop drop2" data-kind="record">
-        <div class="ico">⌚</div>
-        <div class="drop-t" data-i18n="recordT"></div>
-        <div class="hint" data-i18n="recordH"></div>
-        <input type="file" class="fi" accept="image/*" multiple hidden>
-      </div>
+    <div class="drop drop-all" data-kind="auto">
+      <div class="ico">📷</div>
+      <div class="drop-t" data-i18n="dropAllT"></div>
+      <div class="hint" data-i18n="dropAllH"></div>
+      <input type="file" class="fi" accept="image/*" multiple hidden>
     </div>
     <div class="thumbs" id="thumbs"></div>
+
+    <label class="fl"><span data-i18n="gearLbl"></span> <span class="dim" data-i18n="gearDim"></span></label>
+    <div class="gearbox">
+      <div class="gear-col">
+        <div class="gear-cap" data-i18n="gearWear"></div>
+        <div class="tagfield" id="wearField"><input class="tag-input" id="wearInput" data-i18n-ph="gearPh"></div>
+      </div>
+      <div class="gear-col">
+        <div class="gear-cap" data-i18n="gearEat"></div>
+        <div class="tagfield" id="eatField"><input class="tag-input" id="eatInput" data-i18n-ph="nutriPh"></div>
+      </div>
+    </div>
 
     <label class="fl"><span data-i18n="lblKw"></span> <span class="dim" data-i18n="lblKwDim"></span></label>
     <input class="txt" id="keywords" data-i18n-ph="phKw">
@@ -651,6 +682,12 @@
 
     <label class="fl" data-i18n="lblImages"></label>
     <div class="gallery" id="gallery"></div>
+
+    <div id="curationWrap" class="hidden">
+      <label class="fl"><span data-i18n="curTitle"></span> <span class="dim" data-i18n="curDesc"></span></label>
+      <div class="curation" id="curation"></div>
+      <div class="cur-note" data-i18n="curNote"></div>
+    </div>
   </div>
 
   <!-- STEP 3 -->
@@ -805,7 +842,7 @@ const I18N = {
     s1desc:"Paste the running feed you posted on Instagram, Threads, or X. If you have photos from your run, add them too :)",
     lblStory:"Your running story", lblStoryDim:"— Instagram · Threads · notes (leave empty if uploading photos only)",
     phStory:"e.g. 10 km along the river at dawn. The first 3 km felt heavy, but after the turnaround my legs loosened up and my pace came back. The iced americano afterward never tasted so sweet...",
-    lblCap:"Upload images", capHelp:"Add photos from your run, or a screenshot of your running-app record.", photoT:"Running photos", photoH:"selfies · scenery · shoes, etc.", recordT:"Running-app record screen", recordH:"Nike · Garmin · Strava — we auto-read distance, time & calories", tagPhoto:"Photo", tagRec:"Record", pageH:"Make a search-optimized blog", pageHsub:"Drop one line from your running post plus your running-app record — and get a 2,800-char blog built to rank on Google.",
+    lblCap:"Upload images", capHelp:"Add photos from your run, or a screenshot of your running-app record.", dropAllT:"Drop photos here or click to choose", dropAllH:"Running selfies, scenery, and app record screens — all in one place. AI sorts them automatically.", photoT:"Running photos", photoH:"selfies · scenery · shoes, etc.", recordT:"Running-app record screen", recordH:"Nike · Garmin · Strava — we auto-read distance, time & calories", tagPhoto:"Photo", tagRec:"Record", pageH:"Make a search-optimized blog", pageHsub:"Drop one line from your running post plus your running-app record — and get a 2,800-char blog built to rank on Google.",
     dropMain:"Drag images here or <b>click to choose</b>",
     dropHint:"PNG · JPG · WEBP · crisp, readable captures work best (multiple OK)",
     lblKw:"Target keywords", lblKwDim:"— up to 3, leave blank and AI picks them",
@@ -852,7 +889,8 @@ const I18N = {
     obQ:"First time?", obTry:"Fill a sample ✨", obDone:"Sample filled — just hit ⚡ Generate below",
     obStory:"10 km along the Han River at dawn. My alarm went off at 5:30 and I almost skipped it, but I headed out. The first 3 km felt heavy and I thought 'not again today,' but after the turnaround my legs loosened up and my pace came back. Three weeks ago 5 km wrecked me — today I finished 10 km. The iced americano afterward never tasted so good.",
     obKw:"river run, 10k pace, beginner running",
-    edEdit:"✏️ Edit body", edDone:"✅ Done editing", edHint:"Edit freely — your changes flow straight into every export.", edSaved:"Edits saved ✓"
+    edEdit:"✏️ Edit body", edDone:"✅ Done editing", edHint:"Edit freely — your changes flow straight into every export.", edSaved:"Edits saved ✓",
+    gearLbl:"Running gear & fuel", gearDim:"optional · what you wore & ate today (skip to omit)", gearWear:"Worn / gear", gearEat:"Fuel / snacks", gearPh:"Type shoes, apparel, gear + Enter", nutriPh:"Type gels, snacks, drinks + Enter", curTitle:"Today's running gear & fuel", curDesc:"woven into your post — and shoppable right here", curBtn:"View", curNote:"We only feature what you actually used. Some links may earn a commission."
   },
   ko:{
     brand:"달린 기록은 반드시 <b>가치</b>가 된다",
@@ -863,7 +901,7 @@ const I18N = {
     s1desc:"당신이 인스타, 스레드, X에 올린 러닝 피드 이야기를 여기 넣으면 됩니다. 당신의 러닝 순간의 사진이 있다면 그 사진도 넣어주세요 :)",
     lblStory:"러닝 이야기", lblStoryDim:"— 인스타·스레드·메모 (사진만 올릴 거면 비워도 됨)",
     phStory:"예) 오늘 새벽 한강 10km. 초반 3km가 유독 무거웠는데, 반환점 돌고 나니 다리가 풀리면서 페이스가 살아났다. 끝나고 마신 아이스 아메리카노 한 잔이 그렇게 달 수가 없었다...",
-    lblCap:"이미지 업로드", capHelp:"러닝하면서 찍었던 사진, 또는 러닝 앱의 기록 이미지를 넣어주시면 됩니다.", photoT:"러닝 사진", photoH:"셀카·풍경·러닝화 등", recordT:"러닝 앱 기록 화면", recordH:"나이키·가민·스트라바 · 거리·시간·칼로리를 자동으로 읽어요", tagPhoto:"사진", tagRec:"기록", pageH:"검색에 최적화된 블로그 만들기", pageHsub:"SNS 러닝 글 한 줄과 러닝 앱 기록만 넣으면, 구글·네이버 검색에 잘 걸리는 2,800자 블로그가 완성돼요.",
+    lblCap:"이미지 업로드", capHelp:"러닝하면서 찍었던 사진, 또는 러닝 앱의 기록 이미지를 넣어주시면 됩니다.", dropAllT:"여기로 사진을 끌어다 놓거나 눌러서 선택", dropAllH:"일상 러닝 사진·셀카·풍경, 러닝 앱 기록 화면 모두 한 곳에 — AI가 자동으로 분류해요", photoT:"러닝 사진", photoH:"셀카·풍경·러닝화 등", recordT:"러닝 앱 기록 화면", recordH:"나이키·가민·스트라바 · 거리·시간·칼로리를 자동으로 읽어요", tagPhoto:"사진", tagRec:"기록", pageH:"검색에 최적화된 블로그 만들기", pageHsub:"SNS 러닝 글 한 줄과 러닝 앱 기록만 넣으면, 구글·네이버 검색에 잘 걸리는 2,800자 블로그가 완성돼요.",
     dropMain:"이미지를 끌어다 놓거나 <b>여기를 눌러 선택</b>",
     dropHint:"PNG · JPG · WEBP · 글자가 또렷한 캡처가 좋아요 (여러 장 OK)",
     lblKw:"노리는 키워드", lblKwDim:"— 최대 3개, 비워두면 AI가 알아서 고름",
@@ -910,7 +948,8 @@ const I18N = {
     obQ:"처음이세요?", obTry:"샘플로 채워보기 ✨", obDone:"예시를 채웠어요 — 아래 ⚡ 생성을 눌러보세요",
     obStory:"오늘 새벽 5시 반, 알람 끄고 그냥 잘까 3초 고민하다 결국 한강으로 나갔어요. 목표는 10km. 초반 3km는 다리가 무겁고 '오늘도 실패인가' 싶었는데, 반환점을 돌고 나니 신기하게 몸이 풀렸어요. 3주 전엔 5km도 겨우였는데 오늘 10km 완주. 끝나고 마신 아이스 아메리카노가 진짜 꿀맛이었어요.",
     obKw:"한강 러닝, 10km 페이스, 러닝 초보",
-    edEdit:"✏️ 본문 편집", edDone:"✅ 편집 완료", edHint:"자유롭게 고쳐도 내보내기에 그대로 반영돼요.", edSaved:"편집 내용을 저장했어요 ✓"
+    edEdit:"✏️ 본문 편집", edDone:"✅ 편집 완료", edHint:"자유롭게 고쳐도 내보내기에 그대로 반영돼요.", edSaved:"편집 내용을 저장했어요 ✓",
+    gearLbl:"러닝 장비 & 간식", gearDim:"선택 · 오늘 입고 신고 먹은 것 (비우면 건너뜀)", gearWear:"착용·장비", gearEat:"먹은 것", gearPh:"신발·의류·장비 입력 후 Enter", nutriPh:"젤·간식·음료 입력 후 Enter", curTitle:"오늘의 러닝 장비 & 간식", curDesc:"글에 자연스럽게 담기고, 바로 보러갈 수 있어요", curBtn:"보러가기", curNote:"실제 착용·사용한 것만 추천해요. 일부 링크는 제휴로 수수료가 발생할 수 있어요."
   },
   ja:{
     brand:"走った記録は必ず<b>価値</b>になる",
@@ -921,7 +960,7 @@ const I18N = {
     s1desc:"インスタ・スレッズ・Xに投稿したランニングの話をここに入れてください。ランニング中の写真があれば、それも一緒にどうぞ :)",
     lblStory:"ランニングの話", lblStoryDim:"— インスタ・スレッズ・メモ（写真だけなら空欄でOK）",
     phStory:"例）明け方の河川敷10km。最初の3kmが重かったけど、折り返してから脚がほぐれてペースが戻った。走り終わりのアイスアメリカーノが最高だった…",
-    lblCap:"画像アップロード", capHelp:"ランニング中に撮った写真、またはランニングアプリの記録画像を入れてください。", photoT:"ランニング写真", photoH:"自撮り・風景・シューズなど", recordT:"ランニングアプリの記録画面", recordH:"Nike・Garmin・Strava — 距離・時間・カロリーを自動で読み取ります", tagPhoto:"写真", tagRec:"記録", pageH:"検索に強いブログを作る", pageHsub:"SNSのランニング投稿の一言と、ランニングアプリの記録を入れるだけ。検索に強い2,800字のブログが完成します。",
+    lblCap:"画像アップロード", capHelp:"ランニング中に撮った写真、またはランニングアプリの記録画像を入れてください。", dropAllT:"ここに写真をドラッグ、またはクリックして選択", dropAllH:"ランニング写真・自撮り・風景、アプリの記録画面もすべてここに — AIが自動で分類します", photoT:"ランニング写真", photoH:"自撮り・風景・シューズなど", recordT:"ランニングアプリの記録画面", recordH:"Nike・Garmin・Strava — 距離・時間・カロリーを自動で読み取ります", tagPhoto:"写真", tagRec:"記録", pageH:"検索に強いブログを作る", pageHsub:"SNSのランニング投稿の一言と、ランニングアプリの記録を入れるだけ。検索に強い2,800字のブログが完成します。",
     dropMain:"画像をドラッグ、または<b>ここをクリックして選択</b>",
     dropHint:"PNG · JPG · WEBP · 文字がはっきりしたキャプチャがおすすめ（複数OK）",
     lblKw:"狙うキーワード", lblKwDim:"— 最大3つ、空欄ならAIが選びます",
@@ -968,7 +1007,8 @@ const I18N = {
     obQ:"はじめてですか？", obTry:"サンプルを入れる ✨", obDone:"サンプルを入れました — 下の ⚡ 生成を押してみて",
     obStory:"今朝5時半、アラームを止めて二度寝しようか3秒迷って、結局漢江へ走りに出ました。目標は10km。最初の3kmは脚が重くて『今日もダメかな』と思ったけど、折り返してから不思議と体がほぐれてペースが戻りました。3週間前は5kmでやっとだったのに、今日は10km完走。走り終わりのアイスアメリカーノが本当に最高でした。",
     obKw:"漢江 ランニング, 10kmペース, ランニング初心者",
-    edEdit:"✏️ 本文を編集", edDone:"✅ 編集完了", edHint:"自由に直しても、そのまま書き出しに反映されます。", edSaved:"編集を保存しました ✓"
+    edEdit:"✏️ 本文を編集", edDone:"✅ 編集完了", edHint:"自由に直しても、そのまま書き出しに反映されます。", edSaved:"編集を保存しました ✓",
+    gearLbl:"ランニング装備 & 補給", gearDim:"任意 · 今日着た・食べたもの（空欄でスキップ）", gearWear:"着用・装備", gearEat:"補給・軽食", gearPh:"シューズ・ウェア・装備を入力してEnter", nutriPh:"ジェル・軽食・ドリンクを入力してEnter", curTitle:"今日のランニング装備 & 補給", curDesc:"記事に自然に反映され、そのまま見に行けます", curBtn:"見る", curNote:"実際に使ったものだけを紹介します。一部リンクは手数料が発生する場合があります。"
   },
   zh:{
     brand:"跑过的记录终将<b>成为价值</b>",
@@ -979,7 +1019,7 @@ const I18N = {
     s1desc:"把你发在 Instagram、Threads、X 上的跑步动态贴进来。如果有跑步时的照片，也一起放进来吧 :)",
     lblStory:"你的跑步故事", lblStoryDim:"— Instagram · Threads · 笔记（只上传照片可留空）",
     phStory:"例）清晨沿河跑了10公里。前3公里格外沉重，过了折返点后腿脚放松，配速回来了。跑完后的那杯冰美式格外香甜……",
-    lblCap:"上传图片", capHelp:"放入跑步时拍的照片，或跑步 App 的记录截图即可。", photoT:"跑步照片", photoH:"自拍·风景·跑鞋等", recordT:"跑步 App 记录页面", recordH:"Nike·Garmin·Strava — 自动读取距离·时间·卡路里", tagPhoto:"照片", tagRec:"记录", pageH:"打造搜索优化的博客", pageHsub:"只需放入一句跑步动态和跑步 App 的记录，就能生成利于搜索排名的 2,800 字博客。",
+    lblCap:"上传图片", capHelp:"放入跑步时拍的照片，或跑步 App 的记录截图即可。", dropAllT:"拖拽图片到此或点击选择", dropAllH:"跑步照片·自拍·风景，App 记录截图都放这里 — AI 会自动分类", photoT:"跑步照片", photoH:"自拍·风景·跑鞋等", recordT:"跑步 App 记录页面", recordH:"Nike·Garmin·Strava — 自动读取距离·时间·卡路里", tagPhoto:"照片", tagRec:"记录", pageH:"打造搜索优化的博客", pageHsub:"只需放入一句跑步动态和跑步 App 的记录，就能生成利于搜索排名的 2,800 字博客。",
     dropMain:"把图片拖到这里，或<b>点击选择</b>",
     dropHint:"PNG · JPG · WEBP · 文字清晰的截图效果最好（可多张）",
     lblKw:"目标关键词", lblKwDim:"— 最多3个，留空则由 AI 选择",
@@ -1026,7 +1066,8 @@ const I18N = {
     obQ:"第一次使用？", obTry:"填入示例 ✨", obDone:"已填入示例 — 点击下方 ⚡ 生成试试",
     obStory:"今天凌晨五点半，关掉闹钟犹豫了三秒要不要再睡，最后还是去了汉江。目标10公里。最初的3公里腿很沉，一度觉得今天又要失败，但折返之后身体奇迹般放松，配速也回来了。三周前跑5公里都很勉强，今天完成了10公里。跑完喝的冰美式，真的太香了。",
     obKw:"汉江跑步, 10公里配速, 跑步新手",
-    edEdit:"✏️ 编辑正文", edDone:"✅ 完成编辑", edHint:"随意修改，导出时会原样保留。", edSaved:"已保存修改 ✓"
+    edEdit:"✏️ 编辑正文", edDone:"✅ 完成编辑", edHint:"随意修改，导出时会原样保留。", edSaved:"已保存修改 ✓",
+    gearLbl:"跑步装备 & 补给", gearDim:"选填 · 今天穿的·吃的（留空则跳过）", gearWear:"穿着·装备", gearEat:"补给·零食", gearPh:"输入鞋子·服装·装备后按 Enter", nutriPh:"输入能量胶·零食·饮料后按 Enter", curTitle:"今日跑步装备 & 补给", curDesc:"自然融入文章，并可直接查看", curBtn:"查看", curNote:"仅推荐你实际使用的物品。部分链接可能产生佣金。"
   },
   es:{
     brand:"Cada carrera registrada <b>se vuelve valor</b>",
@@ -1037,7 +1078,7 @@ const I18N = {
     s1desc:"Pega el feed de running que publicaste en Instagram, Threads o X. Si tienes fotos de tu carrera, añádelas también :)",
     lblStory:"Tu historia de running", lblStoryDim:"— Instagram · Threads · notas (déjalo vacío si solo subes fotos)",
     phStory:"ej.) 10 km junto al río al amanecer. Los primeros 3 km fueron pesados, pero tras el giro las piernas se soltaron y recuperé el ritmo. El americano helado de después nunca supo tan bien...",
-    lblCap:"Subir imágenes", capHelp:"Añade fotos de tu carrera o una captura del registro de tu app de running.", photoT:"Fotos de carrera", photoH:"selfies · paisaje · zapatillas, etc.", recordT:"Pantalla de registro de la app", recordH:"Nike · Garmin · Strava — leemos distancia, tiempo y calorías automáticamente", tagPhoto:"Foto", tagRec:"Registro", pageH:"Crea un blog optimizado para búsqueda", pageHsub:"Pon una línea de tu publicación de running y el registro de tu app — y obtén un blog de 2.800 caracteres hecho para posicionar en Google.",
+    lblCap:"Subir imágenes", capHelp:"Añade fotos de tu carrera o una captura del registro de tu app de running.", dropAllT:"Arrastra fotos aquí o haz clic para elegir", dropAllH:"Fotos de carrera, selfies, paisajes y pantallas de registro — todo aquí. La IA las clasifica automáticamente.", photoT:"Fotos de carrera", photoH:"selfies · paisaje · zapatillas, etc.", recordT:"Pantalla de registro de la app", recordH:"Nike · Garmin · Strava — leemos distancia, tiempo y calorías automáticamente", tagPhoto:"Foto", tagRec:"Registro", pageH:"Crea un blog optimizado para búsqueda", pageHsub:"Pon una línea de tu publicación de running y el registro de tu app — y obtén un blog de 2.800 caracteres hecho para posicionar en Google.",
     dropMain:"Arrastra imágenes aquí o <b>haz clic para elegir</b>",
     dropHint:"PNG · JPG · WEBP · las capturas nítidas funcionan mejor (varias OK)",
     lblKw:"Palabras clave", lblKwDim:"— hasta 3, déjalo en blanco y la IA las elige",
@@ -1084,7 +1125,8 @@ const I18N = {
     obQ:"¿Primera vez?", obTry:"Rellenar ejemplo ✨", obDone:"Ejemplo cargado — pulsa ⚡ Generar abajo",
     obStory:"Al amanecer, 10 km por el río Han. Sonó la alarma a las 5:30 y casi me quedo, pero salí. Los primeros 3 km se sintieron pesados y pensé 'hoy tampoco', pero tras el giro las piernas se soltaron y recuperé el ritmo. Hace tres semanas 5 km me destrozaban; hoy terminé 10 km. El americano helado de después nunca supo tan bien.",
     obKw:"correr río, ritmo 10k, running principiante",
-    edEdit:"✏️ Editar texto", edDone:"✅ Edición lista", edHint:"Edita libremente — los cambios pasan directo a tu exportación.", edSaved:"Cambios guardados ✓"
+    edEdit:"✏️ Editar texto", edDone:"✅ Edición lista", edHint:"Edita libremente — los cambios pasan directo a tu exportación.", edSaved:"Cambios guardados ✓",
+    gearLbl:"Equipo y avituallamiento", gearDim:"opcional · lo que llevaste y comiste hoy (deja vacío para omitir)", gearWear:"Ropa / equipo", gearEat:"Geles / snacks", gearPh:"Escribe zapatillas, ropa, equipo + Enter", nutriPh:"Escribe geles, snacks, bebidas + Enter", curTitle:"Equipo y avituallamiento de hoy", curDesc:"se integra en tu post y puedes verlo aquí", curBtn:"Ver", curNote:"Solo mostramos lo que usaste de verdad. Algunos enlaces pueden generar comisión."
   }
 };
 
@@ -1177,11 +1219,15 @@ const setStep=(n)=>{[1,2,3].forEach(i=>$('#ps'+i).classList.toggle('active',i<=n
 
 const files=[];
 function addThumb(f,kind){
-  f._kind=kind||'photo'; files.push(f);
+  f._kind=kind||'auto'; files.push(f);
   const wrap=document.createElement('div'); wrap.className='thumb'+(f._kind==='record'?' rec':'');
   const img=document.createElement('img'); img.src=URL.createObjectURL(f);
-  const tag=document.createElement('span'); tag.className='thumb-tag'; tag.textContent=(f._kind==='record'?T('tagRec'):T('tagPhoto'));
-  wrap.appendChild(img); wrap.appendChild(tag); $('#thumbs').appendChild(wrap);
+  wrap.appendChild(img);
+  if(f._kind==='photo'||f._kind==='record'){
+    const tag=document.createElement('span'); tag.className='thumb-tag'; tag.textContent=(f._kind==='record'?T('tagRec'):T('tagPhoto'));
+    wrap.appendChild(tag);
+  }
+  $('#thumbs').appendChild(wrap);
 }
 document.querySelectorAll('.drop[data-kind]').forEach(z=>{
   const kind=z.getAttribute('data-kind'); const inp=z.querySelector('input[type=file]');
@@ -1194,6 +1240,53 @@ document.querySelectorAll('.drop[data-kind]').forEach(z=>{
     if(ev==='drop') for(const f of e.dataTransfer.files) addThumb(f,kind);
   }));
 });
+
+// ===== 고도화 3차: 러닝 장비 & 간식 → 큐레이션 =====
+// 본인 브랜드 스토어 검색 베이스 URL을 넣으면 우선 링크됨 (예: "https://your-brand.com/search?q=")
+const BRAND_STORE="";
+const gearItems=[], eatItems=[];
+function curationLink(name){
+  const q=encodeURIComponent(name);
+  if(BRAND_STORE) return BRAND_STORE+q;
+  return 'https://www.google.com/search?tbm=shop&q='+q;
+}
+function bindTagField(fieldId,inputId,store){
+  const field=$('#'+fieldId), inp=$('#'+inputId);
+  function repaint(){
+    field.querySelectorAll('.tag').forEach(t=>t.remove());
+    store.forEach((v,idx)=>{
+      const chip=document.createElement('span'); chip.className='tag';
+      chip.innerHTML='<span></span><button type="button" aria-label="remove">×</button>';
+      chip.querySelector('span').textContent=v;
+      chip.querySelector('button').onclick=()=>{store.splice(idx,1);repaint();};
+      field.insertBefore(chip,inp);
+    });
+  }
+  function addVal(raw){ (raw||'').split(',').map(s=>s.trim()).filter(Boolean).forEach(v=>{ if(!store.includes(v)) store.push(v); }); inp.value=''; repaint(); }
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===','){ e.preventDefault(); addVal(inp.value); }
+    else if(e.key==='Backspace' && !inp.value && store.length){ store.pop(); repaint(); }
+  });
+  inp.addEventListener('blur',()=>{ if(inp.value.trim()) addVal(inp.value); });
+  field.onclick=e=>{ if(e.target===field) inp.focus(); };
+}
+bindTagField('wearField','wearInput',gearItems);
+bindTagField('eatField','eatInput',eatItems);
+function renderCuration(){
+  const wrap=$('#curationWrap'), c=$('#curation'); if(!wrap) return;
+  const items=[...gearItems.map(x=>({n:x,k:'wear'})), ...eatItems.map(x=>({n:x,k:'eat'}))];
+  c.innerHTML='';
+  if(!items.length){ wrap.classList.add('hidden'); return; }
+  items.forEach(it=>{
+    const card=document.createElement('div'); card.className='cur-card';
+    card.innerHTML='<div class="cur-ico"></div><div class="cur-n"></div><a class="cur-btn" target="_blank" rel="nofollow noopener"></a>';
+    card.querySelector('.cur-ico').textContent = it.k==='eat'?'🥤':'👟';
+    card.querySelector('.cur-n').textContent=it.n;
+    const a=card.querySelector('.cur-btn'); a.textContent=T('curBtn'); a.href=curationLink(it.n);
+    c.appendChild(card);
+  });
+  wrap.classList.remove('hidden');
+}
 
 let current=null;
 
@@ -1313,6 +1406,8 @@ async function doGenerate(answersText){
     fd.append('lang',LANG);
     if(answersText) fd.append('answers',answersText);   // 스마트 답변을 재료로 전달
     files.forEach(f=>{fd.append('shots',f);fd.append('shot_kinds',f._kind||'photo');});
+    if(gearItems.length) fd.append('gear',gearItems.join('|'));
+    if(eatItems.length) fd.append('nutrition',eatItems.join('|'));
     const headers={};
     if(AUTH.session && AUTH.session.access_token) headers['Authorization']='Bearer '+AUTH.session.access_token;
     const res=await fetch('/api/generate',{method:'POST',body:fd,headers});
@@ -1373,12 +1468,15 @@ function render(d){
     if(im.url){cell.innerHTML=`<img src="${im.url}"><div class="cap"></div>`;cell.querySelector('.cap').textContent=cap;}
     else{cell.innerHTML=`<div class="g ph">🖼️<br></div>`;cell.querySelector('.ph').insertAdjacentText('beforeend',cap);}
     g.appendChild(cell);});
+  renderCuration();
 }
 
 // ===== 결과 화면 툴바: 새로 쓰기 =====
 function resetAll(){
   $('#srcText').value=''; $('#keywords').value='';
   files.length=0; $('#thumbs').innerHTML=''; document.querySelectorAll('.drop input[type=file]').forEach(i=>i.value='');
+  gearItems.length=0; eatItems.length=0; document.querySelectorAll('.tagfield .tag').forEach(t=>t.remove());
+  const cw=$('#curationWrap'); if(cw) cw.classList.add('hidden');
   current=null;
   $('#titles').innerHTML=''; $('#metrics').innerHTML=''; $('#bodyPreview').innerHTML=''; $('#gallery').innerHTML='';
   $('#step2').classList.add('hidden'); $('#step3').classList.add('hidden');
