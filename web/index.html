@@ -625,6 +625,12 @@
     <label class="fl"><span data-i18n="lblKw"></span> <span class="dim" data-i18n="lblKwDim"></span></label>
     <input class="txt" id="keywords" data-i18n-ph="phKw">
 
+    <label class="fl"><span data-i18n="hwLbl"></span> <span class="dim" data-i18n="hwDim"></span></label>
+    <div class="row2">
+      <div><input class="txt" id="height" type="number" inputmode="numeric" min="100" max="230" data-i18n-ph="hPh"></div>
+      <div><input class="txt" id="weight" type="number" inputmode="numeric" min="30" max="200" data-i18n-ph="wPh"></div>
+    </div>
+
     <label class="fl"><span data-i18n="toneLbl"></span> <span class="dim" data-i18n="toneDim"></span></label>
     <select id="tone">
       <option value="" data-i18n="toneAuto"></option>
@@ -886,7 +892,7 @@ const I18N = {
     obStory:"10 km along the Han River at dawn. My alarm went off at 5:30 and I almost skipped it, but I headed out. The first 3 km felt heavy and I thought 'not again today,' but after the turnaround my legs loosened up and my pace came back. Three weeks ago 5 km wrecked me — today I finished 10 km. The iced americano afterward never tasted so good.",
     obKw:"river run, 10k pace, beginner running",
     edEdit:"✏️ Edit body", edDone:"✅ Done editing", edHint:"Edit freely — your changes flow straight into every export.", edSaved:"Edits saved ✓",
-    gearLbl:"Running gear & fuel", gearDim:"optional · what you wore & ate today (skip to omit)", gearWear:"Worn / gear", gearEat:"Fuel / snacks", gearPh:"Type shoes, apparel, gear + Enter", nutriPh:"Type gels, snacks, drinks + Enter", curTitle:"Today's running gear & fuel", curDesc:"woven into your post — and shoppable right here", curBtn:"View", curNote:"We only feature what you actually used. Some links may earn a commission."
+    gearLbl:"Running gear & fuel", hwLbl:"Height · Weight", hwDim:"optional · used to estimate calories & health data", hPh:"Height (cm)", wPh:"Weight (kg)", gearDim:"optional · what you wore & ate today (skip to omit)", gearWear:"Worn / gear", gearEat:"Fuel / snacks", gearPh:"Type shoes, apparel, gear + Enter", nutriPh:"Type gels, snacks, drinks + Enter", curTitle:"Today's running gear & fuel", curDesc:"woven into your post — and shoppable right here", curBtn:"View", curNote:"We only feature what you actually used. Some links may earn a commission."
   },
   ko:{
     brand:"달린 기록은 반드시 <b>가치</b>가 된다",
@@ -946,7 +952,7 @@ const I18N = {
     obStory:"오늘 새벽 5시 반, 알람 끄고 그냥 잘까 3초 고민하다 결국 한강으로 나갔어요. 목표는 10km. 초반 3km는 다리가 무겁고 '오늘도 실패인가' 싶었는데, 반환점을 돌고 나니 신기하게 몸이 풀렸어요. 3주 전엔 5km도 겨우였는데 오늘 10km 완주. 끝나고 마신 아이스 아메리카노가 진짜 꿀맛이었어요.",
     obKw:"한강 러닝, 10km 페이스, 러닝 초보",
     edEdit:"✏️ 본문 편집", edDone:"✅ 편집 완료", edHint:"자유롭게 고쳐도 내보내기에 그대로 반영돼요.", edSaved:"편집 내용을 저장했어요 ✓",
-    gearLbl:"러닝 장비 & 간식", gearDim:"선택 · 오늘 입고 신고 먹은 것 (비우면 건너뜀)", gearWear:"착용·장비", gearEat:"먹은 것", gearPh:"신발·의류·장비 입력 후 Enter", nutriPh:"젤·간식·음료 입력 후 Enter", curTitle:"오늘의 러닝 장비 & 간식", curDesc:"글에 자연스럽게 담기고, 바로 보러갈 수 있어요", curBtn:"보러가기", curNote:"실제 착용·사용한 것만 추천해요. 일부 링크는 제휴로 수수료가 발생할 수 있어요."
+    gearLbl:"러닝 장비 & 간식", hwLbl:"키 · 몸무게", hwDim:"선택 · 칼로리·건강 데이터 계산에 쓰여요", hPh:"키(cm)", wPh:"몸무게(kg)", gearDim:"선택 · 오늘 입고 신고 먹은 것 (비우면 건너뜀)", gearWear:"착용·장비", gearEat:"먹은 것", gearPh:"신발·의류·장비 입력 후 Enter", nutriPh:"젤·간식·음료 입력 후 Enter", curTitle:"오늘의 러닝 장비 & 간식", curDesc:"글에 자연스럽게 담기고, 바로 보러갈 수 있어요", curBtn:"보러가기", curNote:"실제 착용·사용한 것만 추천해요. 일부 링크는 제휴로 수수료가 발생할 수 있어요."
   },
   ja:{
     brand:"走った記録は必ず<b>価値</b>になる",
@@ -1006,7 +1012,7 @@ const I18N = {
     obStory:"今朝5時半、アラームを止めて二度寝しようか3秒迷って、結局漢江へ走りに出ました。目標は10km。最初の3kmは脚が重くて『今日もダメかな』と思ったけど、折り返してから不思議と体がほぐれてペースが戻りました。3週間前は5kmでやっとだったのに、今日は10km完走。走り終わりのアイスアメリカーノが本当に最高でした。",
     obKw:"漢江 ランニング, 10kmペース, ランニング初心者",
     edEdit:"✏️ 本文を編集", edDone:"✅ 編集完了", edHint:"自由に直しても、そのまま書き出しに反映されます。", edSaved:"編集を保存しました ✓",
-    gearLbl:"ランニング装備 & 補給", gearDim:"任意 · 今日着た・食べたもの（空欄でスキップ）", gearWear:"着用・装備", gearEat:"補給・軽食", gearPh:"シューズ・ウェア・装備を入力してEnter", nutriPh:"ジェル・軽食・ドリンクを入力してEnter", curTitle:"今日のランニング装備 & 補給", curDesc:"記事に自然に反映され、そのまま見に行けます", curBtn:"見る", curNote:"実際に使ったものだけを紹介します。一部リンクは手数料が発生する場合があります。"
+    gearLbl:"ランニング装備 & 補給", hwLbl:"身長 · 体重", hwDim:"任意 · カロリー・健康データの計算に使用", hPh:"身長(cm)", wPh:"体重(kg)", gearDim:"任意 · 今日着た・食べたもの（空欄でスキップ）", gearWear:"着用・装備", gearEat:"補給・軽食", gearPh:"シューズ・ウェア・装備を入力してEnter", nutriPh:"ジェル・軽食・ドリンクを入力してEnter", curTitle:"今日のランニング装備 & 補給", curDesc:"記事に自然に反映され、そのまま見に行けます", curBtn:"見る", curNote:"実際に使ったものだけを紹介します。一部リンクは手数料が発生する場合があります。"
   },
   zh:{
     brand:"跑过的记录终将<b>成为价值</b>",
@@ -1066,7 +1072,7 @@ const I18N = {
     obStory:"今天凌晨五点半，关掉闹钟犹豫了三秒要不要再睡，最后还是去了汉江。目标10公里。最初的3公里腿很沉，一度觉得今天又要失败，但折返之后身体奇迹般放松，配速也回来了。三周前跑5公里都很勉强，今天完成了10公里。跑完喝的冰美式，真的太香了。",
     obKw:"汉江跑步, 10公里配速, 跑步新手",
     edEdit:"✏️ 编辑正文", edDone:"✅ 完成编辑", edHint:"随意修改，导出时会原样保留。", edSaved:"已保存修改 ✓",
-    gearLbl:"跑步装备 & 补给", gearDim:"选填 · 今天穿的·吃的（留空则跳过）", gearWear:"穿着·装备", gearEat:"补给·零食", gearPh:"输入鞋子·服装·装备后按 Enter", nutriPh:"输入能量胶·零食·饮料后按 Enter", curTitle:"今日跑步装备 & 补给", curDesc:"自然融入文章，并可直接查看", curBtn:"查看", curNote:"仅推荐你实际使用的物品。部分链接可能产生佣金。"
+    gearLbl:"跑步装备 & 补给", hwLbl:"身高 · 体重", hwDim:"选填 · 用于估算卡路里·健康数据", hPh:"身高(cm)", wPh:"体重(kg)", gearDim:"选填 · 今天穿的·吃的（留空则跳过）", gearWear:"穿着·装备", gearEat:"补给·零食", gearPh:"输入鞋子·服装·装备后按 Enter", nutriPh:"输入能量胶·零食·饮料后按 Enter", curTitle:"今日跑步装备 & 补给", curDesc:"自然融入文章，并可直接查看", curBtn:"查看", curNote:"仅推荐你实际使用的物品。部分链接可能产生佣金。"
   },
   es:{
     brand:"Cada carrera registrada <b>se vuelve valor</b>",
@@ -1126,7 +1132,7 @@ const I18N = {
     obStory:"Al amanecer, 10 km por el río Han. Sonó la alarma a las 5:30 y casi me quedo, pero salí. Los primeros 3 km se sintieron pesados y pensé 'hoy tampoco', pero tras el giro las piernas se soltaron y recuperé el ritmo. Hace tres semanas 5 km me destrozaban; hoy terminé 10 km. El americano helado de después nunca supo tan bien.",
     obKw:"correr río, ritmo 10k, running principiante",
     edEdit:"✏️ Editar texto", edDone:"✅ Edición lista", edHint:"Edita libremente — los cambios pasan directo a tu exportación.", edSaved:"Cambios guardados ✓",
-    gearLbl:"Equipo y avituallamiento", gearDim:"opcional · lo que llevaste y comiste hoy (deja vacío para omitir)", gearWear:"Ropa / equipo", gearEat:"Geles / snacks", gearPh:"Escribe zapatillas, ropa, equipo + Enter", nutriPh:"Escribe geles, snacks, bebidas + Enter", curTitle:"Equipo y avituallamiento de hoy", curDesc:"se integra en tu post y puedes verlo aquí", curBtn:"Ver", curNote:"Solo mostramos lo que usaste de verdad. Algunos enlaces pueden generar comisión."
+    gearLbl:"Equipo y avituallamiento", hwLbl:"Altura · Peso", hwDim:"opcional · para estimar calorías y datos de salud", hPh:"Altura (cm)", wPh:"Peso (kg)", gearDim:"opcional · lo que llevaste y comiste hoy (deja vacío para omitir)", gearWear:"Ropa / equipo", gearEat:"Geles / snacks", gearPh:"Escribe zapatillas, ropa, equipo + Enter", nutriPh:"Escribe geles, snacks, bebidas + Enter", curTitle:"Equipo y avituallamiento de hoy", curDesc:"se integra en tu post y puedes verlo aquí", curBtn:"Ver", curNote:"Solo mostramos lo que usaste de verdad. Algunos enlaces pueden generar comisión."
   }
 };
 
@@ -1404,6 +1410,8 @@ async function doGenerate(answersText){
     fd.append('text',text);fd.append('keywords',$('#keywords').value);
     fd.append('length',$('#length').value);fd.append('proof',$('#proof').value);
     fd.append('tone',($('#tone')&&$('#tone').value)||'');
+    fd.append('height',($('#height')&&$('#height').value)||'');
+    fd.append('weight',($('#weight')&&$('#weight').value)||'');
     fd.append('lang',LANG);
     if(answersText) fd.append('answers',answersText);   // 스마트 답변을 재료로 전달
     files.forEach(f=>{fd.append('shots',f);fd.append('shot_kinds',f._kind||'photo');});
