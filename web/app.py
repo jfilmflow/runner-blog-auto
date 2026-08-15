@@ -224,6 +224,10 @@ def api_generate():
     gear = [s.strip() for s in (request.form.get("gear") or "").split("|") if s.strip()]            # 착용·장비 (큐레이션·본문 반영)
     nutrition = [s.strip() for s in (request.form.get("nutrition") or "").split("|") if s.strip()]  # 젤·간식
     tone = (request.form.get("tone") or "").strip()   # 글 톤 프리셋 (emotive/factual/bright/soft, 빈값=자동)
+    try: length = int(request.form.get("length") or 2800)      # 목표 글자수(하한선)
+    except Exception: length = 2800
+    height = (request.form.get("height") or "").strip()        # 키(cm) — 건강 데이터 역산용(선택)
+    weight = (request.form.get("weight") or "").strip()        # 몸무게(kg) — 칼로리·건강 역산용(선택)
     provider = os.getenv("ENGINE_PROVIDER", "claude")
 
     # ── 로그인·사용량(P3) ── 로그인 기능이 켜져 있으면 검증 + 무료 한도 확인
@@ -270,7 +274,8 @@ def api_generate():
                                      lang=lang, extra_context=answers or None,
                                      style_profile=style_profile or None,
                                      gear=gear or None, nutrition=nutrition or None,
-                                     tone=tone or None)
+                                     tone=tone or None, target_len=length,
+                                     height=height or None, weight=weight or None)
     except Exception as e:
         import traceback; traceback.print_exc()
         return jsonify({"error": f"글 생성 실패 [{type(e).__name__}]: {e}"}), 500
