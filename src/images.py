@@ -10,11 +10,11 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties, findSystemFonts
 from matplotlib.patches import FancyBboxPatch, Rectangle
 
-# ---- 브랜드 색 (원하면 여기만 바꾸면 전체 톤이 바뀜) ----
-SURFACE = "#fcfcfb"; INK = "#141414"; SUB = "#52514e"; MUTED = "#8a8880"
-RED = "#d03b3b"; RED_LT = "#e06a6a"; BLUE = "#2a78d6"; GRID = "#e6e5df"
-ACCENT = "#12b5a6"; ACCENT_LT = "#5fd6c9"  # 러닝 성장 강조색(민트)
-THUMB_BG = "#111214"; THUMB_ACCENT = "#6fa8ff"; THUMB_HL = "#ff5a5a"
+# ---- AIRNOTE 카드 톤: 다크 + 민트 + 공기(하늘·시안) 통일 팔레트 (여기만 바꾸면 전체 톤 바뀜) ----
+SURFACE = "#0b1117"; PANEL = "#141e26"; INK = "#eef5f6"; SUB = "#9fb2b6"; MUTED = "#65777c"
+RED = "#2ed6c6"; RED_LT = "#7fe9dd"; BLUE = "#6cc6ee"; GRID = "#233039"   # 강조=민트 · BLUE=공기(하늘) 시안 · GRID=은은한 경계
+ACCENT = "#2ed6c6"; ACCENT_LT = "#7fe9dd"  # 민트(성장·강조)
+THUMB_BG = "#0b1117"; THUMB_ACCENT = "#6cc6ee"; THUMB_HL = "#2ed6c6"
 BRAND_FOOTER = "달린 기록은 반드시 가치가 된다"
 _FOOTER_BY_LANG = {
     "en": "Every run you log becomes value",
@@ -108,9 +108,9 @@ def _newfig(bg=SURFACE):
 
 
 def _brandbar(ax):
-    ax.add_patch(Rectangle((0, H - 70), W, 70, color=INK, zorder=3))
+    ax.add_patch(Rectangle((0, H - 70), W, 70, color="#080d12", zorder=3))
     ax.text(60, H - 35, BRAND_FOOTER, fontproperties=F["bold"], fontsize=19,
-            color="#fcfcfb", va="center", zorder=4)
+            color=ACCENT, va="center", zorder=4)
 
 
 def _tag(ax, text, color=BLUE):
@@ -149,20 +149,56 @@ _PH_GUIDE_BY_LANG = {
 PH_GUIDE = _PH_GUIDE_BY_LANG["ko"]
 
 
+def _sky_image(scrim_start=330):
+    """맑은 하늘 + 구름 + 하단 스크림(글자 가독성용) PIL 이미지 생성. 히어로 카드 배경."""
+    from PIL import Image, ImageDraw, ImageFilter
+    top = (74, 150, 214); bot = (196, 230, 250)
+    img = Image.new("RGB", (W, H)); d = ImageDraw.Draw(img)
+    for y in range(H):
+        t = y / H
+        d.line([(0, y), (W, y)], fill=(int(top[0]+(bot[0]-top[0])*t),
+                                       int(top[1]+(bot[1]-top[1])*t),
+                                       int(top[2]+(bot[2]-top[2])*t)))
+    import random
+    rnd = random.Random()
+    cl = Image.new("L", (W, H), 0); dc = ImageDraw.Draw(cl)
+    def _puff(cx, cy, base):   # 여러 퍼프를 겹쳐 크고 불규칙한 뭉게구름
+        for _ in range(rnd.randint(8, 12)):
+            ox = rnd.uniform(-base*0.95, base*0.95); oy = rnd.uniform(-base*0.42, base*0.42)
+            rw = base * rnd.uniform(0.5, 1.0); rh = rw * rnd.uniform(0.55, 0.82)
+            dc.ellipse([cx+ox-rw, cy+oy-rh, cx+ox+rw, cy+oy+rh], fill=238)
+    for cx, cy, base in [(320,165,215),(850,150,245),(600,300,170),(1070,255,155)]:
+        _puff(cx + rnd.randint(-55,55), cy + rnd.randint(-25,25), base * rnd.uniform(0.9,1.18))
+    cl = cl.filter(ImageFilter.GaussianBlur(24))
+    img = Image.composite(Image.new("RGB", (W, H), (255,255,255)), img, cl)
+    scrim = Image.new("L", (W, H), 0); ds = ImageDraw.Draw(scrim)
+    for y in range(H):
+        t = max(0.0, (y - scrim_start) / max(1, (H - scrim_start)))
+        ds.line([(0, y), (W, y)], fill=int(248 * min(1.0, t ** 0.92)))
+    img = Image.composite(Image.new("RGB", (W, H), (11,17,23)), img, scrim)
+    return img
+
+
+def _sky_bg(ax, scrim_start=330):
+    import numpy as np
+    ax.imshow(np.asarray(_sky_image(scrim_start)), extent=(0, W, H, 0), zorder=0, aspect="auto")
+
+
 def render_thumbnail(s, path):
     fig, ax = _newfig(THUMB_BG)
-    ax.add_patch(Rectangle((0, 0), W, H, color=THUMB_BG))
-    _fit(ax, 60, 110, s.get("tag", "러너 블로그"), F["black"], 26, W - 120, THUMB_ACCENT, va="center", ha="left")
-    _fit(ax, 60, 255, s.get("line1", ""), F["black"], 86, W - 120, "#fff", va="center", ha="left", min_size=44)
-    _fit(ax, 60, 390, s.get("line2", ""), F["black"], 86, W - 120, "#fff", va="center", ha="left", min_size=44)
-    if s.get("highlight"):
-        _fit(ax, 60, 530, s["highlight"], F["black"], 96, W - 120, THUMB_HL, va="center", ha="left", min_size=48)
-        y3 = 650
+    _sky_bg(ax, scrim_start=250)   # 하늘+구름 배경 (히어로 카드)
+    has_hl = bool(s.get("highlight"))
+    _fit(ax, 60, 470, s.get("tag", "러너 블로그"), F["black"], 26, W - 120, THUMB_ACCENT, va="center", ha="left")
+    _fit(ax, 60, 545, s.get("line1", ""), F["black"], 74, W - 120, "#fff", va="center", ha="left", min_size=42)
+    _fit(ax, 60, 632, s.get("line2", ""), F["black"], 74, W - 120, "#fff", va="center", ha="left", min_size=42)
+    if has_hl:
+        _fit(ax, 60, 728, s["highlight"], F["black"], 82, W - 120, THUMB_HL, va="center", ha="left", min_size=46)
+        y3 = 800
     else:
-        y3 = 530
-    _fit(ax, 60, y3, s.get("line3", ""), F["black"], 58, W - 120, "#fff", va="center", ha="left", min_size=34)
-    ax.add_patch(Rectangle((60, y3 + 62), 300, 8, color=THUMB_ACCENT))
-    _fit(ax, 60, y3 + 140, s.get("sub", ""), F["med"], 26, W - 120, "#c7c7c7", va="center", ha="left")
+        y3 = 720
+    _fit(ax, 60, y3, s.get("line3", ""), F["black"], 46, W - 120, "#fff", va="center", ha="left", min_size=30)
+    ax.add_patch(Rectangle((60, y3 + 40), 240, 7, color=THUMB_ACCENT, zorder=4))
+    _fit(ax, 60, y3 + 82, s.get("sub", ""), F["med"], 24, W - 120, "#d4e2ea", va="center", ha="left")
     fig.savefig(path, facecolor=THUMB_BG); plt.close(fig)
 
 
@@ -178,7 +214,7 @@ def render_stat_compare(s, path):
 
     def block(x, label, num, unit, color):
         ax.add_patch(FancyBboxPatch((x, 430), 510, 300, boxstyle="round,pad=0,rounding_size=24",
-                                    fc="#ffffff", ec=GRID, lw=2))
+                                    fc=PANEL, ec=GRID, lw=2))
         _fit(ax, x + 40, 500, label, F["bold"], 26, 430, SUB, va="center", ha="left")
         _fit(ax, x + 40, 600, str(num), F["black"], 92, 430, color, va="center", ha="left", min_size=30)
         _fit(ax, x + 40, 690, unit, F["med"], 25, 430, MUTED, va="center", ha="left")
@@ -203,7 +239,7 @@ def render_before_after(s, path):
     _tag(ax, s.get("title", ""))
     _fit(ax, 60, 150, s.get("headline", ""), F["black"], 44, W - 120, INK, va="center", ha="left")
     # 좌: 2년 전(흰 상자) — 라벨은 위, 값은 아래. 값이 길면 상자 폭(약 360px)에 맞춰 자동 축소
-    ax.add_patch(FancyBboxPatch((60, 270), 440, 220, boxstyle="round,pad=0,rounding_size=24", fc="#fff", ec=GRID, lw=2))
+    ax.add_patch(FancyBboxPatch((60, 270), 440, 220, boxstyle="round,pad=0,rounding_size=24", fc=PANEL, ec=GRID, lw=2))
     _fit(ax, 280, 328, s.get("from_label", ""), F["bold"], 26, 360, SUB, ha="center", va="center")
     _fit(ax, 280, 420, s.get("from_val", ""), F["black"], 60, 360, SUB, ha="center", va="center", min_size=22)
     # 화살표
@@ -229,6 +265,7 @@ def render_bar(s, path):
     unit = s.get("unit", "")
     neg = any(v < 0 for v in vals)
     ax = fig.add_axes([0.28, 0.12, 0.64, 0.62]) if neg else fig.add_axes([0.08, 0.20, 0.88, 0.56])
+    ax.set_facecolor("none")   # 플롯 안쪽도 다크 배경 유지(흰색 방지)
     if neg:  # 가로 막대 (하락률 등)
         ypos = range(len(items))
         ax.barh(ypos, vals, color=[RED if v == min(vals) or v == max(vals, key=abs) else RED_LT for v in vals],
@@ -263,7 +300,7 @@ def render_summary(s, path):
     y = 270
     for row in s.get("lines", [])[:3]:
         n, a, b = (list(row) + ["", "", ""])[:3]
-        ax.add_patch(FancyBboxPatch((60, y), W - 120, 175, boxstyle="round,pad=0,rounding_size=20", fc="#fff", ec=GRID, lw=2))
+        ax.add_patch(FancyBboxPatch((60, y), W - 120, 175, boxstyle="round,pad=0,rounding_size=20", fc=PANEL, ec=GRID, lw=2))
         ax.add_patch(plt.Circle((130, y + 87), 42, color=BLUE))
         ax.text(130, y + 87, str(n), fontproperties=F["black"], fontsize=40, color="#fff", ha="center", va="center")
         _fit(ax, 210, y + 58, a, F["bold"], 27, W - 300, INK, va="center", ha="left")
@@ -278,14 +315,14 @@ def render_photo_placeholder(s, path):
     # 민트 점선 라운드 프레임
     ax.add_patch(FancyBboxPatch((70, 70), W - 140, H - 210,
                                 boxstyle="round,pad=0,rounding_size=28",
-                                fc="#f2fbf9", ec=ACCENT, lw=3, linestyle=(0, (6, 6))))
+                                fc="#101a22", ec=ACCENT, lw=3, linestyle=(0, (6, 6))))
     cx, cy = W / 2, (H - 140) / 2 + 30
     # 카메라 아이콘(간단 도형)
     ax.add_patch(FancyBboxPatch((cx - 95, cy - 128), 190, 130,
                                 boxstyle="round,pad=0,rounding_size=22", fc=ACCENT, ec="none"))
     ax.add_patch(FancyBboxPatch((cx - 34, cy - 150), 68, 30,
                                 boxstyle="round,pad=0,rounding_size=10", fc=ACCENT, ec="none"))
-    ax.add_patch(plt.Circle((cx, cy - 63), 40, fc="#f2fbf9", ec="none"))
+    ax.add_patch(plt.Circle((cx, cy - 63), 40, fc="#0b1117", ec="none"))
     ax.add_patch(plt.Circle((cx, cy - 63), 24, fc=ACCENT, ec="none"))
     _fit(ax, cx, cy + 40, PH_GUIDE, F["bold"], 40, W - 220, INK, va="center", ha="center", min_size=24)
     cap = s.get("caption") or ""
@@ -312,16 +349,16 @@ def _wrap2(text, maxchars):
 def render_keynote(s, path):
     """빈 사진 자리 대체용 감성 카드 — 큰 문구 한 줄(캡션)로 6장을 꽉 채운다."""
     fig, ax = _newfig(THUMB_BG)
-    ax.add_patch(Rectangle((0, 0), W, H, color=THUMB_BG))
+    _sky_bg(ax, scrim_start=250)   # 하늘+구름 배경 (히어로/키노트 카드)
     tag = (s.get("tag") or s.get("title") or "RUNNING")
-    _fit(ax, 60, 120, tag, F["black"], 26, W - 120, THUMB_ACCENT, va="center", ha="left")
+    _fit(ax, 60, 470, tag, F["black"], 26, W - 120, THUMB_ACCENT, va="center", ha="left")
     cap = (s.get("caption") or s.get("headline") or s.get("sub") or "오늘도, 한 걸음").strip()
     lines = _wrap2(cap, 14)
-    y = 360 if len(lines) > 1 else 430
+    y = 580 if len(lines) > 1 else 650
     for ln in lines:
-        _fit(ax, 60, y, ln, F["black"], 74, W - 120, "#ffffff", va="center", ha="left", min_size=40)
-        y += 118
-    ax.add_patch(Rectangle((60, y - 34), 300, 8, color=THUMB_ACCENT))
+        _fit(ax, 60, y, ln, F["black"], 72, W - 120, "#ffffff", va="center", ha="left", min_size=40)
+        y += 112
+    ax.add_patch(Rectangle((60, y - 30), 240, 7, color=THUMB_ACCENT, zorder=4))
     _brandbar(ax); fig.savefig(path, facecolor=THUMB_BG); plt.close(fig)
 
 
