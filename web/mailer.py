@@ -42,10 +42,10 @@ def send_email(to, subject, html, text=None):
 
 
 def payment_confirmation(to, months, method="card"):
-    """결제 완료 확인 메일 발송. months=약정 개월수, method='card'|'crypto'."""
+    """결제 완료 확인 메일 발송. months=약정 개월수, method='card'."""
     app_url = (os.getenv("APP_BASE_URL") or "https://app.airnote.club").rstrip("/")
     period = {1: "1개월", 6: "6개월", 12: "12개월"}.get(int(months or 1), f"{months}개월")
-    pay_label = "USDT (크립토)" if method == "crypto" else "카드"
+    pay_label = "카드"
     subject = "AIRNOTE · 결제가 완료됐어요 (Pro 활성화)"
     html = f"""\
 <!DOCTYPE html><html><body style="margin:0;background:#070a0b;font-family:'Apple SD Gothic Neo',Arial,sans-serif;color:#eef4f3">
@@ -58,7 +58,7 @@ def payment_confirmation(to, months, method="card"):
       <div style="display:inline-block;font-size:12px;font-weight:800;color:#04211e;background:#2ed6c6;padding:5px 12px;border-radius:999px;margin-bottom:16px">결제 완료 · Pro 활성화</div>
       <h1 style="font-size:22px;margin:0 0 10px">결제해 주셔서 감사해요 🎉</h1>
       <p style="color:#8fa2a7;font-size:14.5px;line-height:1.7;margin:0 0 20px">
-        AIRNOTE <b style="color:#eef4f3">Pro</b> 이용이 시작됐어요. 이제 매월 35편까지, 2,800자 이상의 장문 블로그와 이미지·SEO 키워드를 마음껏 만들 수 있어요.
+        AIRNOTE <b style="color:#eef4f3">Pro</b> 이용이 시작됐어요. 이제 매월 35편까지, 2,800자 이상의 장문 블로그와 SEO 키워드를 마음껏 만들 수 있어요.
       </p>
       <table style="width:100%;font-size:14px;color:#c9d6d4;border-collapse:collapse;margin-bottom:22px">
         <tr><td style="padding:7px 0;color:#8fa2a7">플랜</td><td style="padding:7px 0;text-align:right;font-weight:700">Pro · {period}</td></tr>
@@ -67,7 +67,7 @@ def payment_confirmation(to, months, method="card"):
       <a href="{app_url}" style="display:block;text-align:center;background:#2ed6c6;color:#04211e;font-weight:800;font-size:15px;text-decoration:none;padding:14px;border-radius:12px">AIRNOTE 열기 →</a>
     </div>
     <p style="color:#5d6f74;font-size:12px;line-height:1.6;margin:18px 4px 0">
-      영수증·구독 관리는 결제사(Lemon Squeezy) 안내 메일에서 확인할 수 있어요. 문의는 이 메일에 회신해 주세요.<br>© AIRNOTE — 달린 기록은 반드시 가치가 된다
+      영수증·구독 관리는 결제사(Polar) 안내 메일에서 확인할 수 있어요. 문의는 이 메일에 회신해 주세요.<br>© AIRNOTE — 달린 기록은 반드시 가치가 된다
     </p>
   </div>
 </body></html>"""

@@ -25,8 +25,6 @@ import keyword_seo as keyword_mod
 import main as pipeline           # prepare_images 재사용
 import images as images_mod       # 카드 하단 브랜드 문구 언어 전환용
 import authz                      # 로그인·사용량(P3)
-import mailer                     # 결제 확인 이메일(#58)
-import threading                  # 문체 프로필 백그라운드 재생성(P5)
 from datetime import datetime, timezone
 
 OUT = os.path.join(ROOT, "output")
@@ -85,25 +83,6 @@ def index():
     return send_from_directory(HERE, "index.html")
 
 
-@app.route("/ranking")
-def ranking_page():
-    return send_from_directory(HERE, "ranking.html")
-
-
-@app.route("/og.png")
-def og_image():
-    resp = send_from_directory(HERE, "og.png")
-    resp.headers["Cache-Control"] = "public, max-age=86400"
-    return resp
-
-
-@app.route("/banner/<path:fname>")
-def banner_image(fname):
-    resp = send_from_directory(os.path.join(HERE, "banner"), fname)
-    resp.headers["Cache-Control"] = "public, max-age=604800"
-    return resp
-
-
 @app.route("/terms")
 def terms():
     return send_from_directory(HERE, "terms.html")
@@ -155,79 +134,11 @@ def images(fname):
     return send_from_directory(IMG_DIR, fname)
 
 
-@app.route("/api/questions", methods=["POST"])
-def api_questions():
-    """러너 메모(+사진 개수)를 읽고 재료를 늘릴 스마트 후속질문 3개를 선택 언어로 반환.
-       로그인 기능이 켜져 있으면 로그인 필요(생성과 동일 게이트). 실패해도 기본질문 폴백."""
-    text = (request.form.get("text") or "").strip()
-    lang = (request.form.get("lang") or "ko").strip()
-    try:
-        n_photos = int(request.form.get("n_photos") or 0)
-    except Exception:
-        n_photos = 0
-    provider = os.getenv("ENGINE_PROVIDER", "claude")
-
-    if authz.enabled():
-        user = authz.verify_token(_bearer())
-        if not user:
-            return jsonify({"error": "로그인이 필요해요.", "auth_required": True}), 401
-
-    try:
-        qs = engine_mod.smart_questions(text, lang=lang, n_photos=n_photos, provider=provider)
-    except Exception:
-        import traceback; traceback.print_exc()
-        qs = engine_mod._fallback_questions(lang)
-    return jsonify({"questions": qs})
-
-
-def _rebuild_style_async(token, lang, provider):
-    """문체 프로필 재생성을 백그라운드에서 수행 → 생성 응답을 지연시키지 않음."""
-    def _work():
-        try:
-            samples = authz.get_style_samples(token, limit=12)
-            prof = engine_mod.build_style_profile(samples, lang=lang, provider=provider)
-            if prof:
-                authz.set_style_profile(token, prof, len(samples), lang)
-        except Exception as e:
-            print("[문체] 백그라운드 재생성 실패:", e)
-    try:
-        threading.Thread(target=_work, daemon=True).start()
-    except Exception:
-        pass
-
-
-@app.route("/api/style/save", methods=["POST"])
-def api_style_save():
-    """유저가 최종 편집/발행한 글을 문체 샘플로 저장(가장 강한 신호). 프론트에서 복사/발행 시 호출."""
-    if not authz.enabled():
-        return jsonify({"ok": False}), 200
-    token = _bearer()
-    user = authz.verify_token(token)
-    if not user:
-        return jsonify({"error": "로그인이 필요해요.", "auth_required": True}), 401
-    data = request.get_json(silent=True) or {}
-    text = (data.get("text") or "").strip()
-    lang = (data.get("lang") or "").strip()
-    if len(text) < 40:
-        return jsonify({"ok": False}), 200
-    n = authz.save_style_sample(token, lang, text, kind="edited")
-    if n:
-        _rebuild_style_async(token, lang, os.getenv("ENGINE_PROVIDER", "claude"))
-    return jsonify({"ok": True, "samples": n})
-
-
 @app.route("/api/generate", methods=["POST"])
 def api_generate():
     text = (request.form.get("text") or "").strip()
     lang = (request.form.get("lang") or "").strip()
     answers = (request.form.get("answers") or "").strip()   # 스마트 후속답변(프론트에서 조립한 재료)
-    gear = [s.strip() for s in (request.form.get("gear") or "").split("|") if s.strip()]            # 착용·장비 (큐레이션·본문 반영)
-    nutrition = [s.strip() for s in (request.form.get("nutrition") or "").split("|") if s.strip()]  # 젤·간식
-    tone = (request.form.get("tone") or "").strip()   # 글 톤 프리셋 (emotive/factual/bright/soft, 빈값=자동)
-    try: length = int(request.form.get("length") or 2800)      # 목표 글자수(하한선)
-    except Exception: length = 2800
-    height = (request.form.get("height") or "").strip()        # 키(cm) — 건강 데이터 역산용(선택)
-    weight = (request.form.get("weight") or "").strip()        # 몸무게(kg) — 칼로리·건강 역산용(선택)
     provider = os.getenv("ENGINE_PROVIDER", "claude")
 
     # ── 로그인·사용량(P3) ── 로그인 기능이 켜져 있으면 검증 + 무료 한도 확인
@@ -267,15 +178,9 @@ def api_generate():
         story += _lang_directive(lang)      # 지원 목록 밖 언어일 때만 보조 지시
     if plan != "pro":                       # 무료 플랜: 짧은 글 + 이미지 2장
         story += _free_tier_directive()
-    # 문체 학습(P5): 이 유저의 문체 프로필이 있으면 프롬프트에 주입 → "그 사람처럼" 씀
-    style_profile = authz.get_style_profile(token) if user else ""
     try:
         result = engine_mod.generate(story, provider=provider, photo_paths=photos,
-                                     lang=lang, extra_context=answers or None,
-                                     style_profile=style_profile or None,
-                                     gear=gear or None, nutrition=nutrition or None,
-                                     tone=tone or None, target_len=length,
-                                     height=height or None, weight=weight or None)
+                                     lang=lang, extra_context=answers or None)
     except Exception as e:
         import traceback; traceback.print_exc()
         return jsonify({"error": f"글 생성 실패 [{type(e).__name__}]: {e}"}), 500
@@ -306,16 +211,6 @@ def api_generate():
         cnt = new_count if new_count is not None else authz.get_usage(token, _period())
         usage = {"used": cnt, "limit": lim, "remaining": max(0, lim - cnt),
                  "plan": plan, "email": user.get("email")}
-        # 문체 학습: 이번 원문(스토리+답변)을 샘플로 저장 → 초반엔 매번, 이후 3회마다 프로필 재생성(백그라운드)
-        try:
-            _sample = (text or "")
-            if answers:
-                _sample += "\n" + answers
-            _n = authz.save_style_sample(token, lang, _sample, kind="input")
-            if _n and (_n <= 6 or _n % 3 == 0):
-                _rebuild_style_async(token, lang, provider)
-        except Exception as _se:
-            print("[문체] 샘플 저장 스킵:", _se)
 
     return jsonify({
         "title": result.get("title"),
@@ -375,17 +270,6 @@ def lemon_webhook():
         if uid:
             ok = authz.set_plan(uid, plan, status=status, renews_at=renews_at)
             print(f"[webhook] {event} status={status} user={uid} -> plan={plan} ok={ok}")
-
-    # #58 결제 확인 이메일 — 최초 결제/구독 생성 시 1회 발송 (중복 방지 위해 created 이벤트만)
-    if event in ("subscription_created", "order_created"):
-        email = attrs.get("user_email") or custom.get("email") or (authz.get_user_email(uid) if uid else "")
-        variant = custom.get("variant_name", "") or attrs.get("variant_name", "") or ""
-        months = 6 if "6" in variant else (12 if "12" in variant else 1)
-        if email:
-            try:
-                mailer.payment_confirmation(email, months, method="card")
-            except Exception as _me:
-                print("[mail] lemon confirm skip:", _me)
     return jsonify({"received": True}), 200
 
 
@@ -421,13 +305,11 @@ def crypto_create():
         return jsonify({"error": "요금제를 확인해주세요."}), 400
     price, months = CRYPTO_PLANS[plan_key]
     uid = (user or {}).get("id", "anon")
-    email = (user or {}).get("email", "") or "no-email"
     base = _app_base()
     payload = {
         "price_amount": price, "price_currency": "usd",
         "order_id": f"{uid}|{months}",
-        # 주문 설명에 이메일을 넣어 NOWPayments 대시보드에서도 누가 냈는지 보이게 함
-        "order_description": f"Runner Blog Pro · {months}mo · {email}",
+        "order_description": f"Runner Blog Pro · {months} month(s)",
         "ipn_callback_url": base + "/api/nowpayments-webhook",
         "success_url": base + "/?paid=1", "cancel_url": base + "/?canceled=1",
         "is_fixed_rate": True,
@@ -436,14 +318,7 @@ def crypto_create():
     req = urllib.request.Request(
         "https://api.nowpayments.io/v1/invoice",
         data=_json.dumps(payload).encode("utf-8"), method="POST",
-        headers={
-            "x-api-key": key,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            # Cloudflare(에러 1010) 회피용 — 정상 브라우저 User-Agent
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                          "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        })
+        headers={"x-api-key": key, "Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
             inv = _json.loads(r.read().decode("utf-8"))
@@ -477,13 +352,6 @@ def nowpayments_webhook():
         renews = _add_months(datetime.now(timezone.utc), months).isoformat()
         ok = authz.set_plan(uid, "pro", status="crypto", renews_at=renews)
         print(f"[nowpayments] finished user={uid} +{months}mo -> pro ok={ok}")
-        # #58 크립토 결제 확인 이메일
-        try:
-            email = authz.get_user_email(uid)
-            if email:
-                mailer.payment_confirmation(email, months, method="crypto")
-        except Exception as _me:
-            print("[mail] crypto confirm skip:", _me)
     return jsonify({"received": True}), 200
 
 
