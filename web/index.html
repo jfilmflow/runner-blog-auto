@@ -1636,10 +1636,12 @@ function refreshUpBtn(){
 }
 
 // ===== 업그레이드(요금제) 팝업 =====
+// Polar 결제 링크. 현재 Polar에는 'Monthly(1개월)' 상품만 있어 세 요금제가 모두 같은 링크를 가리킴.
+// TODO: Polar에 6개월·12개월 상품을 추가하면 아래 '6m','12m' 값을 각 상품 체크아웃 링크로 교체.
 const CHECKOUT = {
-  '1m':  'https://airnote.lemonsqueezy.com/checkout/buy/e22ebe6b-d374-4e67-923b-68594b1a29b7',
-  '6m':  'https://airnote.lemonsqueezy.com/checkout/buy/42e8fbea-4b03-41a1-b864-9afebd4fbbc2',
-  '12m': 'https://airnote.lemonsqueezy.com/checkout/buy/8c63135d-38f5-4c92-81e8-a0609ac3f81c',
+  '1m':  'https://buy.polar.sh/polar_cl_pH3RqDxFa5vdO4IDAgAsFPPGw2806kxs1OooF0Gnkkr',
+  '6m':  'https://buy.polar.sh/polar_cl_pH3RqDxFa5vdO4IDAgAsFPPGw2806kxs1OooF0Gnkkr',
+  '12m': 'https://buy.polar.sh/polar_cl_pH3RqDxFa5vdO4IDAgAsFPPGw2806kxs1OooF0Gnkkr',
 };
 const PLAN_DATA = [
   {k:'1m',  nameKey:'up1',  total:'$12', permo:'$12'},
@@ -1651,8 +1653,9 @@ function buildCheckout(k){
   const p=[];
   if(AUTH.session && AUTH.session.user){
     const usr=AUTH.session.user;
-    if(usr.email) p.push('checkout[email]='+encodeURIComponent(usr.email));
-    if(usr.id)    p.push('checkout[custom][user_id]='+encodeURIComponent(usr.id));
+    // Polar checkout 파라미터: 이메일 자동입력 + reference_id(우리 user_id) → 결제 성공 시 Order/Subscription metadata로 전달됨(웹훅에서 유저 매칭에 사용)
+    if(usr.email) p.push('customer_email='+encodeURIComponent(usr.email));
+    if(usr.id)    p.push('reference_id='+encodeURIComponent(usr.id));
   }
   return u + (p.length ? ('?'+p.join('&')) : '');
 }
@@ -1773,10 +1776,10 @@ function handlePaymentReturn(){
     }
   }catch(_){}
 }
-// 친구 초대(제휴 20%) — LS 제휴 가입 페이지로
-const AFFILIATE_URL='https://airnote.lemonsqueezy.com/affiliates';
-$('#inviteBtn').onclick=()=>window.open(AFFILIATE_URL,'_blank');
-{ const _rc=$('#referCta'); if(_rc) _rc.onclick=()=>window.open(AFFILIATE_URL,'_blank'); }
+// 친구 초대/제휴 — Polar은 네이티브 제휴 기능이 없어 임시 비활성화 (Affonso 등 3rd-party 연동 시 재활성화)
+const AFFILIATE_URL='';
+{ const _ib=$('#inviteBtn'); if(_ib) _ib.style.display='none'; }
+{ const _rc=$('#referCta'); if(_rc) _rc.style.display='none'; }
 /* 레퍼럴 카드 SNS 공유 */
 (function(){
   const LINK="https://airnote.club";

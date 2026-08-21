@@ -389,6 +389,84 @@ def lemon_webhook():
     return jsonify({"received": True}), 200
 
 
+@app.route("/api/polar-webhook", methods=["POST"])
+def polar_webhook():
+    """Polar 결제 웹훅 (Standard Webhooks 규격).
+       - 서명 검증: POLAR_WEBHOOK_SECRET (webhook-id / webhook-timestamp / webhook-signature 헤더)
+       - order.paid / subscription.active → pro,  subscription.canceled/revoked → free
+       - 유저 매칭: 체크아웃에서 넘긴 reference_id(=user_id)가 Order/Subscription metadata로 전달됨."""
+    import hmac, hashlib, base64
+    raw = request.get_data()  # bytes
+    secret = os.getenv("POLAR_WEBHOOK_SECRET", "")
+
+    # ── Standard Webhooks 서명 검증 (secret 설정 시에만) ──
+    if secret:
+        wh_id = request.headers.get("webhook-id", "")
+        wh_ts = request.headers.get("webhook-timestamp", "")
+        wh_sig = request.headers.get("webhook-signature", "")
+        signed = wh_id.encode() + b"." + wh_ts.encode() + b"." + raw
+        keys = [secret.encode("utf-8")]          # Polar secret 그대로 (base64 라운드트립 상쇄)
+        try:
+            keys.append(base64.b64decode(secret))  # secret이 base64인 경우도 대비
+        except Exception:
+            pass
+        ok_sig = False
+        for key in keys:
+            digest = base64.b64encode(hmac.new(key, signed, hashlib.sha256).digest()).decode()
+            for part in wh_sig.split():            # 헤더는 "v1,<sig> v1,<sig2>" 공백 구분
+                if hmac.compare_digest(digest, part.split(",", 1)[-1]):
+                    ok_sig = True; break
+            if ok_sig: break
+        if not ok_sig:
+            print("[polar] bad signature"); return jsonify({"error": "bad signature"}), 401
+
+    data = request.get_json(force=True, silent=True) or {}
+    event = data.get("type", "")               # order.paid, subscription.active, subscription.canceled ...
+    obj = data.get("data", {}) or {}
+
+    def _dig(d, *ks):
+        for k in ks:
+            v = (d or {}).get(k)
+            if v: return v
+        return None
+    meta     = obj.get("metadata") or {}
+    cust     = obj.get("customer") or {}
+    checkout = obj.get("checkout") or {}
+    uid = (_dig(meta, "reference_id", "user_id")
+           or obj.get("reference_id")
+           or _dig(checkout, "reference_id")
+           or _dig(checkout.get("metadata") or {}, "reference_id", "user_id"))
+    status = obj.get("status", "")
+    email  = _dig(cust, "email") or obj.get("customer_email") or (authz.get_user_email(uid) if uid else "")
+
+    active_events = {"order.paid", "subscription.active", "subscription.created", "subscription.updated"}
+    cancel_events = {"subscription.canceled", "subscription.revoked"}
+
+    if event in active_events:
+        plan = "pro"
+        if event.startswith("subscription") and status and status not in ("active", "trialing", "past_due"):
+            plan = "free"
+        if uid:
+            ok = authz.set_plan(uid, plan, status=status or event)
+            print(f"[polar] {event} status={status} user={uid} -> plan={plan} ok={ok}")
+    elif event in cancel_events:
+        if uid:
+            ok = authz.set_plan(uid, "free", status=status or event)
+            print(f"[polar] {event} user={uid} -> plan=free ok={ok}")
+
+    # 결제 확인 메일 — 최초 결제(order.paid) 1회
+    if event == "order.paid" and email:
+        prod = obj.get("product") or {}
+        name = (prod.get("name") or "") + " " + str(obj.get("amount") or "")
+        months = 6 if "6" in name else (12 if "12" in name else 1)
+        try:
+            mailer.payment_confirmation(email, months, method="card")
+        except Exception as _me:
+            print("[mail] polar confirm skip:", _me)
+
+    return jsonify({"received": True}), 200
+
+
 @app.route("/healthz")
 def healthz():
     return "ok"
