@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google Analytics (GA4) — 랜딩과 같은 속성으로 퍼널 통합 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WXJ71CFH74"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-WXJ71CFH74');
+  window.track = function(name, params){ try{ gtag('event', name, params||{}); }catch(_){} };
+</script>
 <title>AIRNOTE — 러닝 기록을 블로그로</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
 <meta name="theme-color" content="#070a0b">
@@ -1420,6 +1429,7 @@ async function doGenerate(answersText){
   }
   // 서버가 준 진짜 결과만 사용
   current=data;
+  if(window.track) track('generate', {plan:(AUTH.session?'user':'guest')});   // 글 생성 성공
   progStop(true);
   render(current);
   if(data.usage) updateUsage(data.usage);
@@ -1588,6 +1598,7 @@ async function initAuth(){
     SB=window.supabase.createClient(AUTH.url, AUTH.anon);
     try{ const {data}=await SB.auth.getSession(); AUTH.session=data.session||null; }catch(_){}
     SB.auth.onAuthStateChange((_e,s)=>{ AUTH.session=s||null; updateAuthUI(); if(s) fetchUsage();
+      if(s && _e==='SIGNED_IN' && window.track) track('login');   // 로그인/가입 완료
       if(s && window.__pendingPlan){ const k=window.__pendingPlan; window.__pendingPlan=null; try{$('#loginModal').style.display='none';}catch(_){} window.location.href=buildCheckout(k); } });
   }
   $('#authWrap').style.display = AUTH.enabled ? 'flex' : 'none';
@@ -1661,6 +1672,7 @@ function buildCheckout(k){
 }
 function planClick(k){
   if(AUTH.enabled && !AUTH.session){ openLogin(); return; }   // 로그인부터
+  if(window.track) track('begin_checkout', {plan:k});          // 결제 시도 (전환 신호)
   window.open(buildCheckout(k), '_blank');
 }
 // 할인 사다리: 무료 → 1개월 → 6개월 → 12개월 (오른쪽으로 갈수록 할인↑)
@@ -1768,6 +1780,7 @@ function handlePaymentReturn(){
     const q=new URLSearchParams(location.search);
     if(q.get('paid')==='1'){
       toast(T('paidThanks'));
+      if(window.track) track('purchase');   // 결제 완료 후 앱 복귀
       let n=0; const iv=setInterval(()=>{ fetchUsage(); if(++n>=6) clearInterval(iv); }, 2500);
       q.delete('paid'); history.replaceState(null,'', location.pathname+(q.toString()?('?'+q):''));
     } else if(q.get('canceled')==='1'){
