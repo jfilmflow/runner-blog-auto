@@ -1647,12 +1647,11 @@ function refreshUpBtn(){
 }
 
 // ===== 업그레이드(요금제) 팝업 =====
-// Polar 결제 링크. 현재 Polar에는 'Monthly(1개월)' 상품만 있어 세 요금제가 모두 같은 링크를 가리킴.
-// TODO: Polar에 6개월·12개월 상품을 추가하면 아래 '6m','12m' 값을 각 상품 체크아웃 링크로 교체.
+// Polar 결제 링크 — 요금제별 개별 체크아웃 링크 (1개월/6개월/12개월 각각)
 const CHECKOUT = {
   '1m':  'https://buy.polar.sh/polar_cl_pH3RqDxFa5vdO4IDAgAsFPPGw2806kxs1OooF0Gnkkr',
-  '6m':  'https://buy.polar.sh/polar_cl_pH3RqDxFa5vdO4IDAgAsFPPGw2806kxs1OooF0Gnkkr',
-  '12m': 'https://buy.polar.sh/polar_cl_pH3RqDxFa5vdO4IDAgAsFPPGw2806kxs1OooF0Gnkkr',
+  '6m':  'https://buy.polar.sh/polar_cl_w1AIMsOlBkdwqmuwORbhwYIwZP2evjmYiwRHW1C7j8F',
+  '12m': 'https://buy.polar.sh/polar_cl_tZqTZpPIkhS9fkklLYg9IMJ8Dnw9qfstV3c6I47aDOn',
 };
 const PLAN_DATA = [
   {k:'1m',  nameKey:'up1',  total:'$12', permo:'$12'},
