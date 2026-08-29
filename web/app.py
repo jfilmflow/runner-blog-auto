@@ -405,18 +405,16 @@ def polar_webhook():
         wh_ts = request.headers.get("webhook-timestamp", "")
         wh_sig = request.headers.get("webhook-signature", "")
         signed = wh_id.encode() + b"." + wh_ts.encode() + b"." + raw
-        # Standard Webhooks: 시크릿은 'whsec_' + base64. 접두사 떼고 base64 디코드한 값이 raw key.
+        # Standard Webhooks: 시크릿은 'whsec_' + base64(패딩 없을 수 있음). 접두사 떼고 base64 디코드한 값이 raw key.
+        def _b64(s):
+            s = s + "=" * (-len(s) % 4)               # 패딩 보정 (Polar 시크릿은 '=' 없이 옴)
+            return base64.b64decode(s)
         sk = secret[6:] if secret.startswith("whsec_") else secret
         keys = []
-        try:
-            keys.append(base64.b64decode(sk))        # 표준 케이스 (권장)
-        except Exception:
-            pass
-        keys.append(secret.encode("utf-8"))          # fallback: 원문 그대로
-        try:
-            keys.append(base64.b64decode(secret))    # fallback
-        except Exception:
-            pass
+        for cand in (sk, secret):                     # 표준(접두사 제거) + 원문 둘 다 시도
+            try: keys.append(_b64(cand))
+            except Exception: pass
+        keys.append(secret.encode("utf-8"))           # 최후 fallback: 원문 그대로
         ok_sig = False
         for key in keys:
             digest = base64.b64encode(hmac.new(key, signed, hashlib.sha256).digest()).decode()
@@ -439,10 +437,15 @@ def polar_webhook():
     meta     = obj.get("metadata") or {}
     cust     = obj.get("customer") or {}
     checkout = obj.get("checkout") or {}
+    sub      = obj.get("subscription") or {}
     uid = (_dig(meta, "reference_id", "user_id")
            or obj.get("reference_id")
            or _dig(checkout, "reference_id")
-           or _dig(checkout.get("metadata") or {}, "reference_id", "user_id"))
+           or _dig(checkout.get("metadata") or {}, "reference_id", "user_id")
+           or _dig(sub.get("metadata") or {}, "reference_id", "user_id")
+           or _dig(cust, "external_id")
+           or obj.get("customer_external_id"))
+    print(f"[polar] event={data.get('type','')} uid={uid} meta={meta} custkeys={list(cust.keys()) if isinstance(cust,dict) else cust}")
     status = obj.get("status", "")
     email  = _dig(cust, "email") or obj.get("customer_email") or (authz.get_user_email(uid) if uid else "")
 
