@@ -405,9 +405,16 @@ def polar_webhook():
         wh_ts = request.headers.get("webhook-timestamp", "")
         wh_sig = request.headers.get("webhook-signature", "")
         signed = wh_id.encode() + b"." + wh_ts.encode() + b"." + raw
-        keys = [secret.encode("utf-8")]          # Polar secret 그대로 (base64 라운드트립 상쇄)
+        # Standard Webhooks: 시크릿은 'whsec_' + base64. 접두사 떼고 base64 디코드한 값이 raw key.
+        sk = secret[6:] if secret.startswith("whsec_") else secret
+        keys = []
         try:
-            keys.append(base64.b64decode(secret))  # secret이 base64인 경우도 대비
+            keys.append(base64.b64decode(sk))        # 표준 케이스 (권장)
+        except Exception:
+            pass
+        keys.append(secret.encode("utf-8"))          # fallback: 원문 그대로
+        try:
+            keys.append(base64.b64decode(secret))    # fallback
         except Exception:
             pass
         ok_sig = False
